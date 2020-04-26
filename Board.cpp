@@ -46,14 +46,24 @@ namespace Engine{
 		Position org=move.getOrigin();
 		Position dest=move.getDestination();
 
-		if(move.getType()==MoveType::Capture){
+		if(move.getType()==MoveType::Capture || move.getType()==MoveType::Quiet){
 			pieces[dest.y][dest.x]=pieces[org.y][org.x];
 			pieces[org.y][org.x]=Piece::None;
 		}
 		current_game_state.toggleState(turnColor);
+		current_game_state.setLastMove(move);
 	}
 	void Board::undoLastMove(){
-		
+		Move last_move=current_game_state.getLastMove();
+		Position org=last_move.getOrigin();
+		Position dest=last_move.getDestination();
+		if(last_move.getType()==MoveType::Capture || last_move.getType()==MoveType::Quiet){
+			pieces[org.y][org.x]=pieces[dest.y][dest.x];
+			pieces[dest.y][dest.x]=last_move.getTaken();
+		}
+
+		current_game_state=history.top();
+		history.pop();
 	}
 
 

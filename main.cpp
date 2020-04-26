@@ -13,12 +13,14 @@ int main(){
 	
 	Engine::Board board;
 	
-	Move move(MoveType::Capture,Position(3,1),Position(3,6),Piece::None);
+	Move move(MoveType::Quiet,Position(3,1),Position(3,6),Piece::BlackPawn);
+	Move move2(MoveType::Quiet,Position(4,1),Position(4,3),Piece::None);
 
 
-	cout<<board.getTurn()<<endl;
+	board.makeMove(move2);
 	board.makeMove(move);
-	cout<<board.getTurn()<<endl;
+	board.undoLastMove();
+	board.undoLastMove();
 	board.print();
 
 	Protocol uci;

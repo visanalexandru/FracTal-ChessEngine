@@ -2,31 +2,16 @@
 
 namespace Engine{
 	namespace AnParser{
-		bool isUppercase(char a){
-			return a>='A' && a<='Z';
-		}
 
-		Move getMove(const std::string&an,Board&board){
-			int cursor=0;
-			bool capture=false;
-			Piece captured=Piece::None;
-			
-			if(isUppercase(an[0]))//piece indicator,just ignore it
-				cursor++;
-			Position origin=parsePosition(an,cursor);
-			if(an[cursor]=='x')
-				capture=true;
-			Position destination=parsePosition(an,cursor);
+		Move getMove(const std::string&an,Board&board){//We assume the move is legal
+			Position origin(an[0]-'a',an[1]-'1');
+			Position destination(an[2]-'a',an[3]-'1');
+			Piece piece_moved=board.getPieceAt(origin);
+			Piece captured=board.getPieceAt(destination);
 
-			if(capture)
-				captured=board.getPieceAt(destination);
-		}
-
-		Position parsePosition(const std::string&an,int&cursor){
-			char file=an[cursor++];
-			char rank=an[cursor++];
-		
-			return Position((int)(file-'a'),(int)(rank-'1'));
+			if(captured==Piece::None){
+				
+			}
 		}
 
 	}
