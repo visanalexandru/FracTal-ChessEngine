@@ -3,7 +3,6 @@
 #include "Position.h"
 #include "Types.h"
 #include<cstdint>
-
 namespace Engine{
 
 
@@ -14,13 +13,11 @@ namespace Engine{
 			const Position destination;
 			const MoveType move_type;
 			const Piece taken;
-			const Piece piece_before_promotion;
-			const uint16_t previous_game_state;
 		public:
-			Move(MoveType type,Position start,Position end,uint16_t game_state,Piece piece_taken,Piece before_promotion);
+			Move(MoveType type,Position start,Position end,Piece piece_taken);
+			Move();
 			Position getOrigin() const;
 			Position getDestination() const;
-			uint16_t getPreviousGameState() const;
 			MoveType getType() const;
 			Piece getTaken() const;
 	};

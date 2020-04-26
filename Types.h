@@ -3,7 +3,7 @@
 
 namespace Engine{
 
-	enum MoveType{
+	enum class MoveType{
 		Null,
 		Quiet,
 		QueenSideCastle,

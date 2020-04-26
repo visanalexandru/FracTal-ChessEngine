@@ -4,16 +4,22 @@
 
 namespace Engine{
 
-	Move::Move(MoveType type,Position start,Position end,uint16_t game_state,Piece piece_taken):
+	Move::Move(MoveType type,Position start,Position end,Piece piece_taken):
 	move_type(type),
 	origin(start),
 	destination(end),
-	previous_game_state(game_state),
 	taken(piece_taken){
 
 
 	}
 
+	Move::Move():move_type(MoveType::Null),
+	taken(Piece::None)	
+	{
+
+
+
+	}
 
 
 	Position Move::getOrigin() const{
@@ -21,9 +27,6 @@ namespace Engine{
 	}
 	Position Move::getDestination() const{
 		return destination;
-	}
-	uint16_t Move::getPreviousGameState() const{
-		return previous_game_state;
 	}
 	MoveType Move::getType() const{
 		return move_type;

@@ -5,12 +5,12 @@ namespace Engine{
 		initBoard();
 	}
 	void Board::initBoard(){
-		game_state=0;
-		game_state|=canCastleQueenSideBlack;
-		game_state|=canCastleKingSideBlack;
-		game_state|=canCastleQueenSideWhite;
-		game_state|=canCastleKingSideWhite;
+		
 
+		current_game_state.setState(canCastleQueenSideBlack);
+		current_game_state.setState(canCastleKingSideBlack);
+		current_game_state.setState(canCastleQueenSideWhite);
+		current_game_state.setState(canCastleKingSideWhite);
 
 		for(int i=0;i<8;i++){
 			for(int k=0;k<8;k++)
@@ -42,25 +42,18 @@ namespace Engine{
 
 	}
 	void Board::makeMove(Move move){
+		history.push(current_game_state);
 		Position org=move.getOrigin();
 		Position dest=move.getDestination();
 
-		if(move.getType()==Capture){
+		if(move.getType()==MoveType::Capture){
 			pieces[dest.y][dest.x]=pieces[org.y][org.x];
 			pieces[org.y][org.x]=Piece::None;
 		}
-		game_state^=turnColor;
+		current_game_state.toggleState(turnColor);
 	}
-	void Board::undoMove(Move move){
-		Position org=move.getOrigin();
-		Position dest=move.getDestination();
-
-		if(move.getType()==Capture){
-			pieces[org.y][org.x]=pieces[dest.y][dest.x];
-			pieces[dest.y][dest.x]=move.getTaken();
-		}
-
-		game_state=move.getPreviousGameState();
+	void Board::undoLastMove(){
+		
 	}
 
 
@@ -86,7 +79,7 @@ namespace Engine{
 
 
 	Color Board::getTurn() const{
-		if(game_state&turnColor!=0)
+		if(current_game_state.getState(turnColor))
 			return Black;
 		return White;
 	}
