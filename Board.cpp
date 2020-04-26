@@ -97,21 +97,14 @@ namespace Engine{
 		return pieces[pos.y][pos.x];
 	}
 		
-	Move Board::createMove(Position a,Position b) const{
-		Piece colored_pawn=Piece::WhitePawn;
-		if(getTurn()==Color::White)
-			colored_pawn=Piece::BlackPawn;
-
-		if(getPieceAt(a)!=colored_pawn){
-
-		}
-		else{
-
-
-
-		}
-
-
+	Move Board::createNormalMove(Position a,Position b) const{
+		return Move(MoveType::Normal,a,b,getPieceAt(b),Piece::None);
+	}
+	Move Board::createPromotionMove(Position a,Position b,Piece promote_to) const{
+		return Move(MoveType::Promote,a,b,getPieceAt(b),promote_to);
+	}
+	Move Board::createDoublePawnPushMove(Position a,Position b) const{
+		return Move(MoveType::DoublePawnPush,a,b,Piece::None,Piece::None);
 	}
 	
 	Move Board::createKingSideCastleMove() const{

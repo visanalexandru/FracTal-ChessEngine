@@ -14,8 +14,9 @@ int main(){
 	Engine::Board board;
 	
 
-	Move to_move=board.createCaptureMove(Position(2,1),Position(2,6));
+	Move to_move=board.createNormalMove(Position(2,1),Position(2,6));
 	board.makeMove(to_move);
+	board.undoLastMove();
 	board.print();
 
 	cout<<to_move.toString();
