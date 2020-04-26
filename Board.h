@@ -16,6 +16,12 @@ namespace Engine{
 			GameState current_game_state;
 			void initBoard();
 		public:
+
+			//These do not check if the move is legal,just provide
+			//a way to easily create moves assuming the move is legal
+			Move createMove(Position a,Position b) const;
+			Move createQueenSideCastleMove() const;
+			Move createKingSideCastleMove() const;
 			Board();
 			void print() const;
 			Piece getPieceAt(Position position) const;

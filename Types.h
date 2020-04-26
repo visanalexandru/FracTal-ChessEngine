@@ -5,14 +5,12 @@ namespace Engine{
 
 	enum class MoveType{
 		Null,
-		Quiet,
+		Normal,//can be a quiet move or a capture
 		QueenSideCastle,
 		KingSideCastle,
 		DoublePawnPush,
 		EnPassant,
-		Capture,
 		Promote,
-		CaptureAndPromote,
 	};
 	enum class Piece{
 		WhitePawn,

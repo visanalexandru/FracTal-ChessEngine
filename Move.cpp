@@ -47,7 +47,7 @@ namespace Engine{
 		result+=(char)(destination.x+'a');
 		result+=(char)(destination.y+'1');
 
-		if(move_type==MoveType::Promote || move_type==MoveType::CaptureAndPromote){
+		if(move_type==MoveType::Promote){
 			result+=tolower(getChar(promote_to));
 		}
 
