@@ -3,15 +3,14 @@
 namespace Engine{
 	namespace AnParser{
 
-		Move getMove(const std::string&an,Board&board){//We assume the move is legal
-			Position origin(an[0]-'a',an[1]-'1');
-			Position destination(an[2]-'a',an[3]-'1');
-			Piece piece_moved=board.getPieceAt(origin);
-			Piece captured=board.getPieceAt(destination);
+		Move getMove(const std::string&an,Board&board){
+		    std::vector<Move> move_list=board.getAllMoves();
 
-			if(captured==Piece::None){
-				
-			}
+		    for(Move a:move_list){
+		        if(a.toString()==an)
+		            return a;
+		    }
+		    return Move();//null move;
 		}
 
 	}

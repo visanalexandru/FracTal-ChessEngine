@@ -8,10 +8,12 @@ Protocol::Protocol(Engine::Board&internal_board):isRunning(false),
 
 	}
 void Protocol::send(const std::string&to_send){
-	log<<"sent "<<to_send<<'\n';
+	Log("sent "+to_send);
 	std::cout<<to_send<<'\n';
 }
-
+void Protocol::Log(const std::string &to_log) {
+    log<<to_log<<std::endl;
+}
 void Protocol::handleRequest(const std::string&req){
 
 	log<<"received "<<req<<std::endl;
@@ -30,11 +32,29 @@ void Protocol::handleRequest(const std::string&req){
 	else if(cmmd=="isready"){
 		send("readyok");
 	}
+	else if(cmmd=="position"){
+        std::string aux;
+        sstream>>aux;//the first string is a fen string or "startpos"
+
+        while(!sstream.eof())
+            sstream>>aux;
+
+        Engine::Move server_move=Engine::AnParser::getMove(aux,board);
+        if(server_move.getType()==Engine::MoveType::Null){
+            Log("invalid move" +server_move.toString());
+            isRunning=false;
+        }
+        else{
+            board.makeMove(Engine::AnParser::getMove(aux,board));
+            Log(board.print());
+        }
+	}
 	else if(cmmd=="go"){
         std::vector<Engine::Move> moves=board.getAllMoves();
         Engine::Move bestmove=moves[rand()%(moves.size())];
         send("bestmove "+bestmove.toString());
         board.makeMove(bestmove);
+        Log(board.print());
     }
 	else if(cmmd=="quit"){
 		isRunning=false;

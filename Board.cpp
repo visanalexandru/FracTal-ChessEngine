@@ -153,23 +153,25 @@ namespace Engine{
 
 
 
-	void Board::print() const{
+	std::string Board::print() const{
+	    std::string to_return;
 		for(int i=0;i<8;i++){
 			for(int k=0;k<33;k++)
-				std::cout<<"#";
-			std::cout<<std::endl;
-			std::cout<<"# ";
+				to_return+='#';
+			to_return+='\n';
+			to_return+="# ";
 
 			for(int k=0;k<8;k++){
-				std::cout<<getChar(pieces[7-i][k])<<" # ";
+				to_return+=getChar(pieces[7-i][k]);
+				to_return+=" # ";
 			}
-			std::cout<<std::endl;
+			to_return+='\n';
 		}
 		for(int k=0;k<33;k++)
-			std::cout<<"#";
+			to_return+='#';
 
-		std::cout<<std::endl;
-
+		to_return+='\n';
+        return to_return;
 	}
 
 

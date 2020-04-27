@@ -39,7 +39,7 @@ namespace Engine{
 			std::vector<Move> getAllMoves() const;
 
 			Board();
-			void print() const;
+			std::string print() const;
 			Piece getPieceAt(Position position) const;
 			void makeMove(Move move);
 			void undoLastMove();
