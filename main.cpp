@@ -10,7 +10,7 @@ using namespace std;
 using namespace Engine;
 
 int main(){
-
+    srand(time(NULL));
 	Engine::Board board;
 	Protocol uci(board);
 	uci.start();

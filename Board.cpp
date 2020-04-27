@@ -279,9 +279,15 @@ namespace Engine{
         for(Position pos:can_go){
             if(turn_color==White && pos.y==7){
                 moves.push_back(createPromotion(a,pos,Piece::WhiteQueen));
+                moves.push_back(createPromotion(a,pos,Piece::WhiteKnight));
+                moves.push_back(createPromotion(a,pos,Piece::WhiteBishop));
+                moves.push_back(createPromotion(a,pos,Piece::WhiteRook));
             }
             else if(turn_color==Black && pos.y==0){
                 moves.push_back(createPromotion(a,pos,Piece::BlackQueen));
+                moves.push_back(createPromotion(a,pos,Piece::BlackKnight));
+                moves.push_back(createPromotion(a,pos,Piece::BlackBishop));
+                moves.push_back(createPromotion(a,pos,Piece::BlackRook));
             }
             else moves.push_back(createNormal(a,pos));
         }
