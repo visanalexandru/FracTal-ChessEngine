@@ -23,6 +23,7 @@ namespace Engine{
 			void makeQueenSideCastle();
 			void makeKingSideCastle();
 			void makeEnPassant(Move move);
+			void makePromotion(Move move);
 			void initBoard();
 		public:
 

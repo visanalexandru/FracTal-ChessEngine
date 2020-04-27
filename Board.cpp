@@ -78,10 +78,15 @@ namespace Engine{
 
 		}
 	}
+	void Board::makePromotion(Engine::Move move) {
+        Position a=move.getOrigin();
+        Position b=move.getDestination();
+        pieces[b.y][b.x]=move.getPromotion();
+        pieces[a.y][a.x]=Piece::None;
+	}
 	void Board::makeEnPassant(Move move){
 		Position a=move.getOrigin();
 		Position b=move.getDestination();
-
 		pieces[a.y][b.x]=Piece::None;
 		pieces[b.y][b.x]=getPieceAt(a);
 		pieces[a.y][a.x]=Piece::None;
@@ -130,10 +135,14 @@ namespace Engine{
 		MoveType type=move.getType();
 		if(type==MoveType::Normal || type==MoveType::DoublePawnPush)
 			makeNormalMove(move);
+		else if(type==MoveType::EnPassant)
+		    makeEnPassant(move);
 		else if(type==MoveType::KingSideCastle)
 			makeKingSideCastle();
 		else if(type==MoveType::QueenSideCastle)
 			makeQueenSideCastle();
+		else if(type==MoveType::Promote)
+		    makePromotion(move);
 
 		current_game_state.toggleState(turnColor);
 		current_game_state.setLastMove(move);
@@ -241,7 +250,7 @@ namespace Engine{
 			l=Position(a.x-1,a.y+1);
 			r=Position(a.x+1,a.y+1);
 
-			if(a.y==1 && getPieceAt(f)==Piece::None && getPieceAt(f)==Piece::None)
+			if(a.y==1 && getPieceAt(f)==Piece::None && getPieceAt(ff)==Piece::None)
 				moves.push_back(createDoublePawnPush(a,ff));
 		}
 		else {
@@ -249,7 +258,7 @@ namespace Engine{
             ff=Position(a.x,a.y-2);
             l=Position(a.x-1,a.y-1);
             r=Position(a.x+1,a.y-1);
-			if(a.y==6 && getPieceAt(f)==Piece::None && getPieceAt(f)==Piece::None)
+			if(a.y==6 && getPieceAt(f)==Piece::None && getPieceAt(ff)==Piece::None)
 				moves.push_back(createDoublePawnPush(a,ff));
 		}
 
@@ -281,7 +290,7 @@ namespace Engine{
         if(current_game_state.getLastMove().getType()==MoveType::DoublePawnPush){
             Position pawnpushpos=current_game_state.getLastMove().getDestination();
             int x=pawnpushpos.x;
-            if(abs(x-a.x)==1){//is neighbour
+            if(abs(x-a.x)==1 && pawnpushpos.y==a.y){//is neighbour
                 if(turn_color==Color::White){
                     moves.push_back(createEnPassant(a,pawnpushpos+Position(0,1)));
                 }

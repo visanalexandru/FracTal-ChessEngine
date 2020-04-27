@@ -14,6 +14,9 @@ void Protocol::send(const std::string&to_send){
 void Protocol::Log(const std::string &to_log) {
     log<<to_log<<std::endl;
 }
+bool Protocol::compare(Engine::Move a, Engine::Move b) {
+        return a.getType()<b.getType();
+}
 void Protocol::handleRequest(const std::string&req){
 
 	log<<"received "<<req<<std::endl;
@@ -51,7 +54,8 @@ void Protocol::handleRequest(const std::string&req){
 	}
 	else if(cmmd=="go"){
         std::vector<Engine::Move> moves=board.getAllMoves();
-        Engine::Move bestmove=moves[rand()%(moves.size())];
+        std::sort(moves.begin(),moves.end(),compare);
+        Engine::Move bestmove=moves[moves.size()-1];
         send("bestmove "+bestmove.toString());
         board.makeMove(bestmove);
         Log(board.print());
