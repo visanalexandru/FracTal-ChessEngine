@@ -54,15 +54,15 @@ namespace Engine{
 
 
 			case Piece::BlackPawn:
-				return 1;
+				return -1;
 			case Piece::BlackKnight:
-				return 3;
+				return -3;
 			case Piece::BlackBishop:
-				return 3;
+				return -3;
 			case Piece::BlackRook:
-				return 5;
+				return -5;
 			case Piece::BlackQueen:
-				return 10;
+				return -10;
 		}
 		return 0;//kings or empty spaces
 	}
@@ -98,6 +98,12 @@ namespace Engine{
 		return ' ';
 	}
 
+	
+	inline Color getColor(Piece piece){
+		if(getValue(piece)>=0)
+			return Color::White;
+		return Color::Black;
+	}
 
 
 }

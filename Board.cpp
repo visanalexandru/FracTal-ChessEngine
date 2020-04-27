@@ -41,15 +41,104 @@ namespace Engine{
 		pieces[7][7]=Piece::BlackRook;
 
 	}
-	void Board::makeMove(Move move){
-		history.push(current_game_state);
+	void Board::makeNormalMove(Move move){
+
 		Position org=move.getOrigin();
 		Position dest=move.getDestination();
 
-		if(move.getType()==MoveType::Normal){
-			pieces[dest.y][dest.x]=pieces[org.y][org.x];
-			pieces[org.y][org.x]=Piece::None;
+		pieces[dest.y][dest.x]=pieces[org.y][org.x];
+		pieces[org.y][org.x]=Piece::None;
+
+
+		if(getTurn()==Color::White){
+			if(org.y==0 && org.x==4){
+				current_game_state.unsetState(canCastleKingSideWhite);
+				current_game_state.unsetState(canCastleQueenSideWhite);
+			}
+			else if (org.y==0 && org.x==0){
+				current_game_state.unsetState(canCastleQueenSideWhite);
+			}
+			else if(org.y==0 && org.x==7){
+				current_game_state.unsetState(canCastleKingSideWhite);
+			}
 		}
+		else{
+
+			if(org.y==7 && org.x==4){
+				current_game_state.unsetState(canCastleKingSideBlack);
+				current_game_state.unsetState(canCastleQueenSideBlack);
+			}
+			else if (org.y==7 && org.x==0){
+				current_game_state.unsetState(canCastleQueenSideBlack);
+			}
+			else if(org.y==7 && org.x==7){
+				current_game_state.unsetState(canCastleKingSideBlack);
+			}
+
+		}
+		current_game_state.toggleState(turnColor);
+	}
+	void Board::makeEnPassant(Move move){
+		Position a=move.getOrigin();
+		Position b=move.getDestination();
+
+		pieces[a.y][b.x]=Piece::None;	
+		pieces[b.y][b.x]=getPieceAt(a);
+		pieces[a.y][a.x]=Piece::None;
+	}
+	void Board::makeKingSideCastle(){
+		if(getTurn()==Color::White){
+			pieces[0][6]=Piece::WhiteKing;
+			pieces[0][4]=Piece::None;
+			pieces[0][5]=Piece::WhiteRook;
+			pieces[0][7]=Piece::None;
+
+			current_game_state.unsetState(canCastleKingSideWhite);
+			current_game_state.unsetState(canCastleQueenSideWhite);
+		}
+		else{
+			pieces[7][6]=Piece::BlackKing;
+			pieces[7][4]=Piece::None;
+			pieces[7][5]=Piece::BlackRook;
+			pieces[7][7]=Piece::None;
+			current_game_state.unsetState(canCastleKingSideBlack);
+			current_game_state.unsetState(canCastleQueenSideBlack);
+
+		}
+	}
+	void Board::makeQueenSideCastle(){
+		if(getTurn()==Color::White){
+			pieces[0][2]=Piece::WhiteKing;
+			pieces[0][4]=Piece::None;
+			pieces[0][3]=Piece::WhiteRook;
+			pieces[0][0]=Piece::None;
+			current_game_state.unsetState(canCastleKingSideWhite);
+			current_game_state.unsetState(canCastleQueenSideWhite);
+
+		}
+		else{
+			pieces[7][2]=Piece::BlackKing;
+			pieces[7][4]=Piece::None;
+			pieces[7][3]=Piece::BlackRook;
+			pieces[7][0]=Piece::None;
+			current_game_state.unsetState(canCastleKingSideBlack);
+			current_game_state.unsetState(canCastleQueenSideBlack);
+		}
+	}
+	void Board::makeMove(Move move){
+		history.push(current_game_state);
+		switch(move.getType()){
+			case MoveType::Normal:
+				makeNormalMove(move);
+				break;
+			case MoveType::KingSideCastle:
+				makeKingSideCastle();
+				break;
+			case MoveType::QueenSideCastle:
+				makeQueenSideCastle();
+				break;
+
+		}	
 		current_game_state.toggleState(turnColor);
 		current_game_state.setLastMove(move);
 	}
@@ -96,18 +185,21 @@ namespace Engine{
 	Piece Board::getPieceAt(Position pos) const{
 		return pieces[pos.y][pos.x];
 	}
-		
-	Move Board::createNormalMove(Position a,Position b) const{
+
+	Move Board::createNormal(Position a,Position b) const{
 		return Move(MoveType::Normal,a,b,getPieceAt(b),Piece::None);
 	}
-	Move Board::createPromotionMove(Position a,Position b,Piece promote_to) const{
+	Move Board::createPromotion(Position a,Position b,Piece promote_to) const{
 		return Move(MoveType::Promote,a,b,getPieceAt(b),promote_to);
 	}
-	Move Board::createDoublePawnPushMove(Position a,Position b) const{
+	Move Board::createDoublePawnPush(Position a,Position b) const{
 		return Move(MoveType::DoublePawnPush,a,b,Piece::None,Piece::None);
 	}
-	
-	Move Board::createKingSideCastleMove() const{
+	Move Board::createEnPassant(Position a,Position b) const{
+		return Move(MoveType::EnPassant,a,b,Piece::None,Piece::None);
+	}
+
+	Move Board::createKingSideCastle() const{
 		if(getTurn()==Color::White){
 			return Move(MoveType::KingSideCastle,Position(4,0),
 					Position(6,0),Piece::None,Piece::None);
@@ -116,12 +208,12 @@ namespace Engine{
 				Position(6,7),Piece::None,Piece::None);
 	}
 
-	Move Board::createQueenSideCastleMove() const{
+	Move Board::createQueenSideCastle() const{
 		if(getTurn()==Color::White){
-			return Move(MoveType::KingSideCastle,Position(4,0),
+			return Move(MoveType::QueenSideCastle,Position(4,0),
 					Position(2,0),Piece::None,Piece::None);
 		}
-		return Move(MoveType::KingSideCastle,Position(4,7),
+		return Move(MoveType::QueenSideCastle,Position(4,7),
 				Position(2,7),Piece::None,Piece::None);
 	}
 

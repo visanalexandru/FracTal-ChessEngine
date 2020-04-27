@@ -14,8 +14,9 @@ int main(){
 	Engine::Board board;
 	
 
-	Move to_move=board.createNormalMove(Position(2,1),Position(2,6));
-	board.makeMove(to_move);
+	Move to_move=board.createNormal(Position(2,1),Position(2,6));
+	board.makeMove(board.createQueenSideCastle());
+	board.makeMove(board.createQueenSideCastle());
 	board.undoLastMove();
 	board.print();
 
