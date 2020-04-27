@@ -16,14 +16,13 @@ namespace Engine{
 			std::stack<GameState> history;
 			GameState current_game_state;
 
-			void generatePawnMoves(Position a,std::vector<Move>&moves);
+			void generatePawnMoves(Position a,std::vector<Move>&moves) const;
 
 
 			void makeNormalMove(Move move);
 			void makeQueenSideCastle();
 			void makeKingSideCastle();
 			void makeEnPassant(Move move);
-
 			void initBoard();
 		public:
 
@@ -32,13 +31,12 @@ namespace Engine{
 			Move createNormal(Position a,Position b) const;
 			Move createPromotion(Position a,Position b,Piece promote_to) const;
 			Move createDoublePawnPush(Position a,Position b) const;
-
-			//position of the pawn moved,position of 
+			//position of the pawn moved,position of
 			//the square destination, position of the captured pawn
 			Move createEnPassant(Position a,Position b) const;
 			Move createQueenSideCastle() const;
 			Move createKingSideCastle() const;
-
+			std::vector<Move> getAllMoves() const;
 
 			Board();
 			void print() const;

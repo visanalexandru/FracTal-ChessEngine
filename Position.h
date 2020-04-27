@@ -8,6 +8,8 @@ namespace Engine{
 			int y;
 			Position(int a=0,int b=0);
 			bool isInside();
+			Position operator+(const Position&other);
+			Position operator-(const Position&other);
 	};
 }
 

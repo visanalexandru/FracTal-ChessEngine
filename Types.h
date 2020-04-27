@@ -36,7 +36,8 @@ namespace Engine{
 	};
 	enum Color{
 		White,
-		Black
+		Black,
+		Null
 	};
 
 	inline int getValue(Piece piece){
@@ -51,6 +52,8 @@ namespace Engine{
 				return 5;
 			case Piece::WhiteQueen:
 				return 10;
+			case Piece::WhiteKing:
+				return 11;
 
 
 			case Piece::BlackPawn:
@@ -63,10 +66,12 @@ namespace Engine{
 				return -5;
 			case Piece::BlackQueen:
 				return -10;
+			case Piece::BlackKing:
+				return -11;
 		}
-		return 0;//kings or empty spaces
+		return 0;
 	}
- 	inline char getChar(Piece piece) {
+	inline char getChar(Piece piece) {
 		switch(piece){
 			case Piece::WhitePawn:
 				return 'P';
@@ -98,14 +103,16 @@ namespace Engine{
 		return ' ';
 	}
 
-	
+
 	inline Color getColor(Piece piece){
-		if(getValue(piece)>=0)
+		if(getValue(piece)>0)
 			return Color::White;
-		return Color::Black;
+		else if(getValue(piece)<0)
+			return Color::Black;
+		return Color::Null;
 	}
 
 
 }
 
-#endif 
+#endif

@@ -1,3 +1,4 @@
+#include <linux/videodev2.h>
 #include "Board.h"
 
 namespace Engine{
@@ -82,7 +83,7 @@ namespace Engine{
 		Position a=move.getOrigin();
 		Position b=move.getDestination();
 
-		pieces[a.y][b.x]=Piece::None;	
+		pieces[a.y][b.x]=Piece::None;
 		pieces[b.y][b.x]=getPieceAt(a);
 		pieces[a.y][a.x]=Piece::None;
 	}
@@ -127,18 +128,15 @@ namespace Engine{
 	}
 	void Board::makeMove(Move move){
 		history.push(current_game_state);
-		switch(move.getType()){
-			case MoveType::Normal:
-				makeNormalMove(move);
-				break;
-			case MoveType::KingSideCastle:
-				makeKingSideCastle();
-				break;
-			case MoveType::QueenSideCastle:
-				makeQueenSideCastle();
-				break;
+		MoveType type=move.getType();
+		if(type==MoveType::Normal || type==MoveType::DoublePawnPush)
+			makeNormalMove(move);
+		else if(type==MoveType::KingSideCastle)
+			makeKingSideCastle();
+		else if(type==MoveType::QueenSideCastle)
+			makeQueenSideCastle();
 
-		}	
+
 		current_game_state.toggleState(turnColor);
 		current_game_state.setLastMove(move);
 	}
@@ -216,5 +214,77 @@ namespace Engine{
 		return Move(MoveType::QueenSideCastle,Position(4,7),
 				Position(2,7),Piece::None,Piece::None);
 	}
+	std::vector<Move> Board::getAllMoves() const{
+		std::vector<Move> to_return;
+		for(int i=0;i<8;i++){
+			for(int k=0;k<8;k++){
+				Position pos(i,k);
+				Piece there=getPieceAt(pos);
 
+				if(getColor(there)==getTurn()){
+					if(there==Piece::BlackPawn || there==Piece::WhitePawn)
+						generatePawnMoves(pos,to_return);
+				}
+			}
+		}
+		return to_return;
+	}
+
+	void Board::generatePawnMoves(Position a,std::vector<Move>&moves) const{
+
+		Position l,r,f,ff;
+
+		Color turn_color=getTurn();
+
+		if(turn_color==Color::White){
+			f=Position(a.x,a.y+1);
+			ff=Position(a.x,a.y+2);
+			l=Position(a.x-1,a.y+1);
+			r=Position(a.x+1,a.y+1);
+
+			if(a.y==1 && getPieceAt(f)==Piece::None && getPieceAt(f)==Piece::None)
+				moves.push_back(createDoublePawnPush(a,ff));
+		}
+		else {
+            f=Position(a.x,a.y+1);
+            ff=Position(a.x,a.y+2);
+            l=Position(a.x-1,a.y-1);
+            r=Position(a.x+1,a.y-1);
+			if(a.y==6 && getPieceAt(f)==Piece::None && getPieceAt(f)==Piece::None)
+				moves.push_back(createDoublePawnPush(a,ff));
+		}
+
+		std::vector<Position> can_go;
+
+		if(f.isInside() && getPieceAt(f)==Piece::None)
+		    can_go.push_back(f);
+		if(l.isInside() && getPieceAt(l)!=Piece::None)
+		    can_go.push_back(l);
+        if(r.isInside() && getPieceAt(r)!=Piece::None)
+            can_go.push_back(r);
+
+        for(Position pos:can_go){
+            if(turn_color==White && pos.y==7){
+                moves.push_back(createPromotion(a,pos,Piece::WhiteQueen));
+            }
+            else if(turn_color==Black && pos.y==0){
+                moves.push_back(createPromotion(a,pos,Piece::BlackQueen));
+            }
+            else moves.push_back(createNormal(a,pos));
+        }
+
+
+        if(current_game_state.getLastMove().getType()==MoveType::DoublePawnPush){
+            Position pawnpushpos=current_game_state.getLastMove().getDestination();
+            int x=pawnpushpos.x;
+            if(abs(x-a.x)==1){//is neighbour
+                if(turn_color==Color::White){
+                    moves.push_back(createEnPassant(a,pawnpushpos+Position(0,1)));
+                }
+                else{
+                    moves.push_back(createEnPassant(a,pawnpushpos-Position(0,1)));
+                }
+            }
+        }
+	}
 }

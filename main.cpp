@@ -10,14 +10,12 @@ using namespace std;
 using namespace Engine;
 
 int main(){
-	
-	Engine::Board board;
-	
 
-	Move to_move=board.createNormal(Position(2,1),Position(2,6));
-	board.makeMove(board.createQueenSideCastle());
-	board.makeMove(board.createQueenSideCastle());
-	board.undoLastMove();
+	Engine::Board board;
+
+	cout<<board.getAllMoves().size()<<endl;
+	Move to_move=board.getAllMoves()[1];
+	board.makeMove(to_move);
 	board.print();
 
 	cout<<to_move.toString();
