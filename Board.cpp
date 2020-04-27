@@ -77,7 +77,6 @@ namespace Engine{
 			}
 
 		}
-		current_game_state.toggleState(turnColor);
 	}
 	void Board::makeEnPassant(Move move){
 		Position a=move.getOrigin();
@@ -136,7 +135,6 @@ namespace Engine{
 		else if(type==MoveType::QueenSideCastle)
 			makeQueenSideCastle();
 
-
 		current_game_state.toggleState(turnColor);
 		current_game_state.setLastMove(move);
 	}
@@ -176,7 +174,7 @@ namespace Engine{
 
 
 	Color Board::getTurn() const{
-		if(current_game_state.getState(turnColor))
+		if(current_game_state.getState(turnColor)==1)
 			return Black;
 		return White;
 	}
@@ -233,7 +231,6 @@ namespace Engine{
 	void Board::generatePawnMoves(Position a,std::vector<Move>&moves) const{
 
 		Position l,r,f,ff;
-
 		Color turn_color=getTurn();
 
 		if(turn_color==Color::White){
@@ -246,8 +243,8 @@ namespace Engine{
 				moves.push_back(createDoublePawnPush(a,ff));
 		}
 		else {
-            f=Position(a.x,a.y+1);
-            ff=Position(a.x,a.y+2);
+            f=Position(a.x,a.y-1);
+            ff=Position(a.x,a.y-2);
             l=Position(a.x-1,a.y-1);
             r=Position(a.x+1,a.y-1);
 			if(a.y==6 && getPieceAt(f)==Piece::None && getPieceAt(f)==Piece::None)
@@ -255,13 +252,18 @@ namespace Engine{
 		}
 
 		std::vector<Position> can_go;
+        Piece piece_front=getPieceAt(f),piece_left=getPieceAt(l),piece_right=getPieceAt(r);
 
-		if(f.isInside() && getPieceAt(f)==Piece::None)
-		    can_go.push_back(f);
-		if(l.isInside() && getPieceAt(l)!=Piece::None)
-		    can_go.push_back(l);
-        if(r.isInside() && getPieceAt(r)!=Piece::None)
+		if(f.isInside() && piece_front==Piece::None) {
+            can_go.push_back(f);
+        }
+        if(l.isInside() && piece_left!=Piece::None && getColor(piece_left) !=turn_color )
+            can_go.push_back(l);
+
+        if(r.isInside() && piece_right!=Piece::None &&getColor(piece_right) !=turn_color)
             can_go.push_back(r);
+
+
 
         for(Position pos:can_go){
             if(turn_color==White && pos.y==7){

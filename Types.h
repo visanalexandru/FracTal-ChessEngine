@@ -29,10 +29,10 @@ namespace Engine{
 	};
 	enum State{
 		turnColor=1,//0 for white 1 for black
-		canCastleKingSideWhite=1<<2,
-		canCastleQueenSideWhite=1<<3,
-		canCastleKingSideBlack=1<<4,
-		canCastleQueenSideBlack=1<<5,
+		canCastleKingSideWhite=1<<1,
+		canCastleQueenSideWhite=1<<2,
+		canCastleKingSideBlack=1<<3,
+		canCastleQueenSideBlack=1<<4,
 	};
 	enum Color{
 		White,
