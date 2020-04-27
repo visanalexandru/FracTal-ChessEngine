@@ -233,6 +233,14 @@ namespace Engine{
 				if(getColor(there)==getTurn()){
 					if(there==Piece::BlackPawn || there==Piece::WhitePawn)
 						generatePawnMoves(pos,to_return);
+					else if(there==Piece::BlackKnight || there==Piece::WhiteKnight)
+					    generateKnightMoves(pos,to_return);
+					else if(there==Piece::BlackBishop || there==Piece::WhiteBishop){
+					    generateBishopMoves(pos,to_return);
+					}
+					/*else if(there==Piece::WhiteKing || there==Piece::BlackKing)
+					    generateKingMoves(pos,to_return);
+					    */
 				}
 			}
 		}
@@ -306,4 +314,54 @@ namespace Engine{
             }
         }
 	}
+
+
+	void Board::generateKingMoves(Engine::Position a, std::vector<Move> &moves) const {
+
+	    for(int i=-1;i<=1;i++){
+	        for(int k=-1;k<=1;k++){
+
+	            if(i!=k){
+                    Position neighbour=a+Position(i,k);
+
+                    if(neighbour.isInside() && getColor(getPieceAt(neighbour))!=getTurn()){
+                        moves.push_back(createNormal(a,neighbour));
+                    }
+	            }
+
+	        }
+	    }
+	}
+
+
+	void Board::generateKnightMoves(Engine::Position a, std::vector<Move> &moves) const {
+	    Position offsets[8]{Position(1,2),Position(2,1),Position(2,-1),
+                         Position(1,-2),Position(-1,-2),
+                         Position(-2,-1),Position(-2,1),Position(-1,2)};
+
+	    for(int i=0;i<8;i++){
+	        Position there=a+offsets[i];
+            if(there.isInside() && getColor(getPieceAt(there))!=getTurn())
+                moves.push_back(createNormal(a,there));
+	    }
+	}
+    void Board::generateBishopMoves(Engine::Position a, std::vector<Move> &moves) const {
+
+        Position offsets[4]{Position(1, 1), Position(1, -1), Position(-1, 1), Position(-1, -1)};
+        for (int i = 0; i < 4; i++) {
+            Position now = a + offsets[i];
+
+            while (now.isInside()) {
+                Piece here = getPieceAt(now);
+                if (here == Piece::None) {
+                    moves.push_back(createNormal(a, now));
+                } else {
+                    if (getColor(here) != getTurn())
+                        moves.push_back(createNormal(a, now));
+                    break;
+                }
+                now += offsets[i];
+            }
+        }
+    }
 }

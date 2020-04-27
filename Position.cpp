@@ -14,4 +14,13 @@ namespace Engine{
 	Position Position::operator-(const Position&other ){
 		return Position(x-other.x,y-other.y);
 	}
+
+	void Position::operator+=(const Engine::Position &other) {
+	    x+=other.x;
+	    y+=other.y;
+	}
+	void Position::operator-=(const Engine::Position &other) {
+	    x-=other.x;
+	    y-=other.y;
+	}
 }

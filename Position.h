@@ -10,6 +10,8 @@ namespace Engine{
 			bool isInside();
 			Position operator+(const Position&other);
 			Position operator-(const Position&other);
+			void operator+=(const Position&other);
+			void operator-=(const Position&other);
 	};
 }
 

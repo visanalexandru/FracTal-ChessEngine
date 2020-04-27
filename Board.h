@@ -17,6 +17,9 @@ namespace Engine{
 			GameState current_game_state;
 
 			void generatePawnMoves(Position a,std::vector<Move>&moves) const;
+			void generateKingMoves(Position a,std::vector<Move>&moves) const;
+			void generateKnightMoves(Position a,std::vector<Move>&moves) const;
+			void generateBishopMoves(Position a,std::vector<Move>&moves) const;
 
 
 			void makeNormalMove(Move move);
