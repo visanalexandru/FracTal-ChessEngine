@@ -53,7 +53,8 @@ void Protocol::handleRequest(const std::string&req){
         }
 	}
 	else if(cmmd=="go"){
-        std::vector<Engine::Move> moves=board.getAllMoves();
+	    Engine::MoveGen movegen(board);
+        std::vector<Engine::Move> moves=movegen.getAllMoves();
         std::sort(moves.begin(),moves.end(),compare);
         Engine::Move bestmove=moves[moves.size()-1];
         send("bestmove "+bestmove.toString());

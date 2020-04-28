@@ -2,6 +2,7 @@
 #define AN_PARSER_H
 #include "Board.h"
 #include "Move.h"
+#include "MoveGen.h"
 
 namespace Engine{
 	namespace AnParser{

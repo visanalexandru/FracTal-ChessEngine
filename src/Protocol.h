@@ -6,6 +6,7 @@
 #include<fstream>
 #include<sstream>
 #include"Board.h"
+#include "MoveGen.h"
 #include<algorithm>
 #include "AnParser.h"
 class Protocol{
