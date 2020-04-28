@@ -238,9 +238,14 @@ namespace Engine{
 					else if(there==Piece::BlackBishop || there==Piece::WhiteBishop){
 					    generateBishopMoves(pos,to_return);
 					}
-					/*else if(there==Piece::WhiteKing || there==Piece::BlackKing)
+					else if(there==Piece::BlackRook||there==Piece::WhiteRook){
+					    generateRookMoves(pos,to_return);
+					}
+					else if(there==Piece::BlackQueen || there==Piece::WhiteQueen){
+					    generateQueenMoves(pos,to_return);
+					}
+					else if(there==Piece::WhiteKing || there==Piece::BlackKing)
 					    generateKingMoves(pos,to_return);
-					    */
 				}
 			}
 		}
@@ -364,4 +369,27 @@ namespace Engine{
             }
         }
     }
+
+    void Board::generateRookMoves(Engine::Position a, std::vector<Move> &moves) const {
+
+	    Position offsets[4]{Position(1, 0), Position(-1, 0), Position(0, 1), Position(0, -1)};
+        for (int i = 0; i < 4; i++) {
+            Position now = a + offsets[i];
+            while (now.isInside()) {
+                Piece here = getPieceAt(now);
+                if (here == Piece::None) {
+                    moves.push_back(createNormal(a, now));
+                } else {
+                    if (getColor(here) != getTurn())
+                        moves.push_back(createNormal(a, now));
+                    break;
+                }
+                now += offsets[i];
+            }
+        }
+	}
+	void Board::generateQueenMoves(Engine::Position a, std::vector<Move> &moves) const {
+	    generateRookMoves(a,moves);
+	    generateBishopMoves(a,moves);
+	}
 }

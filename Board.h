@@ -20,6 +20,8 @@ namespace Engine{
 			void generateKingMoves(Position a,std::vector<Move>&moves) const;
 			void generateKnightMoves(Position a,std::vector<Move>&moves) const;
 			void generateBishopMoves(Position a,std::vector<Move>&moves) const;
+			void generateRookMoves(Position a,std::vector<Move>&moves) const;
+			void generateQueenMoves(Position a,std::vector<Move>&moves) const;
 
 
 			void makeNormalMove(Move move);
