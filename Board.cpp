@@ -76,7 +76,11 @@ namespace Engine{
 
 		}
 	}
-	void Board::makePromotion(Engine::Move move) {
+	void Board::undoNormalMove(Move move) {
+        setPieceAt(move.getOrigin(),move.getMoved());
+        setPieceAt(move.getDestination(),move.getTaken());
+	}
+	void Board::makePromotion(Move move) {
         setPieceAt(move.getDestination(),move.getPromotion());
         setPieceAt(move.getOrigin(),Piece::None);
 	}
@@ -84,8 +88,15 @@ namespace Engine{
 		Position a=move.getOrigin();
 		Position b=move.getDestination();
 		setPieceAt(Position(b.x,a.y),Piece::None);
-		setPieceAt(Position(b.x,b.y),getPieceAt(a));
-		setPieceAt(Position(a.x,a.y),Piece::None);
+		setPieceAt(b,getPieceAt(a));
+		setPieceAt(a,Piece::None);
+	}
+	void Board::undoEnPassant(Move move) {
+        Position a=move.getOrigin();
+        Position b=move.getDestination();
+        setPieceAt(move.getOrigin(),move.getMoved());
+        setPieceAt(b,Piece::None);
+        setPieceAt(Position(b.x,a.y),move.getTaken());
 	}
 	void Board::makeKingSideCastle(){
 		if(getTurn()==Color::White){
@@ -107,6 +118,22 @@ namespace Engine{
 
 		}
 	}
+	void Board::undoKingSideCastle(Engine::Move move) {
+
+	    if(move.getMoved()==Piece::WhiteKing){
+            setPieceAt(Position(4,0),Piece::WhiteKing);
+            setPieceAt(Position(6,0),Piece::None);
+            setPieceAt(Position(5,0),Piece::None);
+            setPieceAt(Position(7,0),Piece::WhiteRook);
+	    }
+	    else{
+            setPieceAt(Position(4,7),Piece::BlackKing);
+            setPieceAt(Position(6,7),Piece::None);
+            setPieceAt(Position(5,7),Piece::None);
+            setPieceAt(Position(7,7),Piece::BlackRook);
+	    }
+
+	}
 	void Board::makeQueenSideCastle(){
 		if(getTurn()==Color::White){
 			pieces[0][2]=Piece::WhiteKing;
@@ -125,6 +152,23 @@ namespace Engine{
 			current_game_state.unsetState(canCastleKingSideBlack);
 			current_game_state.unsetState(canCastleQueenSideBlack);
 		}
+	}
+
+	void Board::undoQueenSideCastle(Engine::Move move) {
+        if(move.getMoved()==Piece::WhiteKing){
+            setPieceAt(Position(4,0),Piece::WhiteKing);
+            setPieceAt(Position(3,0),Piece::None);
+            setPieceAt(Position(2,0),Piece::None);
+            setPieceAt(Position(1,0),Piece::None);
+            setPieceAt(Position(0,0),Piece::WhiteRook);
+        }
+        else{
+            setPieceAt(Position(4,7),Piece::BlackKing);
+            setPieceAt(Position(3,7),Piece::None);
+            setPieceAt(Position(2,7),Piece::None);
+            setPieceAt(Position(1,7),Piece::None);
+            setPieceAt(Position(0,7),Piece::BlackRook);
+        }
 	}
 	void Board::makeMove(Move move){
 		history.push(current_game_state);
@@ -145,11 +189,18 @@ namespace Engine{
 	}
 	void Board::undoLastMove(){
 		Move last_move=current_game_state.getLastMove();
-		Position org=last_move.getOrigin();
-		Position dest=last_move.getDestination();
-		if(last_move.getType()==MoveType::Normal){
-			pieces[org.y][org.x]=pieces[dest.y][dest.x];
-			pieces[dest.y][dest.x]=last_move.getTaken();
+		MoveType  type=last_move.getType();
+		if(type==MoveType::Normal ||type==MoveType::DoublePawnPush || type==MoveType::Promote){
+            undoNormalMove(last_move);
+		}
+		else if(type==MoveType::EnPassant){
+		    undoEnPassant(last_move);
+		}
+		else if(type==MoveType::KingSideCastle){
+		    undoKingSideCastle(last_move);
+		}
+		else if(type==MoveType::QueenSideCastle){
+		    undoQueenSideCastle(last_move);
 		}
 
 		current_game_state=history.top();
@@ -202,7 +253,8 @@ namespace Engine{
 		return Move(MoveType::DoublePawnPush,a,b,getPieceAt(a),Piece::None,Piece::None);
 	}
 	Move Board::createEnPassant(Position a,Position b) const{
-		return Move(MoveType::EnPassant,a,b,getPieceAt(a),Piece::None,Piece::None);
+	    Piece taken=getPieceAt(Position(b.x,a.y));
+		return Move(MoveType::EnPassant,a,b,getPieceAt(a),taken,Piece::None);
 	}
 
 	Move Board::createKingSideCastle() const{

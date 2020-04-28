@@ -23,12 +23,17 @@ namespace Engine{
 			void generateRookMoves(Position a,std::vector<Move>&moves) const;
 			void generateQueenMoves(Position a,std::vector<Move>&moves) const;
 
-
 			void makeNormalMove(Move move);
 			void makeQueenSideCastle();
 			void makeKingSideCastle();
 			void makeEnPassant(Move move);
 			void makePromotion(Move move);
+
+			void undoNormalMove(Move move);//use this for promotions also
+			void undoQueenSideCastle(Move move);
+			void undoKingSideCastle(Move move);
+			void undoEnPassant(Move move);
+
 			void initBoard();
 		public:
 
