@@ -326,7 +326,7 @@ namespace Engine{
 	    for(int i=-1;i<=1;i++){
 	        for(int k=-1;k<=1;k++){
 
-	            if(i!=k){
+	            if(k!=0 || i!=0){
                     Position neighbour=a+Position(i,k);
 
                     if(neighbour.isInside() && getColor(getPieceAt(neighbour))!=getTurn()){
