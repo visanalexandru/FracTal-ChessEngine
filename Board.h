@@ -15,7 +15,7 @@ namespace Engine{
 			Piece pieces[8][8];
 			std::stack<GameState> history;
 			GameState current_game_state;
-
+			void setPieceAt(Position po,Piece piece);
 			void generatePawnMoves(Position a,std::vector<Move>&moves) const;
 			void generateKingMoves(Position a,std::vector<Move>&moves) const;
 			void generateKnightMoves(Position a,std::vector<Move>&moves) const;

@@ -45,10 +45,8 @@ namespace Engine{
 	void Board::makeNormalMove(Move move){
 
 		Position org=move.getOrigin();
-		Position dest=move.getDestination();
-
-		pieces[dest.y][dest.x]=pieces[org.y][org.x];
-		pieces[org.y][org.x]=Piece::None;
+		setPieceAt(move.getDestination(),getPieceAt(org));
+        setPieceAt(org,Piece::None);
 
 
 		if(getTurn()==Color::White){
@@ -79,17 +77,15 @@ namespace Engine{
 		}
 	}
 	void Board::makePromotion(Engine::Move move) {
-        Position a=move.getOrigin();
-        Position b=move.getDestination();
-        pieces[b.y][b.x]=move.getPromotion();
-        pieces[a.y][a.x]=Piece::None;
+        setPieceAt(move.getDestination(),move.getPromotion());
+        setPieceAt(move.getOrigin(),Piece::None);
 	}
 	void Board::makeEnPassant(Move move){
 		Position a=move.getOrigin();
 		Position b=move.getDestination();
-		pieces[a.y][b.x]=Piece::None;
-		pieces[b.y][b.x]=getPieceAt(a);
-		pieces[a.y][a.x]=Piece::None;
+		setPieceAt(Position(b.x,a.y),Piece::None);
+		setPieceAt(Position(b.x,b.y),getPieceAt(a));
+		setPieceAt(Position(a.x,a.y),Piece::None);
 	}
 	void Board::makeKingSideCastle(){
 		if(getTurn()==Color::White){
@@ -189,39 +185,42 @@ namespace Engine{
 			return Black;
 		return White;
 	}
+	void Board::setPieceAt(Position pos, Piece piece) {
+	    pieces[pos.y][pos.x]=piece;
+	}
 	Piece Board::getPieceAt(Position pos) const{
 		return pieces[pos.y][pos.x];
 	}
 
 	Move Board::createNormal(Position a,Position b) const{
-		return Move(MoveType::Normal,a,b,getPieceAt(b),Piece::None);
+		return Move(MoveType::Normal,a,b,getPieceAt(a),getPieceAt(b),Piece::None);
 	}
 	Move Board::createPromotion(Position a,Position b,Piece promote_to) const{
-		return Move(MoveType::Promote,a,b,getPieceAt(b),promote_to);
+		return Move(MoveType::Promote,a,b,getPieceAt(a),getPieceAt(b),promote_to);
 	}
 	Move Board::createDoublePawnPush(Position a,Position b) const{
-		return Move(MoveType::DoublePawnPush,a,b,Piece::None,Piece::None);
+		return Move(MoveType::DoublePawnPush,a,b,getPieceAt(a),Piece::None,Piece::None);
 	}
 	Move Board::createEnPassant(Position a,Position b) const{
-		return Move(MoveType::EnPassant,a,b,Piece::None,Piece::None);
+		return Move(MoveType::EnPassant,a,b,getPieceAt(a),Piece::None,Piece::None);
 	}
 
 	Move Board::createKingSideCastle() const{
 		if(getTurn()==Color::White){
 			return Move(MoveType::KingSideCastle,Position(4,0),
-					Position(6,0),Piece::None,Piece::None);
+					Position(6,0),Piece::WhiteKing,Piece::None,Piece::None);
 		}
 		return Move(MoveType::KingSideCastle,Position(4,7),
-				Position(6,7),Piece::None,Piece::None);
+				Position(6,7),Piece::BlackKing,Piece::None,Piece::None);
 	}
 
 	Move Board::createQueenSideCastle() const{
 		if(getTurn()==Color::White){
 			return Move(MoveType::QueenSideCastle,Position(4,0),
-					Position(2,0),Piece::None,Piece::None);
+					Position(2,0),Piece::WhiteKing,Piece::None,Piece::None);
 		}
 		return Move(MoveType::QueenSideCastle,Position(4,7),
-				Position(2,7),Piece::None,Piece::None);
+				Position(2,7),Piece::BlackKing,Piece::None,Piece::None);
 	}
 	std::vector<Move> Board::getAllMoves() const{
 		std::vector<Move> to_return;
