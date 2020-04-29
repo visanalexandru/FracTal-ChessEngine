@@ -1,5 +1,6 @@
 #include<iostream>
 #include<fstream>
+
 using namespace std;
 
 #include"Protocol.h"
@@ -9,10 +10,10 @@ using namespace std;
 
 using namespace Engine;
 
-int main(){
+int main() {
     srand(time(NULL));
-	Engine::Board board;
-	cout<<board.print();
-	Protocol uci(board);
-	uci.start();
+    Engine::Board board;
+    cout << board.print();
+    Protocol uci(board);
+    uci.start();
 }

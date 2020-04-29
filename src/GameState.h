@@ -3,23 +3,30 @@
 
 #include <cstdint>
 #include "Move.h"
-namespace Engine{
-	class GameState{
 
-		private:
-			uint16_t state_flags;
-			Move lastmove;
-		public:
+namespace Engine {
+    class GameState {
 
-			bool getState(State state) const;
-			void setState(State state);
-			void unsetState(State state);
-			void toggleState(State state);
-			Move getLastMove() const;
-			void setLastMove(Move move);
-			GameState();
+    private:
+        uint16_t state_flags;
+        Move lastmove;
+    public:
 
-	};
+        bool getState(State state) const;
+
+        void setState(State state);
+
+        void unsetState(State state);
+
+        void toggleState(State state);
+
+        Move getLastMove() const;
+
+        void setLastMove(Move move);
+
+        GameState();
+
+    };
 }
 
 #endif
