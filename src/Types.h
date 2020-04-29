@@ -39,7 +39,7 @@ namespace Engine{
         BlackQueen=12,
         None=6,
 	};
-	enum State{
+	enum State :uint8_t {
 		turnColor=1,//0 for white 1 for black
 		canCastleKingSideWhite=1<<1,
 		canCastleQueenSideWhite=1<<2,

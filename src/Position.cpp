@@ -8,10 +8,10 @@ namespace Engine{
 	bool Position::isInside(){
 		return x>=0 && x<8 && y>=0 && y<8;
 	}
-	Position Position::operator+(const Position&other ){
+	Position Position::operator+(const Position&other ) const{
 		return Position(x+other.x,y+other.y);
 	}
-	Position Position::operator-(const Position&other ){
+	Position Position::operator-(const Position&other ) const {
 		return Position(x-other.x,y-other.y);
 	}
 

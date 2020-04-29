@@ -219,6 +219,7 @@ namespace Engine {
                             break;
                         case Piece::Knight:
                             generateKnightMoves(pos,to_return);
+                            break;
                     }
                 }
             }
