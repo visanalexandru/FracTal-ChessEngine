@@ -13,18 +13,18 @@ namespace Engine{
 			Position origin;
 			Position destination;
 			MoveType move_type;
-			Piece taken;
-			Piece promote_to;
-			Piece moved;
+			uint8_t taken;
+			uint8_t promote_to;
+			uint8_t moved;
 		public:
-			Move(MoveType type,Position start,Position end,Piece piece_moved,Piece piece_taken,Piece promotion);
+			Move(MoveType type,Position start,Position end,uint8_t piece_moved,uint8_t piece_taken,uint8_t promotion);
 			Move();
 			Position getOrigin() const;
 			Position getDestination() const;
 			MoveType getType() const;
-			Piece getTaken() const;
-			Piece getPromotion() const;
-			Piece getMoved() const;
+			uint8_t getTaken() const;
+			uint8_t getPromotion() const;
+			uint8_t getMoved() const;
 			std::string toString() const;
 	};
 };

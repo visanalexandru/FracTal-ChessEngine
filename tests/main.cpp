@@ -23,6 +23,10 @@ int perft(int depth){
 
 
 int main(){
+    cout<<(int)Engine::None<<std::endl;
+
+
+    cout<<board.print();
     float a=clock();
     cout<<perft(6)<<endl;
     cout<<"perf took "<<(clock()-a)/CLOCKS_PER_SEC;

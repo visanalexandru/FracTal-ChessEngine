@@ -1,4 +1,3 @@
-#include <linux/videodev2.h>
 #include "Board.h"
 
 namespace Engine{
@@ -15,38 +14,38 @@ namespace Engine{
 
 		for(int i=0;i<8;i++){
 			for(int k=0;k<8;k++)
-				pieces[i][k]=Piece::None;
+				pieces[i][k]=None;
 		}
 
 		for(int i=0;i<8;i++){
-			pieces[1][i]=Piece::WhitePawn;
-			pieces[6][i]=Piece::BlackPawn;
+			pieces[1][i]=WhitePawn;
+			pieces[6][i]=BlackPawn;
 		}
 
-		pieces[0][0]=Piece::WhiteRook;
-		pieces[0][1]=Piece::WhiteKnight;
-		pieces[0][2]=Piece::WhiteBishop;
-		pieces[0][3]=Piece::WhiteQueen;
-		pieces[0][4]=Piece::WhiteKing;
-		pieces[0][5]=Piece::WhiteBishop;
-		pieces[0][6]=Piece::WhiteKnight;
-		pieces[0][7]=Piece::WhiteRook;
+		pieces[0][0]=WhiteRook;
+		pieces[0][1]=WhiteKnight;
+		pieces[0][2]=WhiteBishop;
+		pieces[0][3]=WhiteQueen;
+		pieces[0][4]=WhiteKing;
+		pieces[0][5]=WhiteBishop;
+		pieces[0][6]=WhiteKnight;
+		pieces[0][7]=WhiteRook;
 
-		pieces[7][0]=Piece::BlackRook;
-		pieces[7][1]=Piece::BlackKnight;
-		pieces[7][2]=Piece::BlackBishop;
-		pieces[7][3]=Piece::BlackQueen;
-		pieces[7][4]=Piece::BlackKing;
-		pieces[7][5]=Piece::BlackBishop;
-		pieces[7][6]=Piece::BlackKnight;
-		pieces[7][7]=Piece::BlackRook;
+		pieces[7][0]=BlackRook;
+		pieces[7][1]=BlackKnight;
+		pieces[7][2]=BlackBishop;
+		pieces[7][3]=BlackQueen;
+		pieces[7][4]=BlackKing;
+		pieces[7][5]=BlackBishop;
+		pieces[7][6]=BlackKnight;
+		pieces[7][7]=BlackRook;
 
 	}
 	void Board::makeNormalMove(const Move&move){
 
 		Position org=move.getOrigin();
 		setPieceAt(move.getDestination(),getPieceAt(org));
-        setPieceAt(org,Piece::None);
+        setPieceAt(org,None);
 
 
 		if(getTurn()==Color::White){
@@ -82,37 +81,37 @@ namespace Engine{
 	}
 	void Board::makePromotion(const Move&move) {
         setPieceAt(move.getDestination(),move.getPromotion());
-        setPieceAt(move.getOrigin(),Piece::None);
+        setPieceAt(move.getOrigin(),None);
 	}
 	void Board::makeEnPassant(const Move&move){
 		Position a=move.getOrigin();
 		Position b=move.getDestination();
-		setPieceAt(Position(b.x,a.y),Piece::None);
+		setPieceAt(Position(b.x,a.y),None);
 		setPieceAt(b,getPieceAt(a));
-		setPieceAt(a,Piece::None);
+		setPieceAt(a,None);
 	}
 	void Board::undoEnPassant(const Move&move) {
         Position a=move.getOrigin();
         Position b=move.getDestination();
         setPieceAt(move.getOrigin(),move.getMoved());
-        setPieceAt(b,Piece::None);
+        setPieceAt(b,None);
         setPieceAt(Position(b.x,a.y),move.getTaken());
 	}
 	void Board::makeKingSideCastle(){
 		if(getTurn()==Color::White){
-			pieces[0][6]=Piece::WhiteKing;
-			pieces[0][4]=Piece::None;
-			pieces[0][5]=Piece::WhiteRook;
-			pieces[0][7]=Piece::None;
+			pieces[0][6]=WhiteKing;
+			pieces[0][4]=None;
+			pieces[0][5]=WhiteRook;
+			pieces[0][7]=None;
 
 			current_game_state.unsetState(canCastleKingSideWhite);
 			current_game_state.unsetState(canCastleQueenSideWhite);
 		}
 		else{
-			pieces[7][6]=Piece::BlackKing;
-			pieces[7][4]=Piece::None;
-			pieces[7][5]=Piece::BlackRook;
-			pieces[7][7]=Piece::None;
+			pieces[7][6]=BlackKing;
+			pieces[7][4]=None;
+			pieces[7][5]=BlackRook;
+			pieces[7][7]=None;
 			current_game_state.unsetState(canCastleKingSideBlack);
 			current_game_state.unsetState(canCastleQueenSideBlack);
 
@@ -120,54 +119,54 @@ namespace Engine{
 	}
 	void Board::undoKingSideCastle(const Move&move) {
 
-	    if(move.getMoved()==Piece::WhiteKing){
-            setPieceAt(Position(4,0),Piece::WhiteKing);
-            setPieceAt(Position(6,0),Piece::None);
-            setPieceAt(Position(5,0),Piece::None);
-            setPieceAt(Position(7,0),Piece::WhiteRook);
+	    if(move.getMoved()==WhiteKing){
+            setPieceAt(Position(4,0),WhiteKing);
+            setPieceAt(Position(6,0),None);
+            setPieceAt(Position(5,0),None);
+            setPieceAt(Position(7,0),WhiteRook);
 	    }
 	    else{
-            setPieceAt(Position(4,7),Piece::BlackKing);
-            setPieceAt(Position(6,7),Piece::None);
-            setPieceAt(Position(5,7),Piece::None);
-            setPieceAt(Position(7,7),Piece::BlackRook);
+            setPieceAt(Position(4,7),BlackKing);
+            setPieceAt(Position(6,7),None);
+            setPieceAt(Position(5,7),None);
+            setPieceAt(Position(7,7),BlackRook);
 	    }
 
 	}
 	void Board::makeQueenSideCastle(){
 		if(getTurn()==Color::White){
-			pieces[0][2]=Piece::WhiteKing;
-			pieces[0][4]=Piece::None;
-			pieces[0][3]=Piece::WhiteRook;
-			pieces[0][0]=Piece::None;
+			pieces[0][2]=WhiteKing;
+			pieces[0][4]=None;
+			pieces[0][3]=WhiteRook;
+			pieces[0][0]=None;
 			current_game_state.unsetState(canCastleKingSideWhite);
 			current_game_state.unsetState(canCastleQueenSideWhite);
 
 		}
 		else{
-			pieces[7][2]=Piece::BlackKing;
-			pieces[7][4]=Piece::None;
-			pieces[7][3]=Piece::BlackRook;
-			pieces[7][0]=Piece::None;
+			pieces[7][2]=BlackKing;
+			pieces[7][4]=None;
+			pieces[7][3]=BlackRook;
+			pieces[7][0]=None;
 			current_game_state.unsetState(canCastleKingSideBlack);
 			current_game_state.unsetState(canCastleQueenSideBlack);
 		}
 	}
 
 	void Board::undoQueenSideCastle(const Move&move) {
-        if(move.getMoved()==Piece::WhiteKing){
-            setPieceAt(Position(4,0),Piece::WhiteKing);
-            setPieceAt(Position(3,0),Piece::None);
-            setPieceAt(Position(2,0),Piece::None);
-            setPieceAt(Position(1,0),Piece::None);
-            setPieceAt(Position(0,0),Piece::WhiteRook);
+        if(move.getMoved()==WhiteKing){
+            setPieceAt(Position(4,0),WhiteKing);
+            setPieceAt(Position(3,0),None);
+            setPieceAt(Position(2,0),None);
+            setPieceAt(Position(1,0),None);
+            setPieceAt(Position(0,0),WhiteRook);
         }
         else{
-            setPieceAt(Position(4,7),Piece::BlackKing);
-            setPieceAt(Position(3,7),Piece::None);
-            setPieceAt(Position(2,7),Piece::None);
-            setPieceAt(Position(1,7),Piece::None);
-            setPieceAt(Position(0,7),Piece::BlackRook);
+            setPieceAt(Position(4,7),BlackKing);
+            setPieceAt(Position(3,7),None);
+            setPieceAt(Position(2,7),None);
+            setPieceAt(Position(1,7),None);
+            setPieceAt(Position(0,7),BlackRook);
         }
 	}
 	void Board::makeMove(const Move&move){
@@ -237,10 +236,10 @@ namespace Engine{
 	GameState Board::getGamestate() const {
 	    return current_game_state;
 	}
-	void Board::setPieceAt(const Position&pos, const Piece&piece) {
+	void Board::setPieceAt(const Position&pos, uint8_t piece) {
 	    pieces[pos.y][pos.x]=piece;
 	}
-	Piece Board::getPieceAt(const Position&pos) const{
+	uint8_t Board::getPieceAt(const Position&pos) const{
 		return pieces[pos.y][pos.x];
 	}
 }

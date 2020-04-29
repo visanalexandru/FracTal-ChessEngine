@@ -1,6 +1,9 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <cstdint>
+#include <cctype>
+
 namespace Engine{
 
 	enum class MoveType{
@@ -13,19 +16,28 @@ namespace Engine{
 		Promote,
 	};
 	enum class Piece{
-		WhitePawn,
-		WhiteKnight,
-		WhiteBishop,
-		WhiteRook,
-		WhiteQueen,
-		WhiteKing,
-		BlackPawn,
-		BlackKnight,
-		BlackBishop,
-		BlackRook,
-		BlackQueen,
-		BlackKing,
+	    Pawn,
+	    Knight,
+	    Bishop,
+	    Rook,
+	    Queen,
+	    King,
 		None
+	};
+	enum ColoredPiece: uint8_t {
+        WhiteKing=5,
+        BlackKing=13,
+        WhitePawn=0,
+        BlackPawn=8,
+        WhiteBishop=2,
+        BlackBishop=10,
+        WhiteKnight=1,
+        BlackKnight=9,
+        WhiteRook=3,
+        BlackRook=11,
+        WhiteQueen=4,
+        BlackQueen=12,
+        None=6,
 	};
 	enum State{
 		turnColor=1,//0 for white 1 for black
@@ -37,80 +49,18 @@ namespace Engine{
 	enum Color{
 		White,
 		Black,
-		Null
 	};
 
-	inline int getValue(Piece piece){
-		switch(piece){
-			case Piece::WhitePawn:
-				return 1;
-			case Piece::WhiteKnight:
-				return 3;
-			case Piece::WhiteBishop:
-				return 3;
-			case Piece::WhiteRook:
-				return 5;
-			case Piece::WhiteQueen:
-				return 10;
-			case Piece::WhiteKing:
-				return 11;
 
 
-			case Piece::BlackPawn:
-				return -1;
-			case Piece::BlackKnight:
-				return -3;
-			case Piece::BlackBishop:
-				return -3;
-			case Piece::BlackRook:
-				return -5;
-			case Piece::BlackQueen:
-				return -10;
-			case Piece::BlackKing:
-				return -11;
-		}
-		return 0;
-	}
-	inline char getChar(Piece piece) {
-		switch(piece){
-			case Piece::WhitePawn:
-				return 'P';
-			case Piece::WhiteKnight:
-				return 'N';
-			case Piece::WhiteBishop:
-				return 'B';
-			case Piece::WhiteRook:
-				return 'R';
-			case Piece::WhiteQueen:
-				return 'Q';
-			case Piece::WhiteKing:
-				return 'K';
+    // bits 0-2 piece type
+    //bit 3 piece color - unused for empty space
 
-
-			case Piece::BlackPawn:
-				return 'p';
-			case Piece::BlackKnight:
-				return 'n';
-			case Piece::BlackBishop:
-				return 'b';
-			case Piece::BlackRook:
-				return 'r';
-			case Piece::BlackQueen:
-				return 'q';
-			case Piece::BlackKing:
-				return 'k';
-		}
-		return ' ';
-	}
-
-
-	inline Color getColor(Piece piece){
-		if(getValue(piece)>0)
-			return Color::White;
-		else if(getValue(piece)<0)
-			return Color::Black;
-		return Color::Null;
-	}
+    uint8_t makePiece(Piece type,bool color);
+    Piece getPieceType(uint8_t pc);
+    Color getPieceColor(uint8_t pc);
+    int getPieceValue(uint8_t pc);
+    char getChar(uint8_t pc);
 
 
 }

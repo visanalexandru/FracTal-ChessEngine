@@ -12,6 +12,7 @@ using namespace Engine;
 int main(){
     srand(time(NULL));
 	Engine::Board board;
+	cout<<board.print();
 	Protocol uci(board);
 	uci.start();
 }

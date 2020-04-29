@@ -4,7 +4,7 @@
 
 namespace Engine{
 
-	Move::Move(MoveType type,Position start,Position end,Piece piece_moved,Piece piece_taken,Piece promotion):
+	Move::Move(MoveType type,Position start,Position end,uint8_t piece_moved,uint8_t piece_taken,uint8_t promotion):
 	move_type(type),
 	origin(start),
 	destination(end),
@@ -16,7 +16,7 @@ namespace Engine{
 	}
 
 	Move::Move():move_type(MoveType::Null),
-	taken(Piece::None)	
+	taken(makePiece(Piece::None,false))
 	{
 
 
@@ -33,13 +33,13 @@ namespace Engine{
 	MoveType Move::getType() const{
 		return move_type;
 	}
-	Piece Move::getMoved() const {
+	uint8_t Move::getMoved() const {
 	    return moved;
 	}
-	Piece Move::getTaken() const{
+	uint8_t Move::getTaken() const{
 		return taken;
 	}
-	Piece Move::getPromotion() const{
+	uint8_t Move::getPromotion() const{
 		return promote_to;
 	}
 

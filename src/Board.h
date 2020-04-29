@@ -12,10 +12,10 @@ namespace Engine{
 
 	class Board{
 		private:
-			Piece pieces[8][8];
+			uint8_t pieces[8][8];
 			std::stack<GameState> history;
 			GameState current_game_state;
-			void setPieceAt(const Position&po,const Piece&piece);
+			void setPieceAt(const Position&po,uint8_t piece);
 			void makeNormalMove(const Move&move);
 			void makeQueenSideCastle();
 			void makeKingSideCastle();
@@ -34,7 +34,7 @@ namespace Engine{
 			//a way to easily create moves assuming the move is legal
 			Board();
 			std::string print() const;
-			Piece getPieceAt(const Position&position) const;
+			uint8_t getPieceAt(const Position&position) const;
             GameState getGamestate() const;
 			void makeMove(const Move&move);
 			void undoLastMove();

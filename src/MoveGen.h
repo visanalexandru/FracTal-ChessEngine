@@ -10,7 +10,7 @@ namespace Engine {
         //These do not check if the move is legal,just provide
         //a way to easily create moves assuming the move is legal
         Move createNormal(Position a,Position b) const;
-        Move createPromotion(Position a,Position b,Piece promote_to) const;
+        Move createPromotion(Position a,Position b,uint8_t promote_to) const;
         Move createDoublePawnPush(Position a,Position b) const;
         Move createEnPassant(Position a,Position b) const;
         Move createQueenSideCastle() const;

@@ -7,38 +7,38 @@ namespace Engine {
     }
 
     Move MoveGen::createNormal(Position a, Position b) const {
-        return Move(MoveType::Normal, a, b, board.getPieceAt(a), board.getPieceAt(b), Piece::None);
+        return Move(MoveType::Normal, a, b, board.getPieceAt(a), board.getPieceAt(b), None);
     }
 
-    Move MoveGen::createPromotion(Position a, Position b, Piece promote_to) const {
+    Move MoveGen::createPromotion(Position a, Position b, uint8_t promote_to) const {
         return Move(MoveType::Promote, a, b, board.getPieceAt(a), board.getPieceAt(b), promote_to);
     }
 
     Move MoveGen::createDoublePawnPush(Position a, Position b) const {
-        return Move(MoveType::DoublePawnPush, a, b, board.getPieceAt(a), Piece::None, Piece::None);
+        return Move(MoveType::DoublePawnPush, a, b, board.getPieceAt(a), None, None);
     }
 
     Move MoveGen::createEnPassant(Position a, Position b) const {
-        Piece taken = board.getPieceAt(Position(b.x, a.y));
-        return Move(MoveType::EnPassant, a, b, board.getPieceAt(a), taken, Piece::None);
+        uint8_t taken = board.getPieceAt(Position(b.x, a.y));
+        return Move(MoveType::EnPassant, a, b, board.getPieceAt(a), taken, None);
     }
 
     Move MoveGen::createKingSideCastle() const {
         if (board.getTurn() == Color::White) {
             return Move(MoveType::KingSideCastle, Position(4, 0),
-                        Position(6, 0), Piece::WhiteKing, Piece::None, Piece::None);
+                        Position(6, 0), WhiteKing, None, None);
         }
         return Move(MoveType::KingSideCastle, Position(4, 7),
-                    Position(6, 7), Piece::BlackKing, Piece::None, Piece::None);
+                    Position(6, 7), BlackKing, None, None);
     }
 
     Move MoveGen::createQueenSideCastle() const {
         if (board.getTurn() == Color::White) {
             return Move(MoveType::QueenSideCastle, Position(4, 0),
-                        Position(2, 0), Piece::WhiteKing, Piece::None, Piece::None);
+                        Position(2, 0), WhiteKing, None, None);
         }
         return Move(MoveType::QueenSideCastle, Position(4, 7),
-                    Position(2, 7), Piece::BlackKing, Piece::None, Piece::None);
+                    Position(2, 7), BlackKing, None, None);
     }
 
 
@@ -53,7 +53,7 @@ namespace Engine {
             l=Position(a.x-1,a.y+1);
             r=Position(a.x+1,a.y+1);
 
-            if(a.y==1 && board.getPieceAt(f)==Piece::None && board.getPieceAt(ff)==Piece::None)
+            if(a.y==1 && board.getPieceAt(f)==None && board.getPieceAt(ff)==None)
                 moves.push_back(createDoublePawnPush(a,ff));
         }
         else {
@@ -61,21 +61,21 @@ namespace Engine {
             ff=Position(a.x,a.y-2);
             l=Position(a.x-1,a.y-1);
             r=Position(a.x+1,a.y-1);
-            if(a.y==6 && board.getPieceAt(f)==Piece::None && board.getPieceAt(ff)==Piece::None)
+            if(a.y==6 && board.getPieceAt(f)==None && board.getPieceAt(ff)==None)
                 moves.push_back(createDoublePawnPush(a,ff));
         }
 
         Position can_go[4];
         int possible=0;
-        Piece piece_front=board.getPieceAt(f),piece_left=board.getPieceAt(l),piece_right=board.getPieceAt(r);
+        uint8_t piece_front=board.getPieceAt(f),piece_left=board.getPieceAt(l),piece_right=board.getPieceAt(r);
 
-        if(f.isInside() && piece_front==Piece::None) {
+        if(f.isInside() && piece_front==None) {
             can_go[possible++]=f;
         }
-        if(l.isInside() && piece_left!=Piece::None && getColor(piece_left) !=turn_color )
+        if(l.isInside() && piece_left!=None && getPieceColor(piece_left) !=turn_color )
             can_go[possible++]=l;
 
-        if(r.isInside() && piece_right!=Piece::None &&getColor(piece_right) !=turn_color)
+        if(r.isInside() && piece_right!=None &&getPieceColor(piece_right) !=turn_color)
             can_go[possible++]=r;
 
         Position pos;
@@ -83,16 +83,16 @@ namespace Engine {
         for(int i=0;i<possible;i++){
             pos=can_go[i];
             if(turn_color==White && pos.y==7){
-                moves.push_back(createPromotion(a,pos,Piece::WhiteQueen));
-                moves.push_back(createPromotion(a,pos,Piece::WhiteKnight));
-                moves.push_back(createPromotion(a,pos,Piece::WhiteBishop));
-                moves.push_back(createPromotion(a,pos,Piece::WhiteRook));
+                moves.push_back(createPromotion(a,pos,WhiteQueen));
+                moves.push_back(createPromotion(a,pos,WhiteKnight));
+                moves.push_back(createPromotion(a,pos,WhiteBishop));
+                moves.push_back(createPromotion(a,pos,WhiteRook));
             }
             else if(turn_color==Black && pos.y==0){
-                moves.push_back(createPromotion(a,pos,Piece::BlackQueen));
-                moves.push_back(createPromotion(a,pos,Piece::BlackKnight));
-                moves.push_back(createPromotion(a,pos,Piece::BlackBishop));
-                moves.push_back(createPromotion(a,pos,Piece::BlackRook));
+                moves.push_back(createPromotion(a,pos,BlackQueen));
+                moves.push_back(createPromotion(a,pos,BlackKnight));
+                moves.push_back(createPromotion(a,pos,BlackBishop));
+                moves.push_back(createPromotion(a,pos,BlackRook));
             }
             else moves.push_back(createNormal(a,pos));
         }
@@ -121,7 +121,9 @@ namespace Engine {
                 if(k!=0 || i!=0){
                     Position neighbour=a+Position(i,k);
 
-                    if(neighbour.isInside() && getColor(board.getPieceAt(neighbour))!=board.getTurn()){
+                    if(neighbour.isInside()){
+                        uint8_t pc=board.getPieceAt(neighbour);
+                        if(getPieceType(pc)==Piece::None || getPieceColor(pc)!=board.getTurn())
                         moves.push_back(createNormal(a,neighbour));
                     }
                 }
@@ -135,11 +137,15 @@ namespace Engine {
         Position offsets[8]{Position(1,2),Position(2,1),Position(2,-1),
                             Position(1,-2),Position(-1,-2),
                             Position(-2,-1),Position(-2,1),Position(-1,2)};
-
         for(int i=0;i<8;i++){
             Position there=a+offsets[i];
-            if(there.isInside() && getColor(board.getPieceAt(there))!=board.getTurn())
-                moves.push_back(createNormal(a,there));
+            if(there.isInside()){
+                uint8_t pc=board.getPieceAt(there);
+                if(getPieceType(pc)==Piece::None || getPieceColor(pc)!=board.getTurn()){
+                    moves.push_back(createNormal(a,there));
+                }
+            }
+
         }
     }
     void MoveGen::generateBishopMoves(Engine::Position a, std::vector<Move> &moves) const {
@@ -149,11 +155,11 @@ namespace Engine {
             Position now = a + offsets[i];
 
             while (now.isInside()) {
-                Piece here =board.getPieceAt(now);
-                if (here == Piece::None) {
+                uint8_t here =board.getPieceAt(now);
+                if (here == None) {
                     moves.push_back(createNormal(a, now));
                 } else {
-                    if (getColor(here) != board.getTurn())
+                    if (getPieceColor(here) != board.getTurn())
                         moves.push_back(createNormal(a, now));
                     break;
                 }
@@ -168,11 +174,11 @@ namespace Engine {
         for (int i = 0; i < 4; i++) {
             Position now = a + offsets[i];
             while (now.isInside()) {
-                Piece here = board.getPieceAt(now);
-                if (here == Piece::None) {
+                uint8_t here = board.getPieceAt(now);
+                if (here == None) {
                     moves.push_back(createNormal(a, now));
                 } else {
-                    if (getColor(here) != board.getTurn())
+                    if (getPieceColor(here) != board.getTurn())
                         moves.push_back(createNormal(a, now));
                     break;
                 }
@@ -191,24 +197,29 @@ namespace Engine {
         for(int i=0;i<8;i++){
             for(int k=0;k<8;k++){
                 Position pos(i,k);
-                Piece there=board.getPieceAt(pos);
+                uint8_t there=board.getPieceAt(pos);
 
-                if(getColor(there)==board.getTurn()){
-                    if(there==Piece::BlackPawn || there==Piece::WhitePawn)
-                        generatePawnMoves(pos,to_return);
-                    else if(there==Piece::BlackKnight || there==Piece::WhiteKnight)
-                        generateKnightMoves(pos,to_return);
-                    else if(there==Piece::BlackBishop || there==Piece::WhiteBishop){
-                        generateBishopMoves(pos,to_return);
+                if(getPieceColor(there)==board.getTurn()){
+
+                    switch (getPieceType(there)){
+                        case Piece::Pawn:
+                            generatePawnMoves(pos,to_return);
+                            break;
+                        case Piece::Bishop:
+                            generateBishopMoves(pos,to_return);
+                            break;
+                        case Piece::Rook:
+                            generateRookMoves(pos,to_return);
+                            break;
+                        case Piece::Queen:
+                            generateQueenMoves(pos,to_return);
+                            break;
+                        case Piece::King:
+                            generateKingMoves(pos,to_return);
+                            break;
+                        case Piece::Knight:
+                            generateKnightMoves(pos,to_return);
                     }
-                    else if(there==Piece::BlackRook||there==Piece::WhiteRook){
-                        generateRookMoves(pos,to_return);
-                    }
-                    else if(there==Piece::BlackQueen || there==Piece::WhiteQueen){
-                        generateQueenMoves(pos,to_return);
-                    }
-                    else if(there==Piece::WhiteKing || there==Piece::BlackKing)
-                        generateKingMoves(pos,to_return);
                 }
             }
         }
