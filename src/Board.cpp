@@ -42,7 +42,7 @@ namespace Engine{
 		pieces[7][7]=Piece::BlackRook;
 
 	}
-	void Board::makeNormalMove(Move move){
+	void Board::makeNormalMove(const Move&move){
 
 		Position org=move.getOrigin();
 		setPieceAt(move.getDestination(),getPieceAt(org));
@@ -76,22 +76,22 @@ namespace Engine{
 
 		}
 	}
-	void Board::undoNormalMove(Move move) {
+	void Board::undoNormalMove(const Move& move) {
         setPieceAt(move.getOrigin(),move.getMoved());
         setPieceAt(move.getDestination(),move.getTaken());
 	}
-	void Board::makePromotion(Move move) {
+	void Board::makePromotion(const Move&move) {
         setPieceAt(move.getDestination(),move.getPromotion());
         setPieceAt(move.getOrigin(),Piece::None);
 	}
-	void Board::makeEnPassant(Move move){
+	void Board::makeEnPassant(const Move&move){
 		Position a=move.getOrigin();
 		Position b=move.getDestination();
 		setPieceAt(Position(b.x,a.y),Piece::None);
 		setPieceAt(b,getPieceAt(a));
 		setPieceAt(a,Piece::None);
 	}
-	void Board::undoEnPassant(Move move) {
+	void Board::undoEnPassant(const Move&move) {
         Position a=move.getOrigin();
         Position b=move.getDestination();
         setPieceAt(move.getOrigin(),move.getMoved());
@@ -118,7 +118,7 @@ namespace Engine{
 
 		}
 	}
-	void Board::undoKingSideCastle(Engine::Move move) {
+	void Board::undoKingSideCastle(const Move&move) {
 
 	    if(move.getMoved()==Piece::WhiteKing){
             setPieceAt(Position(4,0),Piece::WhiteKing);
@@ -154,7 +154,7 @@ namespace Engine{
 		}
 	}
 
-	void Board::undoQueenSideCastle(Engine::Move move) {
+	void Board::undoQueenSideCastle(const Move&move) {
         if(move.getMoved()==Piece::WhiteKing){
             setPieceAt(Position(4,0),Piece::WhiteKing);
             setPieceAt(Position(3,0),Piece::None);
@@ -170,7 +170,7 @@ namespace Engine{
             setPieceAt(Position(0,7),Piece::BlackRook);
         }
 	}
-	void Board::makeMove(Move move){
+	void Board::makeMove(const Move&move){
 		history.push(current_game_state);
 		MoveType type=move.getType();
 		if(type==MoveType::Normal || type==MoveType::DoublePawnPush)
@@ -232,17 +232,15 @@ namespace Engine{
 
 
 	Color Board::getTurn() const{
-		if(current_game_state.getState(turnColor)==1)
-			return Black;
-		return White;
+	    return (Engine::Color )current_game_state.getState(turnColor);
 	}
 	GameState Board::getGamestate() const {
 	    return current_game_state;
 	}
-	void Board::setPieceAt(Position pos, Piece piece) {
+	void Board::setPieceAt(const Position&pos, const Piece&piece) {
 	    pieces[pos.y][pos.x]=piece;
 	}
-	Piece Board::getPieceAt(Position pos) const{
+	Piece Board::getPieceAt(const Position&pos) const{
 		return pieces[pos.y][pos.x];
 	}
 }

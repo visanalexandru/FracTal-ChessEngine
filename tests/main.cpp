@@ -8,17 +8,16 @@ Engine::Board board;
 Engine::MoveGen movegen(board);
 
 int perft(int depth){
+    if(depth==0)
+        return 1;
+    int nodes=0;
     vector<Engine::Move> moves=movegen.getAllMoves();
-    if(depth==1)
-        return moves.size();
-    int to_return=0;
-
     for(const Engine::Move&move:moves){
         board.makeMove(move);
-        to_return+=perft(depth-1);
+        nodes+=perft(depth-1);
         board.undoLastMove();
     }
-    return  to_return;
+    return  nodes;
 
 }
 

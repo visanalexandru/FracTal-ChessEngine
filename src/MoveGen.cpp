@@ -65,21 +65,23 @@ namespace Engine {
                 moves.push_back(createDoublePawnPush(a,ff));
         }
 
-        std::vector<Position> can_go;
+        Position can_go[4];
+        int possible=0;
         Piece piece_front=board.getPieceAt(f),piece_left=board.getPieceAt(l),piece_right=board.getPieceAt(r);
 
         if(f.isInside() && piece_front==Piece::None) {
-            can_go.push_back(f);
+            can_go[possible++]=f;
         }
         if(l.isInside() && piece_left!=Piece::None && getColor(piece_left) !=turn_color )
-            can_go.push_back(l);
+            can_go[possible++]=l;
 
         if(r.isInside() && piece_right!=Piece::None &&getColor(piece_right) !=turn_color)
-            can_go.push_back(r);
+            can_go[possible++]=r;
 
+        Position pos;
 
-
-        for(Position pos:can_go){
+        for(int i=0;i<possible;i++){
+            pos=can_go[i];
             if(turn_color==White && pos.y==7){
                 moves.push_back(createPromotion(a,pos,Piece::WhiteQueen));
                 moves.push_back(createPromotion(a,pos,Piece::WhiteKnight));
@@ -185,6 +187,7 @@ namespace Engine {
 
     std::vector<Move> MoveGen::getAllMoves() const{
         std::vector<Move> to_return;
+        to_return.reserve(300);
         for(int i=0;i<8;i++){
             for(int k=0;k<8;k++){
                 Position pos(i,k);

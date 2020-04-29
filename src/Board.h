@@ -15,17 +15,17 @@ namespace Engine{
 			Piece pieces[8][8];
 			std::stack<GameState> history;
 			GameState current_game_state;
-			void setPieceAt(Position po,Piece piece);
-			void makeNormalMove(Move move);
+			void setPieceAt(const Position&po,const Piece&piece);
+			void makeNormalMove(const Move&move);
 			void makeQueenSideCastle();
 			void makeKingSideCastle();
-			void makeEnPassant(Move move);
-			void makePromotion(Move move);
+			void makeEnPassant(const Move&move);
+			void makePromotion(const Move&move);
 
-			void undoNormalMove(Move move);//use this for promotions also
-			void undoQueenSideCastle(Move move);
-			void undoKingSideCastle(Move move);
-			void undoEnPassant(Move move);
+			void undoNormalMove(const Move&move);//use this for promotions also
+			void undoQueenSideCastle(const Move&move);
+			void undoKingSideCastle(const Move&move);
+			void undoEnPassant(const Move&move);
 
 			void initBoard();
 		public:
@@ -34,9 +34,9 @@ namespace Engine{
 			//a way to easily create moves assuming the move is legal
 			Board();
 			std::string print() const;
-			Piece getPieceAt(Position position) const;
+			Piece getPieceAt(const Position&position) const;
             GameState getGamestate() const;
-			void makeMove(Move move);
+			void makeMove(const Move&move);
 			void undoLastMove();
 			Color getTurn() const;
 	};
