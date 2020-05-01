@@ -46,32 +46,38 @@ namespace BitEngine {
         moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), PieceType::None));
     }
 
-    uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t white_pieces, uint64_t black_pieces, Color color) {
+    uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side,Color color) {
         uint64_t left_attack, right_attack, attacks;
         if (color == White) {
             right_attack = (position & Tables::ClearFile[7]) << 7;
             left_attack = (position & Tables::ClearFile[0]) << 9;
-            return (left_attack | right_attack) & (~white_pieces);
         } else {
             right_attack = (position & Tables::ClearFile[0]) >> 7;
             left_attack = (position & Tables::ClearFile[7]) >> 9;
-            return (left_attack | right_attack) & (~black_pieces);
         }
+        return (left_attack|right_attack)&(~same_side);
     }
 
-    uint64_t MoveGen::getKingAttacks(uint64_t position, uint64_t white_pieces, uint64_t black_pieces, Color color) {
+    uint64_t MoveGen::getKingAttacks(uint64_t position, uint64_t same_side) {
 
         uint64_t clip1 = position & Tables::ClearFile[0], clip2 = position & Tables::ClearFile[7];
         uint64_t spot1 = clip1 << 9, spot2 = position << 8, spot3 = clip2 << 7, spot4 = clip1 << 1,
                 spot5 = clip2 >> 1, spot6 = clip1 >> 7, spot7 = position >> 8, spot8 = clip2 >> 9;
 
         uint64_t king_valid = (spot1 | spot2 | spot3 | spot4 | spot5 | spot6 | spot7 | spot8);
+        return king_valid & (~same_side);
+    }
 
-        if (color == White) {
-            return king_valid & (~white_pieces);
-        } else {
-            return king_valid & (~black_pieces);
-        }
+    uint64_t MoveGen::getKnightAttacks(uint64_t position, uint64_t same_side) {
+        uint64_t clip1 = position & Tables::ClearFile[0], clip2 = position & Tables::ClearFile[7],
+                clip3 = position & Tables::ClearFile[0] & Tables::ClearFile[1],
+                clip4 = position & Tables::ClearFile[6] & Tables::ClearFile[7];
+
+        uint64_t spot1 = clip3 << 10, spot2 = clip1 << 17, spot3 = clip2 << 15, spot4 = clip4 << 6,
+                spot5 = clip4 >> 10, spot6 = clip2 >> 17, spot7 = clip1 >> 15, spot8 = clip3 >> 6;
+        uint64_t knight_valid = (spot1 | spot2 | spot3 | spot4 | spot5 | spot6 | spot7 | spot8);
+
+        return knight_valid & (~same_side);
     }
 
 
@@ -94,7 +100,7 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, WPawn, moves);
 
-            uint64_t attacks = getPawnAttacks(square, white_pieces, black_pieces, White);
+            uint64_t attacks = getPawnAttacks(square, white_pieces,White);
 
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
@@ -131,7 +137,7 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, BPawn, moves);
 
-            uint64_t attacks = getPawnAttacks(square, white_pieces, black_pieces, Black);
+            uint64_t attacks = getPawnAttacks(square, black_pieces,Black);
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
                 if (attack & white_pieces) {
@@ -161,6 +167,7 @@ namespace BitEngine {
 
         addAllKingMoves(white, black, color, to_return);
         addAllPawnMoves(white, black, color, to_return);
+        addAllKnightMoves(white, black, color, to_return);
 
         return to_return;
     }
@@ -173,30 +180,57 @@ namespace BitEngine {
             addBlackPawnsMoves(white_pieces, black_pieces, moves);
     }
 
+    void MoveGen::addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side,
+                                PieceType piece_type, std::vector<Move> &moves) {
+        while (attacks) {
+            uint64_t square = popLsb(attacks);
+            if (square & opposite_side) {
+                addCapture(origin, square, piece_type, moves);
+            } else {
+                addQuiet(origin, square, piece_type, moves);
+            }
+        }
+    }
+
     void MoveGen::addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color,
                                   std::vector<Move> &moves) {
-        uint64_t king_square,opposite_side;
+        uint64_t king_square, opposite_side, same_side;
         PieceType king_type;
 
         if (color == White) {
             king_type = WKing;
-            opposite_side=black_pieces;
-            king_square = board.bitboards[WKing];
+            opposite_side = black_pieces;
+            same_side = white_pieces;
         } else {
-            opposite_side=white_pieces;
+            opposite_side = white_pieces;
+            same_side = black_pieces;
             king_type = BKing;
-            king_square = board.bitboards[BKing];
+        }
+        king_square = board.bitboards[king_type];
+        uint64_t king_attacks = getKingAttacks(king_square, same_side);
+        addAllAttacks(king_square, king_attacks, opposite_side, king_type, moves);
+    }
+
+    void MoveGen::addAllKnightMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
+                                    std::vector<Move> &moves) {
+        uint64_t knight_squares, opposite_side, same_side;
+        PieceType knight_type;
+
+        if (color == White) {
+            knight_type = WKnight;
+            opposite_side = black_pieces;
+            same_side = white_pieces;
+        } else {
+            opposite_side = white_pieces;
+            knight_type = BKnight;
+            same_side = black_pieces;
+        }
+        knight_squares = board.bitboards[knight_type];
+        while (knight_squares) {
+            uint64_t knight_square = popLsb(knight_squares);
+            uint64_t knight_attacks = getKnightAttacks(knight_square, same_side);
+            addAllAttacks(knight_square, knight_attacks, opposite_side, knight_type, moves);
         }
 
-        uint64_t king_attacks = getKingAttacks(king_square, white_pieces, black_pieces, color);
-
-        while (king_attacks) {
-            uint64_t square = popLsb(king_attacks);
-            if (square & opposite_side) {
-                addCapture(king_square, square, king_type, moves);
-            } else {
-                addQuiet(king_square, square, king_type, moves);
-            }
-        }
     }
 }
