@@ -19,7 +19,7 @@ void perft(int depth, bool capture, bool enPassant) {
     vector<Engine::Move> moves = movegen.getAllMoves();
 
     if (depth == 1) {
-        perft_nodes+=moves.size();
+        perft_nodes += moves.size();
         return;
     }
 
@@ -32,20 +32,20 @@ void perft(int depth, bool capture, bool enPassant) {
 }
 
 
-void testBitBoards(){
+void testBitBoards() {
 
     BitEngine::Board bt;
-    BitEngine::MoveGen movegen(bt);
-    for(int i=0;i<22;i++){
-        std::vector<BitEngine::Move> moves=movegen.getAllMoves();
-        cout<<moves[0].toString()<<endl;
-        bt.makeMove(moves[0]);
-        cout<<bt.prt();
+    BitEngine::Tables::initializeAttackTables();
+    for (int i = 63; i >= 0; i--) {
+        uint64_t attacks = BitEngine::Tables::AttackTables[i][BitEngine::Tables::West] |
+                           BitEngine::Tables::AttackTables[i][BitEngine::Tables::East]|
+                           BitEngine::Tables::AttackTables[i][BitEngine::Tables::North] |
+                           BitEngine::Tables::AttackTables[i][BitEngine::Tables::South];
+        bt.print(attacks);
+
     }
 
-
-
-
+    BitEngine::MoveGen movegen(bt);
 
 
 }

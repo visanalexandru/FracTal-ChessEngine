@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include <cmath>
+#include "Utils.h"
 #include "Types.h"
 namespace BitEngine{
 

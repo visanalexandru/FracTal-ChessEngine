@@ -9,4 +9,7 @@ namespace BitEngine{
         to_pop-=lsb;
         return lsb;
     }
+    int bitScanForward(uint64_t x){
+        return __builtin_ffsll(x);
+    }
 }

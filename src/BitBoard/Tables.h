@@ -2,6 +2,7 @@
 #define BITENGINE_TABLES_H
 
 #include <cstdint>
+#include "Utils.h"
 
 namespace BitEngine {
     namespace Tables {
@@ -44,6 +45,18 @@ namespace BitEngine {
                                      0x202020202020202,
                                      0x0101010101010101,
         };
+
+        enum Direction{
+            North,
+            East,
+            South,
+            West,
+
+        };
+
+        extern uint64_t AttackTables[64][8];
+        uint64_t getRay(uint64_t position,Direction direction);
+        void initializeAttackTables();
     }
 }
 #endif
