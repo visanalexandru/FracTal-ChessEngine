@@ -12,7 +12,7 @@
 
 class Protocol {
 private:
-    Engine::Board &board;
+    BitEngine::Board &board;
     std::ofstream log;
     bool isRunning;
 
@@ -22,10 +22,10 @@ private:
 
     void Log(const std::string &to_log);
 
-    static bool compare(Engine::Move a, Engine::Move b);
+    static bool compare(BitEngine::Move a,BitEngine::Move b);
 
 public:
-    Protocol(Engine::Board &internal_board);
+    Protocol(BitEngine::Board &internal_board);
 
     void start();
 };

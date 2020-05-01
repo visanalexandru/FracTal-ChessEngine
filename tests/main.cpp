@@ -1,6 +1,9 @@
 #include<iostream>
 #include"../src/Board.h"
 #include "../src/MoveGen.h"
+#include "../src/BitBoard/Board.h"
+#include "../src/Types.h"
+#include "../src/BitBoard/MoveGen.h"
 #include <string.h>
 
 using namespace std;
@@ -14,17 +17,9 @@ int perft_captures = 0, perft_nodes = 0, perft_ep = 0;
 void perft(int depth, bool capture, bool enPassant) {
     //check for illegal king moves
     vector<Engine::Move> moves = movegen.getAllMoves();
-    for (const Engine::Move &move:moves)
-        if (Engine::getPieceType(move.getTaken()) == Engine::Piece::King)
-            return;
 
-
-    if (depth == 0) {
-        perft_nodes++;
-        if (capture)
-            perft_captures++;
-        if (enPassant)
-            perft_ep++;
+    if (depth == 1) {
+        perft_nodes+=moves.size();
         return;
     }
 
@@ -37,9 +32,32 @@ void perft(int depth, bool capture, bool enPassant) {
 }
 
 
+void testBitBoards(){
+
+    BitEngine::Board bt;
+    BitEngine::MoveGen movegen(bt);
+    for(int i=0;i<22;i++){
+        std::vector<BitEngine::Move> moves=movegen.getAllMoves();
+        cout<<moves[0].toString()<<endl;
+        bt.makeMove(moves[0]);
+        cout<<bt.prt();
+    }
+
+
+
+
+
+
+}
+
 int main() {
+
+
+    testBitBoards();
+    return 0;
+
     float a = clock();
-    perft(5, false, false);
+    perft(6, false, false);
     cout << "perf took " << (clock() - a) / CLOCKS_PER_SEC << endl;
 
     cout << "perf nodes " << perft_nodes << endl;

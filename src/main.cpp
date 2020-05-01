@@ -12,8 +12,8 @@ using namespace Engine;
 
 int main() {
     srand(time(NULL));
-    Engine::Board board;
-    cout << board.print();
+    BitEngine::Board board;
+    cout << board.prt();
     Protocol uci(board);
     uci.start();
 }

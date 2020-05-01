@@ -1,7 +1,7 @@
 #include "Protocol.h"
 
 
-Protocol::Protocol(Engine::Board &internal_board) : isRunning(false),
+Protocol::Protocol(BitEngine::Board &internal_board) : isRunning(false),
                                                     log("chesslog"),
                                                     board(internal_board) {
 
@@ -17,7 +17,7 @@ void Protocol::Log(const std::string &to_log) {
     log << to_log << std::endl;
 }
 
-bool Protocol::compare(Engine::Move a, Engine::Move b) {
+bool Protocol::compare(BitEngine::Move a, BitEngine::Move b) {
     return a.getType() < b.getType();
 }
 
@@ -44,22 +44,21 @@ void Protocol::handleRequest(const std::string &req) {
         while (!sstream.eof())
             sstream >> aux;
 
-        Engine::Move server_move = Engine::AnParser::getMove(aux, board);
-        if (server_move.getType() == Engine::MoveType::Null) {
+        BitEngine::Move server_move = Engine::AnParser::getMove(aux, board);
+        if (server_move.getType() == BitEngine::MoveType::Null) {
             Log("invalid move" + server_move.toString());
             isRunning = false;
         } else {
             board.makeMove(Engine::AnParser::getMove(aux, board));
-            Log(board.print());
+            Log(board.prt());
         }
     } else if (cmmd == "go") {
-        Engine::MoveGen movegen(board);
-        std::vector<Engine::Move> moves = movegen.getAllMoves();
-        std::sort(moves.begin(), moves.end(), compare);
-        Engine::Move bestmove = moves[moves.size() - 1];
+        BitEngine::MoveGen movegen(board);
+        std::vector<BitEngine::Move> moves = movegen.getAllMoves();
+        BitEngine::Move bestmove = moves[rand()%moves.size()];
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
-        Log(board.print());
+        Log(board.prt());
     } else if (cmmd == "quit") {
         isRunning = false;
     }
