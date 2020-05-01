@@ -46,18 +46,29 @@ namespace BitEngine {
         moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), PieceType::None));
     }
 
+    uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t white_pieces, uint64_t black_pieces, Color color) {
+        uint64_t left_attack, right_attack, attacks;
+        if (color == White) {
+            right_attack = (position & Tables::ClearFile[7]) << 7;
+            left_attack = (position & Tables::ClearFile[0]) << 9;
+            return (left_attack | right_attack) & (~white_pieces);
+        } else {
+            right_attack = (position & Tables::ClearFile[0]) >> 7;
+            left_attack = (position & Tables::ClearFile[7]) >> 9;
+            return (left_attack | right_attack) & (~black_pieces);
+        }
+    }
+
 
     void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
         uint64_t white_pawns = board.bitboards[PieceType::WPawn];
         uint64_t all = white_pieces | black_pieces;
-        uint64_t square, single_push, double_push, right_attack, left_attack;
+        uint64_t square, single_push, double_push;
         while (white_pawns) {
             square = popLsb(white_pawns);
 
             single_push = (square << 8) & (~all);
             double_push = ((single_push & Tables::MaskRank[2]) << 8) & (~all);
-            right_attack = (square & Tables::ClearFile[7]) << 7;
-            left_attack = (square & Tables::ClearFile[0]) << 9;
 
             if (single_push) {
                 if ((single_push & Tables::MaskRank[7]) == 0)
@@ -68,14 +79,15 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, WPawn, moves);
 
-            uint64_t attacks = left_attack | right_attack;
+            uint64_t attacks = getPawnAttacks(square, white_pieces, black_pieces, White);
+
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
                 if (attack & black_pieces) {
                     if ((attack & Tables::MaskRank[7]) == 0)
                         addCapture(square, attack, WPawn, moves);
                     else addPromotions(square, attack, White, board.getPieceAt(attack), moves);
-                } else if (attack & (~white_pieces)) {
+                } else {
                     uint64_t dest = board.gamestate.getLastMove().getDestination();
                     MoveType type = board.gamestate.getLastMove().getType();
 
@@ -90,14 +102,11 @@ namespace BitEngine {
     void MoveGen::addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
         uint64_t black_pawns = board.bitboards[PieceType::BPawn];
         uint64_t all = white_pieces | black_pieces;
-        uint64_t square, single_push, double_push, right_attack, left_attack;
+        uint64_t square, single_push, double_push;
         while (black_pawns) {
             square = popLsb(black_pawns);
             single_push = (square >> 8) & (~all);
             double_push = ((single_push & Tables::MaskRank[5]) >> 8) & (~all);
-            right_attack = (square & Tables::ClearFile[0]) >> 7;
-            left_attack = (square & Tables::ClearFile[7]) >> 9;
-
             if (single_push) {
                 if ((single_push & Tables::MaskRank[0]) == 0)
                     addQuiet(square, single_push, BPawn, moves);
@@ -107,14 +116,15 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, BPawn, moves);
 
-            uint64_t attacks = left_attack | right_attack;
+            uint64_t attacks = getPawnAttacks(square, white_pieces, black_pieces, Black);
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
                 if (attack & white_pieces) {
                     if ((attack & Tables::MaskRank[0]) == 0)
                         addCapture(square, attack, BPawn, moves);
                     else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
-                } else if (attack & (~black_pieces)) {
+                }
+                else {
                     uint64_t dest = board.gamestate.getLastMove().getDestination();
                     MoveType type = board.gamestate.getLastMove().getType();
 
@@ -135,8 +145,8 @@ namespace BitEngine {
 
         Color color = board.getTurn();
 
+        addAllKingMoves(white, black, color, to_return);
         addAllPawnMoves(white, black, color, to_return);
-        addAllKingMoves(white,black,color,to_return);
 
         return to_return;
     }
@@ -168,7 +178,7 @@ namespace BitEngine {
         uint64_t spot1 = clip1 << 9, spot2 = king_square << 8, spot3 = clip2 << 7, spot4 = clip1 << 1,
                 spot5 = clip2 >> 1, spot6 = clip1 >> 7, spot7 = king_square >> 8, spot8 = clip2 >> 9;
         uint64_t king_valid = (spot1 | spot2 | spot3 | spot4 | spot5 | spot6 | spot7 | spot8) & (~same_side);
-        
+
         while (king_valid) {
             uint64_t square = popLsb(king_valid);
             if (square & opposite_side) {

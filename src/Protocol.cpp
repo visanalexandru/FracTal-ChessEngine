@@ -56,7 +56,9 @@ void Protocol::handleRequest(const std::string &req) {
         BitEngine::MoveGen movegen(board);
         std::vector<BitEngine::Move> moves = movegen.getAllMoves();
         std::sort(moves.begin(),moves.end(),compare);
-        BitEngine::Move bestmove = moves[rand()%moves.size()];
+        for(BitEngine::Move a:moves)
+            Log("available "+a.toString());
+        BitEngine::Move bestmove = moves[moves.size()-1];
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
         Log(board.prt());
