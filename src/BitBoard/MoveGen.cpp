@@ -7,19 +7,28 @@ namespace BitEngine {
     }
 
 
-    void MoveGen::addQuiet(uint64_t origin, uint64_t dest, PieceType to_move, std::vector<Move> &moves) {
+    void MoveGen::addQuiet(uint64_t origin, uint64_t dest, PieceType to_move, std::vector <Move> &moves) {
 
         moves.push_back(Move(MoveType::Normal, origin, dest, to_move, PieceType::None, PieceType::None));
     }
 
 
-    void MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest, PieceType pawn_type, std::vector<Move> &moves) {
+    void
+    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest, PieceType pawn_type, std::vector <Move> &moves) {
         moves.push_back(Move(MoveType::DoublePawnPush, origin, dest, pawn_type, PieceType::None,
                              PieceType::None));
     }
 
+    void MoveGen::addEnPassant(uint64_t origin, uint64_t dest, BitEngine::Color color, std::vector <Move> &moves) {
+        if (color == White) {
+            moves.push_back(Move(MoveType::EnPassant, origin, dest, WPawn, BPawn, PieceType::None));
+        } else {
+            moves.push_back(Move(MoveType::EnPassant, origin, dest, BPawn, WPawn, PieceType::None));
+        }
+    }
+
     void
-    MoveGen::addPromotions(uint64_t origin, uint64_t dest, Color color, PieceType taken, std::vector<Move> &moves) {
+    MoveGen::addPromotions(uint64_t origin, uint64_t dest, Color color, PieceType taken, std::vector <Move> &moves) {
         if (color == White) {
             moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WQueen));
             moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WRook));
@@ -33,12 +42,12 @@ namespace BitEngine {
         }
     }
 
-    void MoveGen::addCapture(uint64_t origin, uint64_t dest, PieceType to_move, std::vector<Move> &moves) {
+    void MoveGen::addCapture(uint64_t origin, uint64_t dest, PieceType to_move, std::vector <Move> &moves) {
         moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), PieceType::None));
     }
 
 
-    void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
+    void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector <Move> &moves) {
         uint64_t white_pawns = board.bitboards[PieceType::WPawn];
         uint64_t all = white_pieces | black_pieces;
         uint64_t square, single_push, double_push, right_attack, left_attack;
@@ -66,12 +75,19 @@ namespace BitEngine {
                     if ((attack & Tables::MaskRank[7]) == 0)
                         addCapture(square, attack, WPawn, moves);
                     else addPromotions(square, attack, White, board.getPieceAt(attack), moves);
+                } else if (attack & (~white_pieces)) {
+                    uint64_t dest = board.gamestate.getLastMove().getDestination();
+                    MoveType type = board.gamestate.getLastMove().getType();
+
+                    if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1) &&
+                        attack == dest << 8)
+                        addEnPassant(square, attack, White, moves);
                 }
             }
         }
     }
 
-    void MoveGen::addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
+    void MoveGen::addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector <Move> &moves) {
         uint64_t black_pawns = board.bitboards[PieceType::BPawn];
         uint64_t all = white_pieces | black_pieces;
         uint64_t square, single_push, double_push, right_attack, left_attack;
@@ -98,26 +114,34 @@ namespace BitEngine {
                     if ((attack & Tables::MaskRank[0]) == 0)
                         addCapture(square, attack, BPawn, moves);
                     else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
+                } else if (attack & (~black_pieces)) {
+                    uint64_t dest = board.gamestate.getLastMove().getDestination();
+                    MoveType type = board.gamestate.getLastMove().getType();
+
+                    if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1)
+                        && attack == dest >> 8)
+                        addEnPassant(square, attack, Black, moves);
                 }
             }
         }
     }
 
-    std::vector<Move> MoveGen::getAllMoves() {
-        std::vector<Move> to_return;
+    std::vector <Move> MoveGen::getAllMoves() {
+        std::vector <Move> to_return;
         Color turn = board.getTurn();
 
         uint64_t black = board.getBlackPieces();
         uint64_t white = board.getWhitePieces();
 
-        Color  color=board.getTurn();
+        Color color = board.getTurn();
 
-        addAllPawnMoves(white, black, color,to_return);
+        addAllPawnMoves(white, black, color, to_return);
 
         return to_return;
     }
 
-    void MoveGen::addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves) {
+    void
+    MoveGen::addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector <Move> &moves) {
         if (color == White)
             addWhitePawnsMoves(white_pieces, black_pieces, moves);
         else

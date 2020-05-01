@@ -12,11 +12,11 @@ namespace BitEngine {
 
         void addCapture(uint64_t origin,uint64_t dest,PieceType to_move,std::vector<Move>&moves);
         void addQuiet(uint64_t origin,uint64_t dest,PieceType to_move,std::vector<Move>&moves);
+        void addPromotions(uint64_t origin,uint64_t dest,Color color,PieceType taken,std::vector<Move>&moves);
+        void addEnPassant(uint64_t origin,uint64_t dest,Color color,std::vector<Move>&moves);
 
         void addWhitePawnsMoves(uint64_t white_pieces,uint64_t black_pieces,std::vector<Move>&moves);
         void addBlackPawnsMoves(uint64_t white_pieces,uint64_t black_pieces,std::vector<Move>&moves);
-
-        void addPromotions(uint64_t origin,uint64_t dest,Color color,PieceType taken,std::vector<Move>&moves);
         void addDoublePawnPushMove(uint64_t origin,uint64_t dest,PieceType  pawn_type,std::vector<Move>&moves);
 
 

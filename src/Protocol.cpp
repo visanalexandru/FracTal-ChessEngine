@@ -55,7 +55,8 @@ void Protocol::handleRequest(const std::string &req) {
     } else if (cmmd == "go") {
         BitEngine::MoveGen movegen(board);
         std::vector<BitEngine::Move> moves = movegen.getAllMoves();
-        BitEngine::Move bestmove = moves[rand()%moves.size()];
+        std::sort(moves.begin(),moves.end(),compare);
+        BitEngine::Move bestmove = moves[moves.size()-1];
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
         Log(board.prt());

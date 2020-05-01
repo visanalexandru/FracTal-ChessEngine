@@ -15,6 +15,7 @@ namespace BitEngine {
     private:
         void makeNormalMove(const Move&move);
         void makePromotion(const Move &move);
+        void makeEnPassant(const Move&move);
 
         const uint64_t WRookLPosition=0;
         const uint64_t  WRookRPosition=1LL<<7;

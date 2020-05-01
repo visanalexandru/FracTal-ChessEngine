@@ -128,6 +128,21 @@ namespace BitEngine {
         removePieceAt(move.getOrigin(), move.getMoved());
     }
 
+    void Board::makeEnPassant(const BitEngine::Move &move) {
+        uint64_t org = move.getOrigin();
+        uint64_t dest = move.getDestination();
+
+        setPieceAt(move.getDestination(), move.getMoved());
+        removePieceAt(move.getOrigin(), move.getMoved());
+
+        if (dest == org << 9 || dest== org >> 7) {
+            removePieceAt(org << 1, move.getTaken());
+        }
+        else {
+            removePieceAt(org >> 1, move.getTaken());
+        }
+    }
+
     void Board::makeMove(const Move &move) {
         history.push(gamestate);
         MoveType type = move.getType();
@@ -135,8 +150,9 @@ namespace BitEngine {
             makeNormalMove(move);
         else if (type == MoveType::Promote)
             makePromotion(move);
-        /*else if (type == MoveType::EnPassant)
+        else if (type == MoveType::EnPassant)
             makeEnPassant(move);
+        /*
         else if (type == MoveType::KingSideCastle)
             makeKingSideCastle();
         else if (type == MoveType::QueenSideCastle)
