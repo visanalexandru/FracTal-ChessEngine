@@ -22,6 +22,8 @@ namespace BitEngine {
 
         uint64_t getPawnAttacks(uint64_t position, uint64_t white_pieces, uint64_t black_pieces, Color color);
 
+        uint64_t getKingAttacks(uint64_t position, uint64_t white_pieces, uint64_t black_pieces, Color color);
+
         void addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves);
 
         void addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves);
@@ -31,7 +33,7 @@ namespace BitEngine {
         void addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
         void addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
-        
+
 
     public:
         MoveGen(Board &internal_board);

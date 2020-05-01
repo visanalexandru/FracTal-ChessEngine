@@ -59,6 +59,21 @@ namespace BitEngine {
         }
     }
 
+    uint64_t MoveGen::getKingAttacks(uint64_t position, uint64_t white_pieces, uint64_t black_pieces, Color color) {
+
+        uint64_t clip1 = position & Tables::ClearFile[0], clip2 = position & Tables::ClearFile[7];
+        uint64_t spot1 = clip1 << 9, spot2 = position << 8, spot3 = clip2 << 7, spot4 = clip1 << 1,
+                spot5 = clip2 >> 1, spot6 = clip1 >> 7, spot7 = position >> 8, spot8 = clip2 >> 9;
+
+        uint64_t king_valid = (spot1 | spot2 | spot3 | spot4 | spot5 | spot6 | spot7 | spot8);
+
+        if (color == White) {
+            return king_valid & (~white_pieces);
+        } else {
+            return king_valid & (~black_pieces);
+        }
+    }
+
 
     void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
         uint64_t white_pawns = board.bitboards[PieceType::WPawn];
@@ -123,8 +138,7 @@ namespace BitEngine {
                     if ((attack & Tables::MaskRank[0]) == 0)
                         addCapture(square, attack, BPawn, moves);
                     else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
-                }
-                else {
+                } else {
                     uint64_t dest = board.gamestate.getLastMove().getDestination();
                     MoveType type = board.gamestate.getLastMove().getType();
 
@@ -161,26 +175,23 @@ namespace BitEngine {
 
     void MoveGen::addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color,
                                   std::vector<Move> &moves) {
-        uint64_t king_square, same_side, opposite_side;
+        uint64_t king_square,opposite_side;
         PieceType king_type;
+
         if (color == White) {
             king_type = WKing;
+            opposite_side=black_pieces;
             king_square = board.bitboards[WKing];
-            same_side = white_pieces;
-            opposite_side = black_pieces;
         } else {
+            opposite_side=white_pieces;
             king_type = BKing;
             king_square = board.bitboards[BKing];
-            same_side = black_pieces;
-            opposite_side = white_pieces;
         }
-        uint64_t clip1 = king_square & Tables::ClearFile[0], clip2 = king_square & Tables::ClearFile[7];
-        uint64_t spot1 = clip1 << 9, spot2 = king_square << 8, spot3 = clip2 << 7, spot4 = clip1 << 1,
-                spot5 = clip2 >> 1, spot6 = clip1 >> 7, spot7 = king_square >> 8, spot8 = clip2 >> 9;
-        uint64_t king_valid = (spot1 | spot2 | spot3 | spot4 | spot5 | spot6 | spot7 | spot8) & (~same_side);
 
-        while (king_valid) {
-            uint64_t square = popLsb(king_valid);
+        uint64_t king_attacks = getKingAttacks(king_square, white_pieces, black_pieces, color);
+
+        while (king_attacks) {
+            uint64_t square = popLsb(king_attacks);
             if (square & opposite_side) {
                 addCapture(king_square, square, king_type, moves);
             } else {
