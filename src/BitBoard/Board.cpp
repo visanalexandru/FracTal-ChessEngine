@@ -27,22 +27,7 @@ namespace BitEngine {
         return getWhitePieces() | getBlackPieces();
     }
 
-
-    void Board::print(uint64_t bitboard) {
-        for (int i = 63; i >= 0; i--) {
-
-            if ((i + 1) % 8 == 0)
-                std::cout << std::endl;
-
-            if (bitboard & (1LL << i)) {
-                std::cout << 1 << ' ';
-            } else std::cout << 0 << ' ';
-        }
-        std::cout << std::endl;
-    }
-
-
-    std::string Board::prt() const {
+    std::string Board::toString() const {
         std::string to_return;
         for (int i = 7; i >= 0; i--) {
             for (int k = 0; k < 33; k++)
@@ -135,10 +120,9 @@ namespace BitEngine {
         setPieceAt(move.getDestination(), move.getMoved());
         removePieceAt(move.getOrigin(), move.getMoved());
 
-        if (dest == org << 9 || dest== org >> 7) {
+        if (dest == org << 9 || dest == org >> 7) {
             removePieceAt(org << 1, move.getTaken());
-        }
-        else {
+        } else {
             removePieceAt(org >> 1, move.getTaken());
         }
     }

@@ -14,7 +14,7 @@ int main() {
     srand(time(NULL));
     BitEngine::Tables::initializeAttackTables();
     BitEngine::Board board;
-    cout << board.prt();
+    cout << board.toString();
     Protocol uci(board);
     uci.start();
 }

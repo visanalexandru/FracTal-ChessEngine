@@ -24,22 +24,22 @@ namespace BitEngine {
         const uint64_t  BRookRPosition=1LL<<56;
         const uint64_t  BKingPosition=1LL<<59;
         std::stack<GameState> history;
-
-    public:
-        static void print(uint64_t bitboard);
-        Board();
         uint64_t bitboards[12];
         GameState gamestate;
+    public:
+        Board();
         uint64_t getWhitePieces() const;
         uint64_t getBlackPieces() const;
         uint64_t getAll() const;
         Color getTurn() const;
-        std::string prt() const;
+        std::string toString() const;
         PieceType getPieceAt(uint64_t position) const;
         void setPieceAt(uint64_t position,PieceType piece);
         void removePieceAt(uint64_t position,PieceType piece);
         void makeMove(const Move&move);
         void loadFen(const std::string&fen);
+
+        friend class MoveGen;
     };
 }
 

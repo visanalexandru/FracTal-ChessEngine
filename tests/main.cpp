@@ -42,7 +42,7 @@ void testBitBoards() {
 
         for(int k=0;k<8;k++)
         attacks|= BitEngine::Tables::AttackTables[i][k];
-        bt.print(attacks);
+        BitEngine::printBitboard(attacks);
 
     }
     BitEngine::MoveGen movegen(bt);

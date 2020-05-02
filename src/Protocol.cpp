@@ -50,7 +50,7 @@ void Protocol::handleRequest(const std::string &req) {
             isRunning = false;
         } else {
             board.makeMove(Engine::AnParser::getMove(aux, board));
-            Log(board.prt());
+            Log(board.toString());
         }
     } else if (cmmd == "go") {
         BitEngine::MoveGen movegen(board);
@@ -62,7 +62,7 @@ void Protocol::handleRequest(const std::string &req) {
         BitEngine::Move bestmove = moves[rand()%moves.size()];
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
-        Log(board.prt());
+        Log(board.toString());
     } else if (cmmd == "quit") {
         isRunning = false;
     }
