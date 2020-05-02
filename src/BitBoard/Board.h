@@ -17,6 +17,10 @@ namespace BitEngine {
         void makePromotion(const Move &move);
         void makeEnPassant(const Move&move);
 
+        void undoNormalMove(const Move&move);
+        void undoEnPassant(const Move&move);
+        void undoPromotion(const Move&move);
+
         const uint64_t WRookLPosition=0;
         const uint64_t  WRookRPosition=1LL<<7;
         const uint64_t  WKingPosition=1LL<<3;
@@ -37,6 +41,7 @@ namespace BitEngine {
         void setPieceAt(uint64_t position,PieceType piece);
         void removePieceAt(uint64_t position,PieceType piece);
         void makeMove(const Move&move);
+        void undoLastMove();
         void loadFen(const std::string&fen);
 
         friend class MoveGen;

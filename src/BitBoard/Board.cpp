@@ -148,6 +148,59 @@ namespace BitEngine {
 
     }
 
+    void Board::undoNormalMove(const Move &move) {
+
+        uint64_t  dest=move.getDestination();
+        uint64_t  org=move.getOrigin();
+        removePieceAt(dest,move.getMoved());
+        if(move.getTaken()!=PieceType::None){
+            setPieceAt(dest,move.getTaken());
+        }
+        setPieceAt(move.getOrigin(), move.getMoved());
+    }
+
+    void Board::undoPromotion(const BitEngine::Move &move) {
+        removePieceAt(move.getDestination(),move.getPromotion());
+        if(move.getTaken()!=PieceType::None)
+            setPieceAt(move.getDestination(),move.getTaken());
+        setPieceAt(move.getOrigin(),move.getMoved());
+    }
+
+    void Board::undoEnPassant(const BitEngine::Move &move) {
+        uint64_t  dest=move.getDestination();
+        uint64_t  org=move.getOrigin();
+        removePieceAt(dest,move.getMoved());
+
+        if (dest == org << 9 || dest == org >> 7) {
+            setPieceAt(org << 1, move.getTaken());
+        } else {
+            setPieceAt(org >> 1, move.getTaken());
+        }
+
+        setPieceAt(org,move.getMoved());
+    }
+
+    void Board::undoLastMove() {
+        Move last_move = gamestate.getLastMove();
+        MoveType type = last_move.getType();
+        if (type == MoveType::Normal || type == MoveType::DoublePawnPush) {
+            undoNormalMove(last_move);
+        } else if (type == MoveType::EnPassant) {
+            undoEnPassant(last_move);
+        }
+        else if(type==MoveType::Promote){
+            undoPromotion(last_move);
+        }
+        /*else if (type == MoveType::KingSideCastle) {
+            undoKingSideCastle(last_move);
+        } else if (type == MoveType::QueenSideCastle) {
+            undoQueenSideCastle(last_move);
+        }*/
+
+        gamestate = history.top();
+        history.pop();
+    }
+
 
     void Board::loadFen(const std::string &fen) {
 

@@ -205,6 +205,7 @@ namespace BitEngine {
 
     std::vector<Move> MoveGen::getAllMoves() {
         std::vector<Move> to_return;
+        to_return.reserve(300);
         Color turn = board.getTurn();
 
         uint64_t black = board.getBlackPieces();
@@ -219,6 +220,8 @@ namespace BitEngine {
         addAllBishopMoves(white, black, color, to_return);
         addAllQueenMoves(white,black,color,to_return);
 
+
+        
         return to_return;
     }
 
