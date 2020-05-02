@@ -36,8 +36,16 @@ void testBitBoards() {
 
     BitEngine::Board bt;
     BitEngine::Tables::initializeAttackTables();
+    for (int i = 0; i <64; i++) {
+        uint64_t  attacks=0;
+
+
+        for(int k=0;k<8;k++)
+        attacks|= BitEngine::Tables::AttackTables[i][k];
+        bt.print(attacks);
+
+    }
     BitEngine::MoveGen movegen(bt);
-    cout<<bt.prt()<<endl;
     movegen.getAllMoves();
 
 

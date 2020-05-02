@@ -48,10 +48,13 @@ namespace BitEngine {
 
         enum Direction{
             North,
+            NorthEast,
             East,
+            SouthEast,
             South,
+            SouthWest,
             West,
-
+            NorthWest
         };
 
         extern uint64_t AttackTables[64][8];
