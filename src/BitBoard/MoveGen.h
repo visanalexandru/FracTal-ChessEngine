@@ -25,13 +25,20 @@ namespace BitEngine {
         //functions that get the attack bitboards
         //pawn attacks need the attacking color
         //passing a position=0 is undefined !!!
-        uint64_t getPawnAttacks(uint64_t position, uint64_t same_side,Color color);
+        uint64_t getPawnAttacks(uint64_t position, uint64_t same_side, Color color);
 
         uint64_t getKingAttacks(uint64_t position, uint64_t same_side);
 
-        uint64_t getKnightAttacks(uint64_t position,uint64_t same_side);
+        uint64_t getKnightAttacks(uint64_t position, uint64_t same_side);
 
-        uint64_t getRookAttacks(uint64_t position,uint64_t same_side,uint64_t all);
+        //a and b require forward bit scan,c and d require reverse bit scan
+        uint64_t getDiagonalAttacks(uint64_t position, uint64_t same_side, uint64_t all, Tables::Direction a,
+                                    Tables::Direction b, Tables::Direction c, Tables::Direction d);
+
+        uint64_t getRookAttacks(uint64_t position, uint64_t same_side, uint64_t all);
+
+
+        uint64_t getBishopAttacks(uint64_t position, uint64_t same_side, uint64_t all);
 
 
         //Adds all the pawn moves for white
@@ -43,7 +50,7 @@ namespace BitEngine {
         //Adds all pawn moves
         void addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
-        //adds all attacks for not-pawn piece
+        //adds all attacks for non-pawn piece
         void addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side, PieceType piece_type,
                            std::vector<Move> &moves);
 
@@ -52,7 +59,9 @@ namespace BitEngine {
 
         void addAllKnightMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
-        void addAllRookMoves(uint64_t white_pieces,uint64_t black_pieces,Color color,std::vector<Move>&moves);
+        void addAllRookMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+
+        void addAllBishopMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
 
     public:
