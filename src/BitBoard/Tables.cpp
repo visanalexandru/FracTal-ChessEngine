@@ -5,12 +5,6 @@ namespace BitEngine {
     namespace Tables {
         uint64_t AttackTables[64][8];
 
-        uint64_t getRay(uint64_t position, Direction direction) {
-            int index = bitScanForward(position) - 1;
-            return AttackTables[index][direction];
-
-        }
-
         void initializeAttackTables() {
             //NORTH
             for (int i = 55; i >= 0; i--) {

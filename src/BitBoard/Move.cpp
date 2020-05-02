@@ -44,7 +44,7 @@ namespace BitEngine {
 
     std::string Move::toString() const {
         std::string result;
-        int orgindex=bitScanForward(origin)-1,destindex=bitScanForward(destination)-1;
+        int orgindex=bitScanForward(origin),destindex=bitScanForward(destination);
 
         int orgy=orgindex/8;
         int orgx=(7-orgindex%8);

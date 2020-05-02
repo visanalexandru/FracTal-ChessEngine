@@ -10,9 +10,9 @@ namespace BitEngine{
         return lsb;
     }
     int bitScanForward(uint64_t x){
-        return __builtin_ffsll(x);
+        return __builtin_ffsll(x)-1;
     }
     int bitScanReverse(uint64_t x){
-        return __builtin_clzll(x);
+        return 63-__builtin_clzll(x);
     }
 }

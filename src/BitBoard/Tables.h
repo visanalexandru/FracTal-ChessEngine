@@ -55,7 +55,6 @@ namespace BitEngine {
         };
 
         extern uint64_t AttackTables[64][8];
-        uint64_t getRay(uint64_t position,Direction direction);
         void initializeAttackTables();
     }
 }

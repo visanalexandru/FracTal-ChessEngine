@@ -82,7 +82,7 @@ namespace BitEngine {
 
     uint64_t MoveGen::getRookAttacks(uint64_t position, uint64_t same_side, uint64_t all) {
 
-        int index = bitScanForward(position) - 1, square;
+        int index = bitScanForward(position), square;
 
         uint64_t up = Tables::AttackTables[index][Tables::North];
         uint64_t down = Tables::AttackTables[index][Tables::South];
@@ -95,21 +95,21 @@ namespace BitEngine {
         uint64_t blockerDown = down & all;
 
         if (blockerUp) {
-            square = bitScanForward(blockerUp) - 1;
+            square = bitScanForward(blockerUp);
             up ^= Tables::AttackTables[square][Tables::North];
         }
 
         if (blockerLeft) {
-            square = bitScanForward(blockerLeft) - 1;
+            square = bitScanForward(blockerLeft);
             left ^= Tables::AttackTables[square][Tables::West];
         }
         if (blockerRight) {
-            square = 63 - bitScanReverse(blockerRight);
+            square =bitScanReverse(blockerRight);
             right ^= Tables::AttackTables[square][Tables::East];
         }
 
         if (blockerDown) {
-            square = 63 - bitScanReverse(blockerDown);
+            square =bitScanReverse(blockerDown);
             down ^= Tables::AttackTables[square][Tables::South];
         }
 
