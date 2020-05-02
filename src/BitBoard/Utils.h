@@ -8,6 +8,7 @@ namespace BitEngine{
         uint64_t getLsb(uint64_t to_get);
         uint64_t popLsb(uint64_t&to_pop);
         int bitScanForward(uint64_t x);
+        int bitScanReverse(uint64_t x);
 }
 
 

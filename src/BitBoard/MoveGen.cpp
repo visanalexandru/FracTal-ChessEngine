@@ -46,7 +46,7 @@ namespace BitEngine {
         moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), PieceType::None));
     }
 
-    uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side,Color color) {
+    uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side, Color color) {
         uint64_t left_attack, right_attack, attacks;
         if (color == White) {
             right_attack = (position & Tables::ClearFile[7]) << 7;
@@ -55,7 +55,7 @@ namespace BitEngine {
             right_attack = (position & Tables::ClearFile[0]) >> 7;
             left_attack = (position & Tables::ClearFile[7]) >> 9;
         }
-        return (left_attack|right_attack)&(~same_side);
+        return (left_attack | right_attack) & (~same_side);
     }
 
     uint64_t MoveGen::getKingAttacks(uint64_t position, uint64_t same_side) {
@@ -80,6 +80,43 @@ namespace BitEngine {
         return knight_valid & (~same_side);
     }
 
+    uint64_t MoveGen::getRookAttacks(uint64_t position, uint64_t same_side, uint64_t all) {
+
+        int index = bitScanForward(position) - 1, square;
+
+        uint64_t up = Tables::AttackTables[index][Tables::North];
+        uint64_t down = Tables::AttackTables[index][Tables::South];
+        uint64_t left = Tables::AttackTables[index][Tables::West];
+        uint64_t right = Tables::AttackTables[index][Tables::East];
+
+        uint64_t blockerUp = up & all;
+        uint64_t blockerLeft = left & all;
+        uint64_t blockerRight = right & all;
+        uint64_t blockerDown = down & all;
+
+        if (blockerUp) {
+            square = bitScanForward(blockerUp) - 1;
+            up ^= Tables::AttackTables[square][Tables::North];
+        }
+
+        if (blockerLeft) {
+            square = bitScanForward(blockerLeft) - 1;
+            left ^= Tables::AttackTables[square][Tables::West];
+        }
+        if (blockerRight) {
+            square = 63 - bitScanReverse(blockerRight);
+            right ^= Tables::AttackTables[square][Tables::East];
+        }
+
+        if (blockerDown) {
+            square = 63 - bitScanReverse(blockerDown);
+            down ^= Tables::AttackTables[square][Tables::South];
+        }
+
+
+        uint64_t attacks = (up ^ left ^ right ^ down) & (~same_side);
+        return attacks;
+    }
 
     void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
         uint64_t white_pawns = board.bitboards[PieceType::WPawn];
@@ -100,7 +137,7 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, WPawn, moves);
 
-            uint64_t attacks = getPawnAttacks(square, white_pieces,White);
+            uint64_t attacks = getPawnAttacks(square, white_pieces, White);
 
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
@@ -137,7 +174,7 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, BPawn, moves);
 
-            uint64_t attacks = getPawnAttacks(square, black_pieces,Black);
+            uint64_t attacks = getPawnAttacks(square, black_pieces, Black);
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
                 if (attack & white_pieces) {
@@ -168,6 +205,7 @@ namespace BitEngine {
         addAllKingMoves(white, black, color, to_return);
         addAllPawnMoves(white, black, color, to_return);
         addAllKnightMoves(white, black, color, to_return);
+        addAllRookMoves(white, black, color, to_return);
 
         return to_return;
     }
@@ -232,5 +270,29 @@ namespace BitEngine {
             addAllAttacks(knight_square, knight_attacks, opposite_side, knight_type, moves);
         }
 
+    }
+
+    void MoveGen::addAllRookMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
+                                  std::vector<Move> &moves) {
+
+        uint64_t rook_squares, opposite_side, same_side;
+        PieceType rook_type;
+
+        if (color == White) {
+            rook_type = WRook;
+            opposite_side = black_pieces;
+            same_side = white_pieces;
+        } else {
+            opposite_side = white_pieces;
+            rook_type = BRook;
+            same_side = black_pieces;
+        }
+
+        rook_squares = board.bitboards[rook_type];
+        while (rook_squares) {
+            uint64_t rook_square = popLsb(rook_squares);
+            uint64_t rook_attacks = getRookAttacks(rook_square, same_side, white_pieces | black_pieces);
+            addAllAttacks(rook_square, rook_attacks, opposite_side, rook_type, moves);
+        }
     }
 }

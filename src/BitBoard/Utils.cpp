@@ -12,4 +12,7 @@ namespace BitEngine{
     int bitScanForward(uint64_t x){
         return __builtin_ffsll(x);
     }
+    int bitScanReverse(uint64_t x){
+        return __builtin_clzll(x);
+    }
 }

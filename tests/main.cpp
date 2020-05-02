@@ -36,16 +36,9 @@ void testBitBoards() {
 
     BitEngine::Board bt;
     BitEngine::Tables::initializeAttackTables();
-    for (int i = 63; i >= 0; i--) {
-        uint64_t attacks = BitEngine::Tables::AttackTables[i][BitEngine::Tables::West] |
-                           BitEngine::Tables::AttackTables[i][BitEngine::Tables::East]|
-                           BitEngine::Tables::AttackTables[i][BitEngine::Tables::North] |
-                           BitEngine::Tables::AttackTables[i][BitEngine::Tables::South];
-        bt.print(attacks);
-
-    }
-
     BitEngine::MoveGen movegen(bt);
+    cout<<bt.prt()<<endl;
+    movegen.getAllMoves();
 
 
 }

@@ -24,11 +24,14 @@ namespace BitEngine {
 
         //functions that get the attack bitboards
         //pawn attacks need the attacking color
+        //passing a position=0 is undefined !!!
         uint64_t getPawnAttacks(uint64_t position, uint64_t same_side,Color color);
 
         uint64_t getKingAttacks(uint64_t position, uint64_t same_side);
 
         uint64_t getKnightAttacks(uint64_t position,uint64_t same_side);
+
+        uint64_t getRookAttacks(uint64_t position,uint64_t same_side,uint64_t all);
 
 
         //Adds all the pawn moves for white
@@ -48,6 +51,8 @@ namespace BitEngine {
         void addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
         void addAllKnightMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+
+        void addAllRookMoves(uint64_t white_pieces,uint64_t black_pieces,Color color,std::vector<Move>&moves);
 
 
     public:
