@@ -217,6 +217,7 @@ namespace BitEngine {
         addAllKnightMoves(white, black, color, to_return);
         addAllRookMoves(white, black, color, to_return);
         addAllBishopMoves(white, black, color, to_return);
+        addAllQueenMoves(white,black,color,to_return);
 
         return to_return;
     }
@@ -314,7 +315,7 @@ namespace BitEngine {
         PieceType bishop_type;
 
         if (color == White) {
-            bishop_type= WBishop;
+            bishop_type = WBishop;
             opposite_side = black_pieces;
             same_side = white_pieces;
         } else {
@@ -327,8 +328,32 @@ namespace BitEngine {
         while (bishop_squares) {
             uint64_t bishop_square = popLsb(bishop_squares);
             uint64_t bishop_attacks = getBishopAttacks(bishop_square, same_side, white_pieces | black_pieces);
-            board.print(bishop_attacks);
             addAllAttacks(bishop_square, bishop_attacks, opposite_side, bishop_type, moves);
+        }
+    }
+
+    void MoveGen::addAllQueenMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
+                                   std::vector<Move> &moves) {
+
+        uint64_t queen_squares, opposite_side, same_side;
+        PieceType queen_type;
+
+        if (color == White) {
+            queen_type = WQueen;
+            opposite_side = black_pieces;
+            same_side = white_pieces;
+        } else {
+            opposite_side = white_pieces;
+            queen_type = BQueen;
+            same_side = black_pieces;
+        }
+
+        queen_squares = board.bitboards[queen_type];
+        while (queen_squares) {
+            uint64_t queen_square = popLsb(queen_squares);
+            uint64_t queen_attacks = getBishopAttacks(queen_square, same_side, white_pieces | black_pieces) |
+                                     getRookAttacks(queen_square, same_side, white_pieces | black_pieces);
+            addAllAttacks(queen_square,queen_attacks, opposite_side, queen_type, moves);
         }
     }
 }

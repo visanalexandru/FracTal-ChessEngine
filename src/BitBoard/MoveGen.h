@@ -63,6 +63,8 @@ namespace BitEngine {
 
         void addAllBishopMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
+        void addAllQueenMoves(uint64_t white_pieces,uint64_t black_pieces,Color color,std::vector<Move>&moves);
+
 
     public:
         MoveGen(Board &internal_board);
