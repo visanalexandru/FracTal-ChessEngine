@@ -40,6 +40,9 @@ namespace BitEngine {
         to_return += '\n';
         return to_return;
     }
+    uint64_t Board::getBitboard(Piece type) {
+        return bitboards[type];
+    }
 
 
     Piece Board::getPieceAt(uint64_t position) const {

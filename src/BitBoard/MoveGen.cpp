@@ -47,7 +47,7 @@ namespace BitEngine {
     }
 
     uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side, Color color) {
-        uint64_t left_attack, right_attack, attacks;
+        uint64_t left_attack, right_attack;
         if (color == White) {
             right_attack = (position & Tables::ClearFile[7]) << 7;
             left_attack = (position & Tables::ClearFile[0]) << 9;
@@ -159,35 +159,27 @@ namespace BitEngine {
         return result;
     }
 
-    uint64_t MoveGen::getAllAttacks(uint64_t white_pieces, uint64_t black_pieces,
-                                    BitEngine::Color color) {
+    uint64_t MoveGen::getAllAttacks(Color color) {
 
         uint64_t pawn_attacks, knight_attacks, king_attacks, bishop_attacks, rook_attacks, queen_attacks;
-        uint64_t all = white_pieces | black_pieces;
+        uint64_t same_side = board.getPieces(color);
+        uint64_t all = board.getAll();
 
-        if (color == White) {
-            pawn_attacks = getPawnAttacks(board.bitboards[WPawn], white_pieces, White);
-            knight_attacks = getKnightAttacks(board.bitboards[WKnight], white_pieces);
-            king_attacks = getKingAttacks(board.bitboards[WKing], white_pieces);
-            bishop_attacks = getAllBishopAttacks(board.bitboards[WBishop], white_pieces, all);
-            rook_attacks = getAllRookAttacks(board.bitboards[WRook], white_pieces, all);
-            queen_attacks = getAllQueenAttacks(board.bitboards[WQueen], white_pieces, all);
-        } else {
-            pawn_attacks = getPawnAttacks(board.bitboards[BPawn], black_pieces, Black);
-            knight_attacks = getKnightAttacks(board.bitboards[BKnight], black_pieces);
-            king_attacks = getKingAttacks(board.bitboards[BKing], black_pieces);
-            bishop_attacks = getAllBishopAttacks(board.bitboards[BBishop], black_pieces, all);
-            rook_attacks = getAllRookAttacks(board.bitboards[BRook], black_pieces, all);
-            queen_attacks = getAllQueenAttacks(board.bitboards[BQueen], black_pieces, all);
 
-        }
+        pawn_attacks = getPawnAttacks(board.getBitboard(getPiece(PieceType::Pawn, color)), same_side, color);
+        knight_attacks = getKnightAttacks(board.getBitboard(getPiece(PieceType::Knight, color)), same_side);
+        king_attacks = getKingAttacks(board.getBitboard(getPiece(PieceType::King, color)), same_side);
+        bishop_attacks = getAllBishopAttacks(board.getBitboard(getPiece(PieceType::Bishop, color)), same_side, all);
+        rook_attacks = getAllRookAttacks(board.getBitboard(getPiece(PieceType::Rook, color)), same_side, all);
+        queen_attacks = getAllQueenAttacks(board.getBitboard(getPiece(PieceType::Queen, color)), same_side, all);
+
         return pawn_attacks | knight_attacks | king_attacks | bishop_attacks | rook_attacks | queen_attacks;
 
     }
 
-    void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
-        uint64_t white_pawns = board.bitboards[Piece::WPawn];
-        uint64_t all = white_pieces | black_pieces;
+    void MoveGen::addWhitePawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves) {
+        uint64_t white_pawns = board.getBitboard(Piece::WPawn);
+        uint64_t all = same_side | opposite_side;
         uint64_t square, single_push, double_push;
         while (white_pawns) {
             square = popLsb(white_pawns);
@@ -204,11 +196,11 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, WPawn, moves);
 
-            uint64_t attacks = getPawnAttacks(square, white_pieces, White);
+            uint64_t attacks = getPawnAttacks(square, same_side, White);
 
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
-                if (attack & black_pieces) {
+                if (attack &opposite_side) {
                     if ((attack & Tables::MaskRank[7]) == 0)
                         addCapture(square, attack, WPawn, moves);
                     else addPromotions(square, attack, White, board.getPieceAt(attack), moves);
@@ -224,9 +216,9 @@ namespace BitEngine {
         }
     }
 
-    void MoveGen::addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
-        uint64_t black_pawns = board.bitboards[Piece::BPawn];
-        uint64_t all = white_pieces | black_pieces;
+    void MoveGen::addBlackPawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves) {
+        uint64_t black_pawns = board.getBitboard(Piece::BPawn);
+        uint64_t all = same_side| opposite_side;
         uint64_t square, single_push, double_push;
         while (black_pawns) {
             square = popLsb(black_pawns);
@@ -241,10 +233,10 @@ namespace BitEngine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, BPawn, moves);
 
-            uint64_t attacks = getPawnAttacks(square, black_pieces, Black);
+            uint64_t attacks = getPawnAttacks(square, same_side, Black);
             while (attacks) {
                 uint64_t attack = popLsb(attacks);
-                if (attack & white_pieces) {
+                if (attack & opposite_side) {
                     if ((attack & Tables::MaskRank[0]) == 0)
                         addCapture(square, attack, BPawn, moves);
                     else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
@@ -263,33 +255,24 @@ namespace BitEngine {
     std::vector<Move> MoveGen::getAllMoves() {
         std::vector<Move> to_return;
         to_return.reserve(300);
-        Color turn = board.getTurn();
-
-        uint64_t black = board.getPieces(Black);
-        uint64_t white = board.getPieces(White);
-
         Color color = board.getTurn();
+        Color opposite_color=getOpposite(color);
+        uint64_t same_side=board.getPieces(color);
+        uint64_t opposite_side=board.getPieces(opposite_color);
+        Piece king=getPiece(PieceType::King,color);
 
-        Piece king;
-        if (color == White)
-            king = WKing;
-        else king = BKing;
-
-        addAllKingMoves(white, black, color, to_return);
-        addAllPawnMoves(white, black, color, to_return);
-        addAllKnightMoves(white, black, color, to_return);
-        addAllRookMoves(white, black, color, to_return);
-        addAllBishopMoves(white, black, color, to_return);
-        addAllQueenMoves(white, black, color, to_return);
+        addAllKingMoves(same_side, opposite_side, color, to_return);
+        addAllPawnMoves(same_side, opposite_side, color, to_return);
+        addAllKnightMoves(same_side, opposite_side, color, to_return);
+        addAllRookMoves(same_side, opposite_side, color, to_return);
+        addAllBishopMoves(same_side, opposite_side, color, to_return);
+        addAllQueenMoves(same_side, opposite_side, color, to_return);
 
 
         for (int i = 0; i < to_return.size(); i++) {
             board.makeMove(to_return[i]);
-            uint64_t kingpos = board.bitboards[king];
-            black = board.getPieces(Black);
-            white = board.getPieces(White);
-            uint64_t attacks = getAllAttacks(white, black, getOpposite(color));
-
+            uint64_t kingpos = board.getBitboard(king);
+            uint64_t attacks = getAllAttacks(getOpposite(color));
             if (attacks & kingpos) {
                 to_return.erase(to_return.begin() + i);
                 i--;
@@ -300,11 +283,11 @@ namespace BitEngine {
     }
 
     void
-    MoveGen::addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves) {
+    MoveGen::addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         if (color == White)
-            addWhitePawnsMoves(white_pieces, black_pieces, moves);
+            addWhitePawnsMoves(same_side, opposite_side, moves);
         else
-            addBlackPawnsMoves(white_pieces, black_pieces, moves);
+            addBlackPawnsMoves(same_side, opposite_side, moves);
     }
 
     void MoveGen::addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side,
@@ -319,116 +302,49 @@ namespace BitEngine {
         }
     }
 
-    void MoveGen::addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color,
-                                  std::vector<Move> &moves) {
-        uint64_t king_square, opposite_side, same_side;
-        Piece king_type;
-
-        if (color == White) {
-            king_type = WKing;
-            opposite_side = black_pieces;
-            same_side = white_pieces;
-        } else {
-            opposite_side = white_pieces;
-            same_side = black_pieces;
-            king_type = BKing;
-        }
-        king_square = board.bitboards[king_type];
+    void MoveGen::addAllKingMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece king_type = getPiece(PieceType::King, color);
+        uint64_t king_square = board.getBitboard(king_type);
         uint64_t king_attacks = getKingAttacks(king_square, same_side);
         addAllAttacks(king_square, king_attacks, opposite_side, king_type, moves);
     }
 
-    void MoveGen::addAllKnightMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
-                                    std::vector<Move> &moves) {
-        uint64_t knight_squares, opposite_side, same_side;
-        Piece knight_type;
-
-        if (color == White) {
-            knight_type = WKnight;
-            opposite_side = black_pieces;
-            same_side = white_pieces;
-        } else {
-            opposite_side = white_pieces;
-            knight_type = BKnight;
-            same_side = black_pieces;
-        }
-        knight_squares = board.bitboards[knight_type];
+    void MoveGen::addAllKnightMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece knight_type = getPiece(PieceType::Knight, color);
+        uint64_t knight_squares = board.getBitboard(knight_type);
         while (knight_squares) {
             uint64_t knight_square = popLsb(knight_squares);
             uint64_t knight_attacks = getKnightAttacks(knight_square, same_side);
             addAllAttacks(knight_square, knight_attacks, opposite_side, knight_type, moves);
         }
-
     }
 
-    void MoveGen::addAllRookMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
-                                  std::vector<Move> &moves) {
-
-        uint64_t rook_squares, opposite_side, same_side;
-        Piece rook_type;
-
-        if (color == White) {
-            rook_type = WRook;
-            opposite_side = black_pieces;
-            same_side = white_pieces;
-        } else {
-            opposite_side = white_pieces;
-            rook_type = BRook;
-            same_side = black_pieces;
-        }
-
-        rook_squares = board.bitboards[rook_type];
+    void MoveGen::addAllRookMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece rook_type = getPiece(PieceType::Rook, color);
+        uint64_t rook_squares = board.getBitboard(rook_type);
         while (rook_squares) {
             uint64_t rook_square = popLsb(rook_squares);
-            uint64_t rook_attacks = getRookAttacks(rook_square, same_side, white_pieces | black_pieces);
+            uint64_t rook_attacks = getRookAttacks(rook_square, same_side, same_side | opposite_side);
             addAllAttacks(rook_square, rook_attacks, opposite_side, rook_type, moves);
         }
     }
 
-    void MoveGen::addAllBishopMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
-                                    std::vector<Move> &moves) {
-
-        uint64_t bishop_squares, opposite_side, same_side;
-        Piece bishop_type;
-
-        if (color == White) {
-            bishop_type = WBishop;
-            opposite_side = black_pieces;
-            same_side = white_pieces;
-        } else {
-            opposite_side = white_pieces;
-            bishop_type = BBishop;
-            same_side = black_pieces;
-        }
-
-        bishop_squares = board.bitboards[bishop_type];
+    void MoveGen::addAllBishopMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece bishop_type = getPiece(PieceType::Bishop, color);
+        uint64_t bishop_squares = board.getBitboard(bishop_type);
         while (bishop_squares) {
             uint64_t bishop_square = popLsb(bishop_squares);
-            uint64_t bishop_attacks = getBishopAttacks(bishop_square, same_side, white_pieces | black_pieces);
+            uint64_t bishop_attacks = getBishopAttacks(bishop_square, same_side, same_side | opposite_side);
             addAllAttacks(bishop_square, bishop_attacks, opposite_side, bishop_type, moves);
         }
     }
 
-    void MoveGen::addAllQueenMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
-                                   std::vector<Move> &moves) {
-
-        uint64_t queen_squares, opposite_side, same_side;
-        Piece queen_type;
-
-        if (color == White) {
-            queen_type = WQueen;
-            opposite_side = black_pieces;
-            same_side = white_pieces;
-        } else {
-            opposite_side = white_pieces;
-            queen_type = BQueen;
-            same_side = black_pieces;
-        }
-
-        queen_squares = board.bitboards[queen_type];
+    void MoveGen::addAllQueenMoves(uint64_t same_side, uint64_t opposite_side,Color color,std::vector<Move> &moves) {
+        Piece queen_type=getPiece(PieceType::Queen,color);
+        uint64_t queen_squares = board.bitboards[queen_type];
         while (queen_squares) {
             uint64_t queen_square = popLsb(queen_squares);
-            uint64_t queen_attacks = getQueenAttacks(queen_square, same_side, white_pieces | black_pieces);
+            uint64_t queen_attacks = getQueenAttacks(queen_square, same_side, same_side|opposite_side);
             addAllAttacks(queen_square, queen_attacks, opposite_side, queen_type, moves);
         }
     }

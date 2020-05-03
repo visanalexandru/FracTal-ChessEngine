@@ -51,34 +51,34 @@ namespace BitEngine {
 
         uint64_t getAllQueenAttacks(uint64_t positions,uint64_t same_side,uint64_t all);
 
-        uint64_t getAllAttacks(uint64_t white_pieces, uint64_t black_pieces, Color color);
+        uint64_t getAllAttacks(Color color);
 
         bool squareUnderAttack(uint64_t square,uint64_t white_pieces,uint64_t black_pieces,Color turn);
 
 
         //Adds all the pawn moves for white
-        void addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves);
+        void addWhitePawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);
 
         //Adds all the pawn moves for black
-        void addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves);
+        void addBlackPawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);
 
         //Adds all pawn moves
-        void addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+        void addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
         //adds all attacks for non-pawn piece
         void addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Piece piece_type,
                            std::vector<Move> &moves);
 
 
-        void addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+        void addAllKingMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
-        void addAllKnightMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+        void addAllKnightMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
-        void addAllRookMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+        void addAllRookMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
-        void addAllBishopMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+        void addAllBishopMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
-        void addAllQueenMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
+        void addAllQueenMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
 
     public:

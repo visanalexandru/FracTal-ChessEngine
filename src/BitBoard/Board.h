@@ -32,6 +32,7 @@ namespace BitEngine {
         GameState gamestate;
     public:
         Board();
+        uint64_t getBitboard(Piece type);
         uint64_t  getPieces(Color color) const;
         uint64_t getAll() const;
         Color getTurn() const;
