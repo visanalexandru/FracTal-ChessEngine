@@ -1,44 +1,87 @@
-#ifndef MOVEGEN_H
-#define MOVEGEN_H
+
+#ifndef BITENGINE_MOVEGEN_H
+#define BITENGINE_MOVEGEN_H
 
 #include "Board.h"
+#include "Utils.h"
+#include <vector>
 
-namespace Engine {
+namespace BitEngine {
     class MoveGen {
     private:
         Board &board;
 
-        //These do not check if the move is legal,just provide
-        //a way to easily create moves assuming the move is legal
-        Move createNormal(Position a, Position b) const;
+        //the capture move queries the bitboards to see what piece is at dest
+        void addCapture(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves);
 
-        Move createPromotion(Position a, Position b, uint8_t promote_to) const;
+        //doesn't query the bitboard
+        void addQuiet(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves);
 
-        Move createDoublePawnPush(Position a, Position b) const;
+        void addPromotions(uint64_t origin, uint64_t dest, Color color, Piece taken, std::vector<Move> &moves);
 
-        Move createEnPassant(Position a, Position b) const;
+        void addEnPassant(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
-        Move createQueenSideCastle() const;
+        void addDoublePawnPushMove(uint64_t origin, uint64_t dest, Piece pawn_type, std::vector<Move> &moves);
 
-        Move createKingSideCastle() const;
 
-        void generatePawnMoves(Position a, std::vector<Move> &moves) const;
+        //functions that get the attack bitboards from a given position
+        //pawn attacks need the attacking color
+        //passing a position=0 is undefined !!!
+        uint64_t getPawnAttacks(uint64_t position, uint64_t same_side, Color color);
 
-        void generateKingMoves(Position a, std::vector<Move> &moves) const;
+        uint64_t getKingAttacks(uint64_t position, uint64_t same_side);
 
-        void generateKnightMoves(Position a, std::vector<Move> &moves) const;
+        uint64_t getKnightAttacks(uint64_t position, uint64_t same_side);
 
-        void generateBishopMoves(Position a, std::vector<Move> &moves) const;
+        //a and b require forward bit scan,c and d require reverse bit scan
+        uint64_t getDiagonalAttacks(uint64_t position, uint64_t same_side, uint64_t all, Tables::Direction a,
+                                    Tables::Direction b, Tables::Direction c, Tables::Direction d);
 
-        void generateRookMoves(Position a, std::vector<Move> &moves) const;
+        //rook and bishop attacks require all the pieces for blocking
+        uint64_t getRookAttacks(uint64_t position, uint64_t same_side, uint64_t all);
 
-        void generateQueenMoves(Position a, std::vector<Move> &moves) const;
+
+        uint64_t getBishopAttacks(uint64_t position, uint64_t same_side, uint64_t all);
+
+        uint64_t getQueenAttacks(uint64_t position, uint64_t same_side, uint64_t all);
+
+        uint64_t getAllRookAttacks(uint64_t positions, uint64_t same_side, uint64_t all);
+
+        uint64_t getAllBishopAttacks(uint64_t positions, uint64_t same_side, uint64_t all);
+
+        uint64_t getAllQueenAttacks(uint64_t positions,uint64_t same_side,uint64_t all);
+
+        bool squareUnderAttack(uint64_t square,Color color);
+
+        //Adds all the pawn moves for white
+        void addWhitePawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);
+
+        //Adds all the pawn moves for black
+        void addBlackPawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);
+
+        //Adds all pawn moves
+        void addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        //adds all attacks for non-pawn piece
+        void addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Piece piece_type,
+                           std::vector<Move> &moves);
+
+
+        void addAllKingMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllKnightMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllRookMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllBishopMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllQueenMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
 
     public:
         MoveGen(Board &internal_board);
 
-        std::vector<Move> getAllMoves() const;
+        std::vector<Move> getAllMoves();
 
     };
 }

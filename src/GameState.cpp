@@ -1,7 +1,7 @@
 #include "GameState.h"
 
 
-namespace Engine {
+namespace BitEngine {
 
     GameState::GameState() : state_flags(0) {
 

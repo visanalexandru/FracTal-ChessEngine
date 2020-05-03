@@ -4,8 +4,6 @@
 using namespace std;
 
 #include"Protocol.h"
-#include"Board.h"
-#include "Position.h"
 
 
 using namespace Engine;

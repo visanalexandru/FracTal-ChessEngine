@@ -1,41 +1,46 @@
-#ifndef MOVE_H
-#define MOVE_H
 
-#include "Position.h"
+#ifndef BITENGINE_MOVE_H
+#define BITENGINE_MOVE_H
+
+#include <cstdint>
+#include <string>
+#include <cmath>
+#include "Utils.h"
 #include "Types.h"
-#include<string>
-#include<cstdint>
-
-namespace Engine {
+namespace BitEngine{
 
 
     class Move {
     private:
-        Position origin;
-        Position destination;
+        uint64_t origin;
+        uint64_t destination;
         MoveType move_type;
-        uint8_t taken;
-        uint8_t promote_to;
-        uint8_t moved;
+        Piece taken;
+        Piece promote_to;
+        Piece moved;
     public:
-        Move(MoveType type, Position start, Position end, uint8_t piece_moved, uint8_t piece_taken, uint8_t promotion);
+        Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion);
 
         Move();
 
-        Position getOrigin() const;
+        uint64_t getOrigin() const;
 
-        Position getDestination() const;
+        uint64_t getDestination() const;
 
         MoveType getType() const;
 
-        uint8_t getTaken() const;
+        Piece getTaken() const;
 
-        uint8_t getPromotion() const;
+        Piece getPromotion() const;
 
-        uint8_t getMoved() const;
+        Piece getMoved() const;
 
         std::string toString() const;
     };
-};
+
+
+
+}
+
 
 #endif

@@ -1,10 +1,7 @@
 #include "Move.h"
+namespace BitEngine {
 
-
-namespace Engine {
-
-    Move::Move(MoveType type, Position start, Position end, uint8_t piece_moved, uint8_t piece_taken, uint8_t promotion)
-            :
+    Move::Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion):
             move_type(type),
             origin(start),
             destination(end),
@@ -16,17 +13,16 @@ namespace Engine {
     }
 
     Move::Move() : move_type(MoveType::Null),
-                   taken(makePiece(Piece::None, false)) {
-
+                   taken(Piece::None) {
 
     }
 
 
-    Position Move::getOrigin() const {
+    uint64_t Move::getOrigin() const {
         return origin;
     }
 
-    Position Move::getDestination() const {
+    uint64_t Move::getDestination() const {
         return destination;
     }
 
@@ -34,28 +30,36 @@ namespace Engine {
         return move_type;
     }
 
-    uint8_t Move::getMoved() const {
+    Piece Move::getMoved() const {
         return moved;
     }
 
-    uint8_t Move::getTaken() const {
+    Piece Move::getTaken() const {
         return taken;
     }
 
-    uint8_t Move::getPromotion() const {
+    Piece Move::getPromotion() const {
         return promote_to;
     }
 
     std::string Move::toString() const {
         std::string result;
-        result += (char) (origin.x + 'a');
-        result += (char) (origin.y + '1');
+        int orgindex=bitScanForward(origin),destindex=bitScanForward(destination);
 
-        result += (char) (destination.x + 'a');
-        result += (char) (destination.y + '1');
+        int orgy=orgindex/8;
+        int orgx=(7-orgindex%8);
 
-        if (move_type == MoveType::Promote) {
-            result += tolower(getChar(promote_to));
+        int desty=destindex/8;
+        int destx=(7-destindex%8);
+
+        result += (char) (orgx + 'a');
+        result += (char) (orgy + '1');
+
+        result += (char) (destx + 'a');
+        result += (char) (desty + '1');
+
+        if (move_type ==MoveType::Promote) {
+            result += tolower(getPieceChar(promote_to));
         }
 
 

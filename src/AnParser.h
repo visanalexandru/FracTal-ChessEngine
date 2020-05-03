@@ -1,8 +1,8 @@
 #ifndef AN_PARSER_H
 #define AN_PARSER_H
 
-#include "BitBoard/Board.h"
-#include "BitBoard/MoveGen.h"
+#include "Board.h"
+#include "MoveGen.h"
 
 namespace Engine {
     namespace AnParser {

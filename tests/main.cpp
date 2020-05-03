@@ -1,9 +1,6 @@
 #include<iostream>
-#include"../src/Board.h"
+#include "../src/Board.h"
 #include "../src/MoveGen.h"
-#include "../src/BitBoard/Board.h"
-#include "../src/Types.h"
-#include "../src/BitBoard/MoveGen.h"
 #include <string.h>
 
 using namespace std;

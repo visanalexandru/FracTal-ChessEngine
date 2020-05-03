@@ -1,10 +1,10 @@
-#ifndef GAME_STATE_H
-#define GAME_STATE_H
+#ifndef BITENGINE_GAMESTATE_H
+#define BITENGINE_GAMESTATE_H
 
 #include <cstdint>
 #include "Move.h"
 
-namespace Engine {
+namespace BitEngine {
     class GameState {
 
     private:

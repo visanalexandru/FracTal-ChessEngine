@@ -1,62 +1,51 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BITENGINE_BOARD_H
+#define BITENGINE_BOARD_H
 
-#include<cstdint>
-#include<iostream>
-#include<stack>
-#include "GameState.h"
-#include "Move.h"
+
+#include <cstdint>
+#include <iostream>
+#include <stack>
+#include <sstream>
+#include "Tables.h"
 #include "Types.h"
-#include<vector>
+#include "GameState.h"
 
-namespace Engine {
-
+namespace BitEngine {
     class Board {
     private:
-        uint8_t pieces[8][8];
-        std::stack<GameState> history;
-        GameState current_game_state;
-
-        void setPieceAt(const Position &po, uint8_t piece);
-
-        void makeNormalMove(const Move &move);
-
-        void makeQueenSideCastle();
-
-        void makeKingSideCastle();
-
-        void makeEnPassant(const Move &move);
-
+        void makeNormalMove(const Move&move);
         void makePromotion(const Move &move);
+        void makeEnPassant(const Move&move);
 
-        void undoNormalMove(const Move &move);//use this for promotions also
-        void undoQueenSideCastle(const Move &move);
+        void undoNormalMove(const Move&move);
+        void undoEnPassant(const Move&move);
+        void undoPromotion(const Move&move);
 
-        void undoKingSideCastle(const Move &move);
-
-        void undoEnPassant(const Move &move);
-
-        void initBoard();
-
+        const uint64_t WRookLPosition=0;
+        const uint64_t  WRookRPosition=1LL<<7;
+        const uint64_t  WKingPosition=1LL<<3;
+        const uint64_t BRookLPosition=1LL<<63;
+        const uint64_t  BRookRPosition=1LL<<56;
+        const uint64_t  BKingPosition=1LL<<59;
+        std::stack<GameState> history;
+        uint64_t bitboards[12];
+        GameState gamestate;
     public:
-
-        //These do not check if the move is legal,just provide
-        //a way to easily create moves assuming the move is legal
         Board();
-
-        std::string print() const;
-
-        uint8_t getPieceAt(const Position &position) const;
-
-        GameState getGamestate() const;
-
-        void makeMove(const Move &move);
-
-        void undoLastMove();
-
+        uint64_t getBitboard(Piece type);
+        uint64_t  getPieces(Color color) const;
+        uint64_t getAll() const;
         Color getTurn() const;
+        std::string toString() const;
+        Piece getPieceAt(uint64_t position) const;
+        void setPieceAt(uint64_t position, Piece piece);
+        void removePieceAt(uint64_t position, Piece piece);
+        void makeMove(const Move&move);
+        void undoLastMove();
+        void loadFen(const std::string&fen);
+
+        friend class MoveGen;
     };
 }
-
 
 #endif
