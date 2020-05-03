@@ -25,7 +25,7 @@ bool perft(int depth, bool capture, bool enPassant) {
 
     for (const BitEngine::Move &move:moves) {
         board.makeMove(move);
-        perft(depth - 1, move.getTaken() != BitEngine::PieceType::None,
+        perft(depth - 1, move.getTaken() != BitEngine::Piece::None,
               move.getType() == BitEngine::MoveType::EnPassant);
         board.undoLastMove();
     }

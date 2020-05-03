@@ -12,16 +12,16 @@ namespace BitEngine {
         Board &board;
 
         //the capture move queries the bitboards to see what piece is at dest
-        void addCapture(uint64_t origin, uint64_t dest, PieceType to_move, std::vector<Move> &moves);
+        void addCapture(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves);
 
         //doesn't query the bitboard
-        void addQuiet(uint64_t origin, uint64_t dest, PieceType to_move, std::vector<Move> &moves);
+        void addQuiet(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves);
 
-        void addPromotions(uint64_t origin, uint64_t dest, Color color, PieceType taken, std::vector<Move> &moves);
+        void addPromotions(uint64_t origin, uint64_t dest, Color color, Piece taken, std::vector<Move> &moves);
 
         void addEnPassant(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
-        void addDoublePawnPushMove(uint64_t origin, uint64_t dest, PieceType pawn_type, std::vector<Move> &moves);
+        void addDoublePawnPushMove(uint64_t origin, uint64_t dest, Piece pawn_type, std::vector<Move> &moves);
 
 
         //functions that get the attack bitboards from a given position
@@ -66,7 +66,7 @@ namespace BitEngine {
         void addAllPawnMoves(uint64_t white_pieces, uint64_t black_pieces, Color color, std::vector<Move> &moves);
 
         //adds all attacks for non-pawn piece
-        void addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side, PieceType piece_type,
+        void addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Piece piece_type,
                            std::vector<Move> &moves);
 
 

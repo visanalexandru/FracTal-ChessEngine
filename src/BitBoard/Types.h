@@ -4,7 +4,7 @@
 
 #include <cstdint>
 namespace BitEngine{
-    enum PieceType{
+    enum Piece{
         WPawn,
         BPawn,
         WKnight,
@@ -19,7 +19,7 @@ namespace BitEngine{
         BKing,
         None,
     };
-    enum Piece{
+    enum PieceType{
         Pawn,
         Knight,
         Bishop,
@@ -50,7 +50,7 @@ namespace BitEngine{
         EnPassant,
         Promote,
     };
-    char getPieceChar(PieceType type);
+    char getPieceChar(Piece type);
     Color  getOpposite(Color color);
 }
 

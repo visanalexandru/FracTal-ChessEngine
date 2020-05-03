@@ -7,24 +7,16 @@ namespace BitEngine {
         loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 
-    uint64_t Board::getWhitePieces() const {
+    uint64_t Board::getPieces(Color color) const {
         uint64_t to_return = 0;
         for (int i = 0; i < 6; i++)
-            to_return |= bitboards[2 * i];
-        return to_return;
-    }
-
-
-    uint64_t Board::getBlackPieces() const {
-        uint64_t to_return = 0;
-        for (int i = 0; i < 6; i++)
-            to_return |= bitboards[2 * i + 1];
+            to_return |= bitboards[2 * i + color];
         return to_return;
     }
 
 
     uint64_t Board::getAll() const {
-        return getWhitePieces() | getBlackPieces();
+        return getPieces(White) | getPieces(Black);
     }
 
     std::string Board::toString() const {
@@ -36,7 +28,7 @@ namespace BitEngine {
             to_return += "# ";
 
             for (int k = 7; k >= 0; k--) {
-                PieceType piece = getPieceAt(1LL << (i * 8 + k));
+                Piece piece = getPieceAt(1LL << (i * 8 + k));
                 to_return += getPieceChar(piece);
                 to_return += " # ";
             }
@@ -50,20 +42,20 @@ namespace BitEngine {
     }
 
 
-    PieceType Board::getPieceAt(uint64_t position) const {
+    Piece Board::getPieceAt(uint64_t position) const {
         for (int i = 0; i < 12; i++) {
             if (bitboards[i] & position) {
-                return static_cast<PieceType >(i);
+                return static_cast<Piece >(i);
             }
         }
-        return PieceType::None;
+        return Piece::None;
     }
 
-    void Board::removePieceAt(uint64_t position, PieceType piece) {
+    void Board::removePieceAt(uint64_t position, Piece piece) {
         bitboards[piece] &= ~position;
     }
 
-    void Board::setPieceAt(uint64_t position, PieceType piece) {
+    void Board::setPieceAt(uint64_t position, Piece piece) {
         bitboards[piece] |= position;
     }
 
@@ -153,7 +145,7 @@ namespace BitEngine {
         uint64_t  dest=move.getDestination();
         uint64_t  org=move.getOrigin();
         removePieceAt(dest,move.getMoved());
-        if(move.getTaken()!=PieceType::None){
+        if(move.getTaken() != Piece::None){
             setPieceAt(dest,move.getTaken());
         }
         setPieceAt(move.getOrigin(), move.getMoved());
@@ -161,7 +153,7 @@ namespace BitEngine {
 
     void Board::undoPromotion(const BitEngine::Move &move) {
         removePieceAt(move.getDestination(),move.getPromotion());
-        if(move.getTaken()!=PieceType::None)
+        if(move.getTaken() != Piece::None)
             setPieceAt(move.getDestination(),move.getTaken());
         setPieceAt(move.getOrigin(),move.getMoved());
     }

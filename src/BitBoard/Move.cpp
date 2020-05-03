@@ -1,7 +1,7 @@
 #include "Move.h"
 namespace BitEngine {
 
-    Move::Move(MoveType type, uint64_t start, uint64_t end, PieceType piece_moved, PieceType piece_taken, PieceType promotion):
+    Move::Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion):
             move_type(type),
             origin(start),
             destination(end),
@@ -13,7 +13,7 @@ namespace BitEngine {
     }
 
     Move::Move() : move_type(MoveType::Null),
-                   taken(PieceType::None) {
+                   taken(Piece::None) {
 
     }
 
@@ -30,15 +30,15 @@ namespace BitEngine {
         return move_type;
     }
 
-    PieceType Move::getMoved() const {
+    Piece Move::getMoved() const {
         return moved;
     }
 
-    PieceType Move::getTaken() const {
+    Piece Move::getTaken() const {
         return taken;
     }
 
-    PieceType Move::getPromotion() const {
+    Piece Move::getPromotion() const {
         return promote_to;
     }
 

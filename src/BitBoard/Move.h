@@ -15,11 +15,11 @@ namespace BitEngine{
         uint64_t origin;
         uint64_t destination;
         MoveType move_type;
-        PieceType taken;
-        PieceType promote_to;
-        PieceType moved;
+        Piece taken;
+        Piece promote_to;
+        Piece moved;
     public:
-        Move(MoveType type, uint64_t start, uint64_t end, PieceType piece_moved, PieceType piece_taken, PieceType promotion);
+        Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion);
 
         Move();
 
@@ -29,11 +29,11 @@ namespace BitEngine{
 
         MoveType getType() const;
 
-        PieceType getTaken() const;
+        Piece getTaken() const;
 
-        PieceType getPromotion() const;
+        Piece getPromotion() const;
 
-        PieceType getMoved() const;
+        Piece getMoved() const;
 
         std::string toString() const;
     };

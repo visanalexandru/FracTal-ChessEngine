@@ -7,28 +7,28 @@ namespace BitEngine {
     }
 
 
-    void MoveGen::addQuiet(uint64_t origin, uint64_t dest, PieceType to_move, std::vector<Move> &moves) {
+    void MoveGen::addQuiet(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves) {
 
-        moves.push_back(Move(MoveType::Normal, origin, dest, to_move, PieceType::None, PieceType::None));
+        moves.push_back(Move(MoveType::Normal, origin, dest, to_move, Piece::None, Piece::None));
     }
 
 
     void
-    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest, PieceType pawn_type, std::vector<Move> &moves) {
-        moves.push_back(Move(MoveType::DoublePawnPush, origin, dest, pawn_type, PieceType::None,
-                             PieceType::None));
+    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest, Piece pawn_type, std::vector<Move> &moves) {
+        moves.push_back(Move(MoveType::DoublePawnPush, origin, dest, pawn_type, Piece::None,
+                             Piece::None));
     }
 
     void MoveGen::addEnPassant(uint64_t origin, uint64_t dest, BitEngine::Color color, std::vector<Move> &moves) {
         if (color == White) {
-            moves.push_back(Move(MoveType::EnPassant, origin, dest, WPawn, BPawn, PieceType::None));
+            moves.push_back(Move(MoveType::EnPassant, origin, dest, WPawn, BPawn, Piece::None));
         } else {
-            moves.push_back(Move(MoveType::EnPassant, origin, dest, BPawn, WPawn, PieceType::None));
+            moves.push_back(Move(MoveType::EnPassant, origin, dest, BPawn, WPawn, Piece::None));
         }
     }
 
     void
-    MoveGen::addPromotions(uint64_t origin, uint64_t dest, Color color, PieceType taken, std::vector<Move> &moves) {
+    MoveGen::addPromotions(uint64_t origin, uint64_t dest, Color color, Piece taken, std::vector<Move> &moves) {
         if (color == White) {
             moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WQueen));
             moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WRook));
@@ -42,8 +42,8 @@ namespace BitEngine {
         }
     }
 
-    void MoveGen::addCapture(uint64_t origin, uint64_t dest, PieceType to_move, std::vector<Move> &moves) {
-        moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), PieceType::None));
+    void MoveGen::addCapture(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves) {
+        moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), Piece::None));
     }
 
     uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side, Color color) {
@@ -186,7 +186,7 @@ namespace BitEngine {
     }
 
     void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
-        uint64_t white_pawns = board.bitboards[PieceType::WPawn];
+        uint64_t white_pawns = board.bitboards[Piece::WPawn];
         uint64_t all = white_pieces | black_pieces;
         uint64_t square, single_push, double_push;
         while (white_pawns) {
@@ -198,7 +198,7 @@ namespace BitEngine {
             if (single_push) {
                 if ((single_push & Tables::MaskRank[7]) == 0)
                     addQuiet(square, single_push, WPawn, moves);
-                else addPromotions(square, single_push, White, PieceType::None, moves);
+                else addPromotions(square, single_push, White, Piece::None, moves);
             }
 
             if (double_push)
@@ -225,7 +225,7 @@ namespace BitEngine {
     }
 
     void MoveGen::addBlackPawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
-        uint64_t black_pawns = board.bitboards[PieceType::BPawn];
+        uint64_t black_pawns = board.bitboards[Piece::BPawn];
         uint64_t all = white_pieces | black_pieces;
         uint64_t square, single_push, double_push;
         while (black_pawns) {
@@ -235,7 +235,7 @@ namespace BitEngine {
             if (single_push) {
                 if ((single_push & Tables::MaskRank[0]) == 0)
                     addQuiet(square, single_push, BPawn, moves);
-                else addPromotions(square, single_push, Black, PieceType::None, moves);
+                else addPromotions(square, single_push, Black, Piece::None, moves);
             }
 
             if (double_push)
@@ -265,12 +265,12 @@ namespace BitEngine {
         to_return.reserve(300);
         Color turn = board.getTurn();
 
-        uint64_t black = board.getBlackPieces();
-        uint64_t white = board.getWhitePieces();
+        uint64_t black = board.getPieces(Black);
+        uint64_t white = board.getPieces(White);
 
         Color color = board.getTurn();
 
-        PieceType king;
+        Piece king;
         if (color == White)
             king = WKing;
         else king = BKing;
@@ -286,8 +286,8 @@ namespace BitEngine {
         for (int i = 0; i < to_return.size(); i++) {
             board.makeMove(to_return[i]);
             uint64_t kingpos = board.bitboards[king];
-            black = board.getBlackPieces();
-            white = board.getWhitePieces();
+            black = board.getPieces(Black);
+            white = board.getPieces(White);
             uint64_t attacks = getAllAttacks(white, black, getOpposite(color));
 
             if (attacks & kingpos) {
@@ -308,7 +308,7 @@ namespace BitEngine {
     }
 
     void MoveGen::addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side,
-                                PieceType piece_type, std::vector<Move> &moves) {
+                                Piece piece_type, std::vector<Move> &moves) {
         while (attacks) {
             uint64_t square = popLsb(attacks);
             if (square & opposite_side) {
@@ -322,7 +322,7 @@ namespace BitEngine {
     void MoveGen::addAllKingMoves(uint64_t white_pieces, uint64_t black_pieces, Color color,
                                   std::vector<Move> &moves) {
         uint64_t king_square, opposite_side, same_side;
-        PieceType king_type;
+        Piece king_type;
 
         if (color == White) {
             king_type = WKing;
@@ -341,7 +341,7 @@ namespace BitEngine {
     void MoveGen::addAllKnightMoves(uint64_t white_pieces, uint64_t black_pieces, BitEngine::Color color,
                                     std::vector<Move> &moves) {
         uint64_t knight_squares, opposite_side, same_side;
-        PieceType knight_type;
+        Piece knight_type;
 
         if (color == White) {
             knight_type = WKnight;
@@ -365,7 +365,7 @@ namespace BitEngine {
                                   std::vector<Move> &moves) {
 
         uint64_t rook_squares, opposite_side, same_side;
-        PieceType rook_type;
+        Piece rook_type;
 
         if (color == White) {
             rook_type = WRook;
@@ -389,7 +389,7 @@ namespace BitEngine {
                                     std::vector<Move> &moves) {
 
         uint64_t bishop_squares, opposite_side, same_side;
-        PieceType bishop_type;
+        Piece bishop_type;
 
         if (color == White) {
             bishop_type = WBishop;
@@ -413,7 +413,7 @@ namespace BitEngine {
                                    std::vector<Move> &moves) {
 
         uint64_t queen_squares, opposite_side, same_side;
-        PieceType queen_type;
+        Piece queen_type;
 
         if (color == White) {
             queen_type = WQueen;

@@ -6,7 +6,7 @@ namespace BitEngine{
         const char pieceChar[13]{'P','p','N','n','B','b','R','r','Q','q','K','k',' '};
     }
 
-    char getPieceChar(PieceType type){
+    char getPieceChar(Piece type){
         return pieceChar[type];
     }
 

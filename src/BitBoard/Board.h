@@ -32,14 +32,13 @@ namespace BitEngine {
         GameState gamestate;
     public:
         Board();
-        uint64_t getWhitePieces() const;
-        uint64_t getBlackPieces() const;
+        uint64_t  getPieces(Color color) const;
         uint64_t getAll() const;
         Color getTurn() const;
         std::string toString() const;
-        PieceType getPieceAt(uint64_t position) const;
-        void setPieceAt(uint64_t position,PieceType piece);
-        void removePieceAt(uint64_t position,PieceType piece);
+        Piece getPieceAt(uint64_t position) const;
+        void setPieceAt(uint64_t position, Piece piece);
+        void removePieceAt(uint64_t position, Piece piece);
         void makeMove(const Move&move);
         void undoLastMove();
         void loadFen(const std::string&fen);
