@@ -54,7 +54,7 @@ int main() {
     cout << board.toString();
 
     float a = clock();
-    perft(6, false, false);
+    perft(7, false, false);
     cout << "perf took " << (clock() - a) / CLOCKS_PER_SEC << endl;
 
     cout << "perf nodes " << perft_nodes << endl;

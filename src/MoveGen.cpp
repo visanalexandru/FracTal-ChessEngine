@@ -19,27 +19,18 @@ namespace BitEngine {
                              Piece::None));
     }
 
-    void MoveGen::addEnPassant(uint64_t origin, uint64_t dest, BitEngine::Color color, std::vector<Move> &moves) {
-        if (color == White) {
-            moves.push_back(Move(MoveType::EnPassant, origin, dest, WPawn, BPawn, Piece::None));
-        } else {
-            moves.push_back(Move(MoveType::EnPassant, origin, dest, BPawn, WPawn, Piece::None));
-        }
+    void MoveGen::addEnPassant(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves) {
+        Piece pawn = getPiece(PieceType::Pawn, color), taken_pawn = getPiece(PieceType::Pawn, getOpposite(color));
+        moves.push_back(Move(MoveType::EnPassant, origin, dest, pawn, taken_pawn, Piece::None));
     }
 
     void
     MoveGen::addPromotions(uint64_t origin, uint64_t dest, Color color, Piece taken, std::vector<Move> &moves) {
-        if (color == White) {
-            moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WQueen));
-            moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WRook));
-            moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WBishop));
-            moves.push_back(Move(MoveType::Promote, origin, dest, WPawn, taken, WKnight));
-        } else {
-            moves.push_back(Move(MoveType::Promote, origin, dest, BPawn, taken, BQueen));
-            moves.push_back(Move(MoveType::Promote, origin, dest, BPawn, taken, BRook));
-            moves.push_back(Move(MoveType::Promote, origin, dest, BPawn, taken, BBishop));
-            moves.push_back(Move(MoveType::Promote, origin, dest, BPawn, taken, BKnight));
-        }
+        Piece pawn = getPiece(PieceType::Pawn, color);
+        moves.push_back(Move(MoveType::Promote, origin, dest, pawn, taken, getPiece(PieceType::Queen, color)));
+        moves.push_back(Move(MoveType::Promote, origin, dest, pawn, taken, getPiece(PieceType::Rook, color)));
+        moves.push_back(Move(MoveType::Promote, origin, dest, pawn, taken, getPiece(PieceType::Bishop, color)));
+        moves.push_back(Move(MoveType::Promote, origin, dest, pawn, taken, getPiece(PieceType::Knight, color)));
     }
 
     void MoveGen::addCapture(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves) {
@@ -186,7 +177,7 @@ namespace BitEngine {
     }
 
 
-    uint64_t MoveGen::getAllAttacks(BitEngine::Color color) {
+    uint64_t MoveGen::getAllAttacks(Color color) {
         uint64_t same_side = board.getPieces(color);
         uint64_t all = board.getAll();
 
