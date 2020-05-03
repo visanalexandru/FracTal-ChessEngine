@@ -51,10 +51,7 @@ namespace BitEngine {
 
         uint64_t getAllQueenAttacks(uint64_t positions,uint64_t same_side,uint64_t all);
 
-        uint64_t getAllAttacks(Color color);
-
-        bool squareUnderAttack(uint64_t square,uint64_t white_pieces,uint64_t black_pieces,Color turn);
-
+        bool squareUnderAttack(uint64_t square,Color color);
 
         //Adds all the pawn moves for white
         void addWhitePawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);

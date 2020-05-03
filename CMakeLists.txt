@@ -11,4 +11,4 @@ add_executable(ChessEngine src/main.cpp  ${sources})
 target_compile_options(ChessEngine PRIVATE -g)
 
 add_executable(Tests tests/main.cpp ${sources})
-target_compile_options(Tests PRIVATE -O3)
+target_compile_options(Tests PRIVATE -O3  -fno-rtti -ansi  -m64  -msse -flto )
