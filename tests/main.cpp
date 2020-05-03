@@ -18,18 +18,8 @@ bool perft(int depth, bool capture, bool enPassant) {
     //check for illegal king moves
     vector<BitEngine::Move> moves = movegen.getAllMoves();
 
-    for (BitEngine::Move a:moves) {
-        if (a.getTaken() == BitEngine::WKing || a.getTaken() == BitEngine::BKing)
-            return false;
-    }
-
-    if (depth == 0) {
-        perft_nodes++;
-        if (enPassant)
-            perft_ep++;
-        if (capture)
-            perft_captures++;
-
+    if (depth == 1) {
+        perft_nodes+=moves.size();
         return true;
     }
 
@@ -64,8 +54,9 @@ void testBitBoards() {
 int main() {
 
     BitEngine::Tables::initializeAttackTables();
-    float a = clock();
     cout << board.toString();
+
+    float a = clock();
     perft(6, false, false);
     cout << "perf took " << (clock() - a) / CLOCKS_PER_SEC << endl;
 

@@ -128,6 +128,63 @@ namespace BitEngine {
                                   Tables::SouthWest);
     }
 
+    uint64_t MoveGen::getQueenAttacks(uint64_t position, uint64_t same_side, uint64_t all) {
+        return getRookAttacks(position, same_side, all) | getBishopAttacks(position, same_side, all);
+    }
+
+    uint64_t MoveGen::getAllRookAttacks(uint64_t positions, uint64_t same_side, uint64_t all) {
+        uint64_t result = 0, square;
+        while (positions) {
+            square = popLsb(positions);
+            result |= getRookAttacks(square, same_side, all);
+        }
+        return result;
+    }
+
+    uint64_t MoveGen::getAllBishopAttacks(uint64_t positions, uint64_t same_side, uint64_t all) {
+        uint64_t result = 0, square;
+        while (positions) {
+            square = popLsb(positions);
+            result |= getBishopAttacks(square, same_side, all);
+        }
+        return result;
+    }
+
+    uint64_t MoveGen::getAllQueenAttacks(uint64_t positions, uint64_t same_side, uint64_t all) {
+        uint64_t result = 0, square;
+        while (positions) {
+            square = popLsb(positions);
+            result |= getQueenAttacks(square, same_side, all);
+        }
+        return result;
+    }
+
+    uint64_t MoveGen::getAllAttacks(uint64_t white_pieces, uint64_t black_pieces,
+                                    BitEngine::Color color) {
+
+        uint64_t pawn_attacks, knight_attacks, king_attacks, bishop_attacks, rook_attacks, queen_attacks;
+        uint64_t all = white_pieces | black_pieces;
+
+        if (color == White) {
+            pawn_attacks = getPawnAttacks(board.bitboards[WPawn], white_pieces, White);
+            knight_attacks = getKnightAttacks(board.bitboards[WKnight], white_pieces);
+            king_attacks = getKingAttacks(board.bitboards[WKing], white_pieces);
+            bishop_attacks = getAllBishopAttacks(board.bitboards[WBishop], white_pieces, all);
+            rook_attacks = getAllRookAttacks(board.bitboards[WRook], white_pieces, all);
+            queen_attacks = getAllQueenAttacks(board.bitboards[WQueen], white_pieces, all);
+        } else {
+            pawn_attacks = getPawnAttacks(board.bitboards[BPawn], black_pieces, Black);
+            knight_attacks = getKnightAttacks(board.bitboards[BKnight], black_pieces);
+            king_attacks = getKingAttacks(board.bitboards[BKing], black_pieces);
+            bishop_attacks = getAllBishopAttacks(board.bitboards[BBishop], black_pieces, all);
+            rook_attacks = getAllRookAttacks(board.bitboards[BRook], black_pieces, all);
+            queen_attacks = getAllQueenAttacks(board.bitboards[BQueen], black_pieces, all);
+
+        }
+        return pawn_attacks | knight_attacks | king_attacks | bishop_attacks | rook_attacks | queen_attacks;
+
+    }
+
     void MoveGen::addWhitePawnsMoves(uint64_t white_pieces, uint64_t black_pieces, std::vector<Move> &moves) {
         uint64_t white_pawns = board.bitboards[PieceType::WPawn];
         uint64_t all = white_pieces | black_pieces;
@@ -213,15 +270,32 @@ namespace BitEngine {
 
         Color color = board.getTurn();
 
+        PieceType king;
+        if (color == White)
+            king = WKing;
+        else king = BKing;
+
         addAllKingMoves(white, black, color, to_return);
         addAllPawnMoves(white, black, color, to_return);
         addAllKnightMoves(white, black, color, to_return);
         addAllRookMoves(white, black, color, to_return);
         addAllBishopMoves(white, black, color, to_return);
-        addAllQueenMoves(white,black,color,to_return);
+        addAllQueenMoves(white, black, color, to_return);
 
 
-        
+        for (int i = 0; i < to_return.size(); i++) {
+            board.makeMove(to_return[i]);
+            uint64_t kingpos = board.bitboards[king];
+            black = board.getBlackPieces();
+            white = board.getWhitePieces();
+            uint64_t attacks = getAllAttacks(white, black, getOpposite(color));
+
+            if (attacks & kingpos) {
+                to_return.erase(to_return.begin() + i);
+                i--;
+            }
+            board.undoLastMove();
+        }
         return to_return;
     }
 
@@ -354,9 +428,8 @@ namespace BitEngine {
         queen_squares = board.bitboards[queen_type];
         while (queen_squares) {
             uint64_t queen_square = popLsb(queen_squares);
-            uint64_t queen_attacks = getBishopAttacks(queen_square, same_side, white_pieces | black_pieces) |
-                                     getRookAttacks(queen_square, same_side, white_pieces | black_pieces);
-            addAllAttacks(queen_square,queen_attacks, opposite_side, queen_type, moves);
+            uint64_t queen_attacks = getQueenAttacks(queen_square, same_side, white_pieces | black_pieces);
+            addAllAttacks(queen_square, queen_attacks, opposite_side, queen_type, moves);
         }
     }
 }

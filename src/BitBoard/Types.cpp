@@ -10,4 +10,7 @@ namespace BitEngine{
         return pieceChar[type];
     }
 
+    Color getOpposite(Color color){
+        return static_cast<Color>(1-color);
+    }
 }

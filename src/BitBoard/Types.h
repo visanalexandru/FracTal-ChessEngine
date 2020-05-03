@@ -19,6 +19,14 @@ namespace BitEngine{
         BKing,
         None,
     };
+    enum Piece{
+        Pawn,
+        Knight,
+        Bishop,
+        Rook,
+        Queen,
+        King,
+    };
     enum Color {
         White,
         Black,
@@ -43,6 +51,7 @@ namespace BitEngine{
         Promote,
     };
     char getPieceChar(PieceType type);
+    Color  getOpposite(Color color);
 }
 
 #endif
