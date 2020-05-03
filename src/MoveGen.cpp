@@ -170,9 +170,9 @@ namespace BitEngine {
         uint64_t queens_and_bishops = board.getBitboard(queen) | board.getBitboard(bishop);
         uint64_t queens_and_rooks = board.getBitboard(queen) | board.getBitboard(rook);
 
-        if (getAllBishopAttacks(queens_and_bishops, same_side, all)&square)
+        if (getAllBishopAttacks(queens_and_bishops, same_side, all) & square)
             return true;
-        if (getAllRookAttacks(queens_and_rooks, same_side, all)&square)
+        if (getAllRookAttacks(queens_and_rooks, same_side, all) & square)
             return true;
 
 
@@ -180,9 +180,28 @@ namespace BitEngine {
             return true;
         if (getKnightAttacks(board.getBitboard(getPiece(PieceType::Knight, color)), same_side) & square)
             return true;
-        if (getKingAttacks(board.getBitboard(getPiece(PieceType::King, color)), same_side)&square)
+        if (getKingAttacks(board.getBitboard(getPiece(PieceType::King, color)), same_side) & square)
             return true;
         return false;
+    }
+
+
+    uint64_t MoveGen::getAllAttacks(BitEngine::Color color) {
+        uint64_t same_side = board.getPieces(color);
+        uint64_t all = board.getAll();
+
+        Piece queen = getPiece(PieceType::Queen, color);
+        Piece bishop = getPiece(PieceType::Bishop, color);
+        Piece rook = getPiece(PieceType::Rook, color);
+
+        uint64_t queens_and_bishops = board.getBitboard(queen) | board.getBitboard(bishop);
+        uint64_t queens_and_rooks = board.getBitboard(queen) | board.getBitboard(rook);
+
+        return getPawnAttacks(board.getBitboard(getPiece(PieceType::Pawn, color)), same_side, color) |
+               getKnightAttacks(board.getBitboard(getPiece(PieceType::Knight, color)), same_side) |
+               getKingAttacks(board.getBitboard(getPiece(PieceType::King, color)), same_side) |
+               getAllBishopAttacks(queens_and_bishops, same_side, all) |
+               getAllRookAttacks(queens_and_rooks, same_side, all);
     }
 
     void MoveGen::addWhitePawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves) {
@@ -276,11 +295,13 @@ namespace BitEngine {
         addAllBishopMoves(same_side, opposite_side, color, to_return);
         addAllQueenMoves(same_side, opposite_side, color, to_return);
 
+        getAllAttacks(opposite_color);
+
 
         for (int i = 0; i < to_return.size(); i++) {
             board.makeMove(to_return[i]);
             uint64_t kingpos = board.getBitboard(king);
-            if (squareUnderAttack(kingpos,opposite_color)) {
+            if (squareUnderAttack(kingpos, opposite_color)) {
                 to_return.erase(to_return.begin() + i);
                 i--;
             }

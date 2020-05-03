@@ -9,7 +9,7 @@ BitEngine::Board board;
 BitEngine::MoveGen movegen(board);
 
 
-int perft_captures = 0, perft_nodes = 0, perft_ep = 0;
+long long perft_captures = 0, perft_nodes = 0, perft_ep = 0;
 
 bool perft(int depth, bool capture, bool enPassant) {
     //check for illegal king moves
