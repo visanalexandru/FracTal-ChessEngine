@@ -16,6 +16,8 @@ namespace BitEngine {
         void makeNormalMove(const Move&move);
         void makePromotion(const Move &move);
         void makeEnPassant(const Move&move);
+        void makeKingSideCastle();
+        void makeQueenSideCastle();
 
         void undoNormalMove(const Move&move);
         void undoEnPassant(const Move&move);

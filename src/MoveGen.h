@@ -21,7 +21,9 @@ namespace BitEngine {
 
         void addEnPassant(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
-        void addDoublePawnPushMove(uint64_t origin, uint64_t dest, Piece pawn_type, std::vector<Move> &moves);
+        void addDoublePawnPushMove(uint64_t origin, uint64_t dest,Color color, std::vector<Move> &moves);
+
+        void addKingSideCastle(uint64_t origin,uint64_t dest,Color color,std::vector<Move>&moves);
 
 
         //functions that get the attack bitboards from a given position

@@ -40,6 +40,7 @@ namespace BitEngine {
         to_return += '\n';
         return to_return;
     }
+
     uint64_t Board::getBitboard(Piece type) {
         return bitboards[type];
     }
@@ -122,6 +123,29 @@ namespace BitEngine {
         }
     }
 
+    void Board::makeKingSideCastle() {
+        if (getTurn() == White) {
+            removePieceAt(WKingPosition, WKing);
+            removePieceAt(WRookRPosition, WRook);
+
+            setPieceAt(WKingPosition >> 2, Piece::WKing);
+            setPieceAt(WKingPosition >> 1, Piece::WRook);
+
+        } else {
+            removePieceAt(BKingPosition, BKing);
+            removePieceAt(BRookRPosition, BRook);
+
+            setPieceAt(BKingPosition >> 2, Piece::BKing);
+            setPieceAt(BKingPosition >> 1, Piece::BRook);
+
+        }
+    }
+
+    void Board::makeQueenSideCastle() {
+
+
+    }
+
     void Board::makeMove(const Move &move) {
         history.push(gamestate);
         MoveType type = move.getType();
@@ -131,9 +155,9 @@ namespace BitEngine {
             makePromotion(move);
         else if (type == MoveType::EnPassant)
             makeEnPassant(move);
-        /*
         else if (type == MoveType::KingSideCastle)
             makeKingSideCastle();
+        /*
         else if (type == MoveType::QueenSideCastle)
             makeQueenSideCastle();
 
@@ -145,26 +169,26 @@ namespace BitEngine {
 
     void Board::undoNormalMove(const Move &move) {
 
-        uint64_t  dest=move.getDestination();
-        uint64_t  org=move.getOrigin();
-        removePieceAt(dest,move.getMoved());
-        if(move.getTaken() != Piece::None){
-            setPieceAt(dest,move.getTaken());
+        uint64_t dest = move.getDestination();
+        uint64_t org = move.getOrigin();
+        removePieceAt(dest, move.getMoved());
+        if (move.getTaken() != Piece::None) {
+            setPieceAt(dest, move.getTaken());
         }
         setPieceAt(move.getOrigin(), move.getMoved());
     }
 
     void Board::undoPromotion(const BitEngine::Move &move) {
-        removePieceAt(move.getDestination(),move.getPromotion());
-        if(move.getTaken() != Piece::None)
-            setPieceAt(move.getDestination(),move.getTaken());
-        setPieceAt(move.getOrigin(),move.getMoved());
+        removePieceAt(move.getDestination(), move.getPromotion());
+        if (move.getTaken() != Piece::None)
+            setPieceAt(move.getDestination(), move.getTaken());
+        setPieceAt(move.getOrigin(), move.getMoved());
     }
 
     void Board::undoEnPassant(const BitEngine::Move &move) {
-        uint64_t  dest=move.getDestination();
-        uint64_t  org=move.getOrigin();
-        removePieceAt(dest,move.getMoved());
+        uint64_t dest = move.getDestination();
+        uint64_t org = move.getOrigin();
+        removePieceAt(dest, move.getMoved());
 
         if (dest == org << 9 || dest == org >> 7) {
             setPieceAt(org << 1, move.getTaken());
@@ -172,7 +196,7 @@ namespace BitEngine {
             setPieceAt(org >> 1, move.getTaken());
         }
 
-        setPieceAt(org,move.getMoved());
+        setPieceAt(org, move.getMoved());
     }
 
     void Board::undoLastMove() {
@@ -182,8 +206,7 @@ namespace BitEngine {
             undoNormalMove(last_move);
         } else if (type == MoveType::EnPassant) {
             undoEnPassant(last_move);
-        }
-        else if(type==MoveType::Promote){
+        } else if (type == MoveType::Promote) {
             undoPromotion(last_move);
         }
         /*else if (type == MoveType::KingSideCastle) {
@@ -197,8 +220,8 @@ namespace BitEngine {
     }
 
     void Board::resetBoard() {
-        for(int i=0;i<12;i++)
-            bitboards[i]=0;
+        for (int i = 0; i < 12; i++)
+            bitboards[i] = 0;
         gamestate.reset();
     }
 

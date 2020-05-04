@@ -14,8 +14,8 @@ namespace BitEngine {
 
 
     void
-    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest, Piece pawn_type, std::vector<Move> &moves) {
-        moves.push_back(Move(MoveType::DoublePawnPush, origin, dest, pawn_type, Piece::None,
+    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest,Color color, std::vector<Move> &moves) {
+        moves.push_back(Move(MoveType::DoublePawnPush, origin, dest,getPiece(PieceType::Pawn,color), Piece::None,
                              Piece::None));
     }
 
@@ -35,6 +35,10 @@ namespace BitEngine {
 
     void MoveGen::addCapture(uint64_t origin, uint64_t dest, Piece to_move, std::vector<Move> &moves) {
         moves.push_back(Move(MoveType::Normal, origin, dest, to_move, board.getPieceAt(dest), Piece::None));
+    }
+
+    void MoveGen::addKingSideCastle(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves) {
+        moves.push_back(Move(MoveType::KingSideCastle,origin,dest,getPiece(PieceType::King,color),None,None));
     }
 
     uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side, Color color) {
@@ -212,7 +216,7 @@ namespace BitEngine {
             }
 
             if (double_push)
-                addDoublePawnPushMove(square, double_push, WPawn, moves);
+                addDoublePawnPushMove(square, double_push, White, moves);
 
             uint64_t attacks = getPawnAttacks(square, same_side, White);
 
@@ -249,7 +253,7 @@ namespace BitEngine {
             }
 
             if (double_push)
-                addDoublePawnPushMove(square, double_push, BPawn, moves);
+                addDoublePawnPushMove(square, double_push, Black, moves);
 
             uint64_t attacks = getPawnAttacks(square, same_side, Black);
             while (attacks) {
