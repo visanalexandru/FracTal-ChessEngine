@@ -25,6 +25,8 @@ namespace BitEngine {
 
         void addKingSideCastle(uint64_t origin,uint64_t dest,Color color,std::vector<Move>&moves);
 
+        void addQueenSideCastle(uint64_t origin,uint64_t dest,Color color,std::vector<Move>&moves);
+
 
         //functions that get the attack bitboards from a given position
         //pawn attacks need the attacking color
@@ -81,6 +83,7 @@ namespace BitEngine {
 
         void addAllQueenMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
+        void addAllCastling(uint64_t all,Color color,std::vector<Move>&moves);
 
     public:
         MoveGen(Board &internal_board);

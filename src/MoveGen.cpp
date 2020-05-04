@@ -14,8 +14,8 @@ namespace BitEngine {
 
 
     void
-    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest,Color color, std::vector<Move> &moves) {
-        moves.push_back(Move(MoveType::DoublePawnPush, origin, dest,getPiece(PieceType::Pawn,color), Piece::None,
+    MoveGen::addDoublePawnPushMove(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves) {
+        moves.push_back(Move(MoveType::DoublePawnPush, origin, dest, getPiece(PieceType::Pawn, color), Piece::None,
                              Piece::None));
     }
 
@@ -38,7 +38,12 @@ namespace BitEngine {
     }
 
     void MoveGen::addKingSideCastle(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves) {
-        moves.push_back(Move(MoveType::KingSideCastle,origin,dest,getPiece(PieceType::King,color),None,None));
+        moves.push_back(Move(MoveType::KingSideCastle, origin, dest, getPiece(PieceType::King, color), None, None));
+    }
+
+    void MoveGen::addQueenSideCastle(uint64_t origin, uint64_t dest, BitEngine::Color color,
+                                     std::vector<Move> &moves) {
+        moves.push_back(Move(MoveType::QueenSideCastle, origin, dest, getPiece(PieceType::King, color), None, None));
     }
 
     uint64_t MoveGen::getPawnAttacks(uint64_t position, uint64_t same_side, Color color) {
@@ -290,8 +295,6 @@ namespace BitEngine {
         addAllBishopMoves(same_side, opposite_side, color, to_return);
         addAllQueenMoves(same_side, opposite_side, color, to_return);
 
-        getAllAttacks(opposite_color);
-
 
         for (int i = 0; i < to_return.size(); i++) {
             board.makeMove(to_return[i]);
@@ -302,6 +305,7 @@ namespace BitEngine {
             }
             board.undoLastMove();
         }
+       addAllCastling(same_side|opposite_side,color,to_return);
         return to_return;
     }
 
@@ -369,6 +373,32 @@ namespace BitEngine {
             uint64_t queen_square = popLsb(queen_squares);
             uint64_t queen_attacks = getQueenAttacks(queen_square, same_side, same_side | opposite_side);
             addAllAttacks(queen_square, queen_attacks, opposite_side, queen_type, moves);
+        }
+    }
+
+    void MoveGen::addAllCastling(uint64_t all, Color color, std::vector<Move> &moves) {
+        uint64_t attacks = getAllAttacks(getOpposite(color));
+        uint64_t not_in_check = ~attacks;
+        uint64_t valid = ~(attacks | all);
+
+
+        if (color == White) {
+            uint64_t white_king = board.getBitboard(WKing);
+            uint64_t a = white_king >> 1, b = white_king >> 2, c = white_king << 1, d = white_king << 2;
+            if (white_king & not_in_check) {
+                if (board.gamestate.getState(canCastleKingSideWhite) && (a & valid) && (b & valid)) {
+                    addKingSideCastle(white_king, b, color, moves);
+                }
+            }
+        } else {
+            uint64_t black_king = board.getBitboard(BKing);
+            uint64_t a = black_king >> 1, b = black_king >> 2, c = black_king << 1, d = black_king << 2;
+            if (black_king & not_in_check) {
+                if (board.gamestate.getState(canCastleKingSideBlack) && (a & valid) && (b & valid)) {
+                    addKingSideCastle(black_king, b, color, moves);
+                }
+            }
+
         }
     }
 }
