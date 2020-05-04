@@ -196,9 +196,15 @@ namespace BitEngine {
         history.pop();
     }
 
+    void Board::resetBoard() {
+        for(int i=0;i<12;i++)
+            bitboards[i]=0;
+        gamestate.reset();
+    }
+
 
     void Board::loadFen(const std::string &fen) {
-
+        resetBoard();
         std::stringstream sstream;
         sstream << fen;
 

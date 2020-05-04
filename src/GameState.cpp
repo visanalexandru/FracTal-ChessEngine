@@ -31,4 +31,9 @@ namespace BitEngine {
         return lastmove;
     }
 
+    void GameState::reset() {
+        state_flags=0;
+        lastmove=Move();
+    }
+
 }

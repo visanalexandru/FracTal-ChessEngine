@@ -24,6 +24,8 @@ namespace BitEngine {
 
         void setLastMove(Move move);
 
+        void reset();
+
         GameState();
 
     };

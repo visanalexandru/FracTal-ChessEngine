@@ -30,6 +30,8 @@ namespace BitEngine {
         std::stack<GameState> history;
         uint64_t bitboards[12];
         GameState gamestate;
+
+        void resetBoard();
     public:
         Board();
         uint64_t getBitboard(Piece type);
