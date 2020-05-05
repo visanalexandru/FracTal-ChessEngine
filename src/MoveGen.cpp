@@ -1,6 +1,6 @@
 #include "MoveGen.h"
 
-namespace BitEngine {
+namespace Engine {
 
     MoveGen::MoveGen(Board &internal_board) : board(internal_board) {
 
@@ -41,7 +41,7 @@ namespace BitEngine {
         moves.push_back(Move(MoveType::KingSideCastle, origin, dest, getPiece(PieceType::King, color), None, None));
     }
 
-    void MoveGen::addQueenSideCastle(uint64_t origin, uint64_t dest, BitEngine::Color color,
+    void MoveGen::addQueenSideCastle(uint64_t origin, uint64_t dest, Engine::Color color,
                                      std::vector<Move> &moves) {
         moves.push_back(Move(MoveType::QueenSideCastle, origin, dest, getPiece(PieceType::King, color), None, None));
     }
@@ -81,8 +81,8 @@ namespace BitEngine {
     }
 
     uint64_t MoveGen::getDiagonalAttacks(uint64_t position, uint64_t same_side, uint64_t all,
-                                         BitEngine::Tables::Direction a, BitEngine::Tables::Direction b,
-                                         BitEngine::Tables::Direction c, BitEngine::Tables::Direction d) {
+                                         Engine::Tables::Direction a, Engine::Tables::Direction b,
+                                         Engine::Tables::Direction c, Engine::Tables::Direction d) {
         int index = bitScanForward(position), square;
 
         uint64_t up = Tables::AttackTables[index][a];

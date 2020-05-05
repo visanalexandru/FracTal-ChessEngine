@@ -1,10 +1,10 @@
-#ifndef BITENGINE_TABLES_H
-#define BITENGINE_TABLES_H
+#ifndef CHESSENGINE_TABLES_H
+#define CHESSENGINE_TABLES_H
 
 #include <cstdint>
 #include "Utils.h"
 
-namespace BitEngine {
+namespace Engine {
     namespace Tables {
 
         const uint64_t ClearRank[] = {0xFFFFFFFFFFFFFF00,

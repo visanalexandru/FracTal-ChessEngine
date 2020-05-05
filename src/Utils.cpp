@@ -1,6 +1,6 @@
 #include "Utils.h"
 
-namespace BitEngine{
+namespace Engine{
     void printBitboard(uint64_t bitboard) {
         for (int i = 63; i >= 0; i--) {
             if ((i + 1) % 8 == 0)

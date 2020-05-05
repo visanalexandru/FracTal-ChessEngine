@@ -1,12 +1,12 @@
 
-#ifndef BITENGINE_MOVEGEN_H
-#define BITENGINE_MOVEGEN_H
+#ifndef CHESSENGINE_MOVEGEN_H
+#define CHESSENGINE_MOVEGEN_H
 
 #include "Board.h"
 #include "Utils.h"
 #include <vector>
 
-namespace BitEngine {
+namespace Engine {
     class MoveGen {
     private:
         Board &board;

@@ -1,5 +1,5 @@
 #include "Move.h"
-namespace BitEngine {
+namespace Engine {
 
     Move::Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion):
             move_type(type),

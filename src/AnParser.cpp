@@ -3,15 +3,15 @@
 namespace Engine {
     namespace AnParser {
 
-        BitEngine::Move getMove(const std::string &an,BitEngine::Board &board) {
-            BitEngine::MoveGen movegen(board);
-            std::vector<BitEngine::Move> move_list = movegen.getAllMoves();
+        Engine::Move getMove(const std::string &an, Engine::Board &board) {
+            Engine::MoveGen movegen(board);
+            std::vector<Engine::Move> move_list = movegen.getAllMoves();
 
-            for (BitEngine::Move a:move_list) {
+            for (Engine::Move a:move_list) {
                 if (a.toString() == an)
                     return a;
             }
-            return BitEngine::Move();//null move;
+            return Engine::Move();//null move;
         }
 
     }

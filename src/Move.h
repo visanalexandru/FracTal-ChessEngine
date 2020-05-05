@@ -1,13 +1,13 @@
 
-#ifndef BITENGINE_MOVE_H
-#define BITENGINE_MOVE_H
+#ifndef CHESSENGINE_MOVE_H
+#define CHESSENGINE_MOVE_H
 
 #include <cstdint>
 #include <string>
 #include <cmath>
 #include "Utils.h"
 #include "Types.h"
-namespace BitEngine{
+namespace Engine{
 
 
     class Move {

@@ -1,7 +1,7 @@
 
 #include "Types.h"
 
-namespace BitEngine{
+namespace Engine{
     namespace {
         const char pieceChar[13]{'P','p','N','n','B','b','R','r','Q','q','K','k',' '};
     }

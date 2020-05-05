@@ -1,6 +1,6 @@
 #include "Tables.h"
 
-namespace BitEngine {
+namespace Engine {
 
     namespace Tables {
         uint64_t AttackTables[64][8];

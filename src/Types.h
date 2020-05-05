@@ -1,9 +1,9 @@
 
-#ifndef BITENGINE_TYPES_H
-#define BITENGINE_TYPES_H
+#ifndef CHESSENGINE_TYPES_H
+#define CHESSENGINE_TYPES_H
 
 #include <cstdint>
-namespace BitEngine{
+namespace Engine{
     enum Piece{
         WPawn,
         BPawn,

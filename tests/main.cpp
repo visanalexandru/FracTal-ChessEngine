@@ -5,22 +5,22 @@
 
 using namespace std;
 
-BitEngine::Board board;
-BitEngine::MoveGen movegen(board);
+Engine::Board board;
+Engine::MoveGen movegen(board);
 
 
 long long perft_captures = 0, perft_nodes = 0, perft_ep = 0;
 
 void perft(int depth) {
     //check for illegal king moves
-    vector<BitEngine::Move> moves = movegen.getAllMoves();
+    vector<Engine::Move> moves = movegen.getAllMoves();
 
     if (depth == 1) {
         perft_nodes+=moves.size();
         return;
     }
 
-    for (const BitEngine::Move &move:moves) {
+    for (const Engine::Move &move:moves) {
         board.makeMove(move);
         perft(depth - 1);
         board.undoLastMove();
@@ -75,7 +75,7 @@ void perftTest() {
 }
 
 int main() {
-    BitEngine::Tables::initializeAttackTables();
+    Engine::Tables::initializeAttackTables();
     perftTest();
 
     return 0;

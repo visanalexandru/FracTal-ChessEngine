@@ -1,7 +1,7 @@
 
 #include "Board.h"
 
-namespace BitEngine {
+namespace Engine {
 
     Board::Board() : bitboards() {
         loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -67,7 +67,7 @@ namespace BitEngine {
         return static_cast<Color>(gamestate.getState(turnColor));
     }
 
-    void Board::makeNormalMove(const BitEngine::Move &move) {
+    void Board::makeNormalMove(const Engine::Move &move) {
         uint64_t org = move.getOrigin();
 
 
@@ -77,7 +77,7 @@ namespace BitEngine {
         removePieceAt(move.getOrigin(), move.getMoved());
     }
 
-    void Board::makePromotion(const BitEngine::Move &move) {
+    void Board::makePromotion(const Engine::Move &move) {
         uint64_t org = move.getOrigin();
         if (move.getTaken() != None)
             removePieceAt(move.getDestination(), move.getTaken());
@@ -85,7 +85,7 @@ namespace BitEngine {
         removePieceAt(move.getOrigin(), move.getMoved());
     }
 
-    void Board::makeEnPassant(const BitEngine::Move &move) {
+    void Board::makeEnPassant(const Engine::Move &move) {
         uint64_t org = move.getOrigin();
         uint64_t dest = move.getDestination();
 
@@ -188,14 +188,14 @@ namespace BitEngine {
         setPieceAt(move.getOrigin(), move.getMoved());
     }
 
-    void Board::undoPromotion(const BitEngine::Move &move) {
+    void Board::undoPromotion(const Engine::Move &move) {
         removePieceAt(move.getDestination(), move.getPromotion());
         if (move.getTaken() != Piece::None)
             setPieceAt(move.getDestination(), move.getTaken());
         setPieceAt(move.getOrigin(), move.getMoved());
     }
 
-    void Board::undoEnPassant(const BitEngine::Move &move) {
+    void Board::undoEnPassant(const Engine::Move &move) {
         uint64_t dest = move.getDestination();
         uint64_t org = move.getOrigin();
         removePieceAt(dest, move.getMoved());

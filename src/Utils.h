@@ -1,11 +1,11 @@
 
-#ifndef BITENGINE_UTILS_H
-#define BITENGINE_UTILS_H
+#ifndef CHESSENGINE_UTILS_H
+#define CHESSENGINE_UTILS_H
 
 #include <cstdint>
 #include <iostream>
 
-namespace BitEngine{
+namespace Engine{
         inline uint64_t getLsb(uint64_t to_get){
             return to_get&(-to_get);
         }

@@ -1,5 +1,5 @@
-#ifndef BITENGINE_BOARD_H
-#define BITENGINE_BOARD_H
+#ifndef CHESSENGINE_BOARD_H
+#define CHESSENGINE_BOARD_H
 
 
 #include <cstdint>
@@ -10,7 +10,7 @@
 #include "Types.h"
 #include "GameState.h"
 
-namespace BitEngine {
+namespace Engine {
     class Board {
     private:
         void makeNormalMove(const Move&move);

@@ -1,5 +1,5 @@
-#ifndef PROTOCOL_H
-#define PROTOCOL_H
+#ifndef CHESSENGINE_PROTOCOL_H
+#define CHESSENGINE_PROTOCOL_H
 
 
 #include<iostream>
@@ -9,7 +9,7 @@
 
 class Protocol {
 private:
-    BitEngine::Board &board;
+    Engine::Board &board;
     std::ofstream log;
     bool isRunning;
 
@@ -19,10 +19,10 @@ private:
 
     void Log(const std::string &to_log);
 
-    static bool compare(BitEngine::Move a,BitEngine::Move b);
+    static bool compare(Engine::Move a, Engine::Move b);
 
 public:
-    Protocol(BitEngine::Board &internal_board);
+    Protocol(Engine::Board &internal_board);
 
     void start();
 };
