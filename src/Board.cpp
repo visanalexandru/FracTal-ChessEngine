@@ -138,31 +138,25 @@ namespace BitEngine {
     void Board::updateCastlingRights(const Move &move) {
         uint64_t origin = move.getOrigin();
         uint64_t destination = move.getDestination();
-        if (getTurn() == White) {
-            if (origin == WKingPosition) {
-                gamestate.unsetState(canCastleKingSideWhite);
-                gamestate.unsetState(canCastleQueenSideWhite);
-            }
-            if (origin == WRookLPosition || destination == WRookLPosition) {
-                gamestate.unsetState(canCastleQueenSideWhite);
-            }
-            if (origin == WRookRPosition || destination == WRookRPosition) {
-                gamestate.unsetState(canCastleKingSideWhite);
-            }
-        } else {
-            if (origin == BKingPosition) {
-                gamestate.unsetState(canCastleKingSideBlack);
-                gamestate.unsetState(canCastleQueenSideBlack);
-            }
-            if (origin == BRookLPosition || destination == BRookLPosition) {
-                gamestate.unsetState(canCastleQueenSideBlack);
-            }
-            if (origin == BRookRPosition || destination == BRookRPosition) {
-                gamestate.unsetState(canCastleKingSideBlack);
-            }
 
+        if (origin == WKingPosition) {
+            gamestate.unsetState(canCastleKingSideWhite);
+            gamestate.unsetState(canCastleQueenSideWhite);
         }
+        if (origin == BKingPosition) {
+            gamestate.unsetState(canCastleKingSideBlack);
+            gamestate.unsetState(canCastleQueenSideBlack);
+        }
+        if (origin == WRookLPosition || destination == WRookLPosition)
+            gamestate.unsetState(canCastleQueenSideWhite);
+        if (origin == WRookRPosition || destination == WRookRPosition)
+            gamestate.unsetState(canCastleKingSideWhite);
+        if (origin == BRookLPosition || destination == BRookLPosition)
+            gamestate.unsetState(canCastleQueenSideBlack);
+        if (origin == BRookRPosition || destination == BRookRPosition)
+            gamestate.unsetState(canCastleKingSideBlack);
     }
+
 
     void Board::makeMove(const Move &move) {
         history.push(gamestate);
@@ -215,6 +209,37 @@ namespace BitEngine {
         setPieceAt(org, move.getMoved());
     }
 
+    void Board::undoKingSideCastle() {
+        if (getOpposite(getTurn()) == White) {
+            removePieceAt(WRookRPosition << 1, WKing);
+            removePieceAt(WRookRPosition << 2, WRook);
+
+            setPieceAt(WKingPosition, WKing);
+            setPieceAt(WRookRPosition, WRook);
+        } else {
+            removePieceAt(BRookRPosition << 1, BKing);
+            removePieceAt(BRookRPosition << 2, BRook);
+            setPieceAt(BKingPosition, BKing);
+            setPieceAt(BRookRPosition, BRook);
+        }
+    }
+
+    void Board::undoQueenSideCastle() {
+        if (getOpposite(getTurn()) == White) {
+            removePieceAt(WRookLPosition >> 2, WKing);
+            removePieceAt(WRookLPosition >> 3, WRook);
+
+            setPieceAt(WKingPosition, WKing);
+            setPieceAt(WRookLPosition, WRook);
+        } else {
+            removePieceAt(BRookLPosition >> 2, BKing);
+            removePieceAt(BRookLPosition >> 3, BRook);
+            setPieceAt(BKingPosition, BKing);
+            setPieceAt(BRookLPosition, BRook);
+        }
+
+    }
+
     void Board::undoLastMove() {
         Move last_move = gamestate.getLastMove();
         MoveType type = last_move.getType();
@@ -224,12 +249,11 @@ namespace BitEngine {
             undoEnPassant(last_move);
         } else if (type == MoveType::Promote) {
             undoPromotion(last_move);
-        }
-        /*else if (type == MoveType::KingSideCastle) {
-            undoKingSideCastle(last_move);
+        } else if (type == MoveType::KingSideCastle) {
+            undoKingSideCastle();
         } else if (type == MoveType::QueenSideCastle) {
-            undoQueenSideCastle(last_move);
-        }*/
+            undoQueenSideCastle();
+        }
 
         gamestate = history.top();
         history.pop();

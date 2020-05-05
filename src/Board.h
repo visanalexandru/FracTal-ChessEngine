@@ -23,6 +23,8 @@ namespace BitEngine {
         void undoNormalMove(const Move&move);
         void undoEnPassant(const Move&move);
         void undoPromotion(const Move&move);
+        void undoKingSideCastle();
+        void undoQueenSideCastle();
 
         const uint64_t WRookRPosition=1;
         const uint64_t  WRookLPosition=1LL<<7;

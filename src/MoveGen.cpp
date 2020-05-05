@@ -379,28 +379,29 @@ namespace BitEngine {
     void MoveGen::addAllCastling(uint64_t all, Color color, std::vector<Move> &moves) {
         uint64_t attacks = getAllAttacks(getOpposite(color));
         uint64_t not_in_check = ~attacks;
+        uint64_t not_occupied=~all;
         uint64_t valid = ~(attacks | all);
 
 
         if (color == White) {
-            uint64_t white_king = board.getBitboard(WKing);
-            uint64_t a = white_king >> 1, b = white_king >> 2, c = white_king << 1, d = white_king << 2;
+            uint64_t white_king = board.WKingPosition;
+            uint64_t a = white_king >> 1, b = white_king >> 2, c = white_king << 1, d = white_king << 2,e=white_king<<3;
             if (white_king & not_in_check) {
                 if (board.gamestate.getState(canCastleKingSideWhite) && (a & valid) && (b & valid)) {
                     addKingSideCastle(white_king, b, color, moves);
                 }
-                if (board.gamestate.getState(canCastleQueenSideWhite) && (c & valid) && (d & valid)) {
+                if (board.gamestate.getState(canCastleQueenSideWhite) && (c & valid) && (d & valid) && (e&not_occupied)) {
                     addQueenSideCastle(white_king, d, color, moves);
                 }
             }
         } else {
-            uint64_t black_king = board.getBitboard(BKing);
-            uint64_t a = black_king >> 1, b = black_king >> 2, c = black_king << 1, d = black_king << 2;
+            uint64_t black_king = board.BKingPosition;
+            uint64_t a = black_king >> 1, b = black_king >> 2, c = black_king << 1, d = black_king << 2,e=black_king<<3;
             if (black_king & not_in_check) {
                 if (board.gamestate.getState(canCastleKingSideBlack) && (a & valid) && (b & valid)) {
                     addKingSideCastle(black_king, b, color, moves);
                 }
-                if (board.gamestate.getState(canCastleQueenSideBlack) && (c & valid) && (d & valid)) {
+                if (board.gamestate.getState(canCastleQueenSideBlack) && (c & valid) && (d & valid) && (e&not_occupied)) {
                     addQueenSideCastle(black_king, d, color, moves);
                 }
             }
