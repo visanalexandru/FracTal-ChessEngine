@@ -305,7 +305,7 @@ namespace BitEngine {
             }
             board.undoLastMove();
         }
-       addAllCastling(same_side|opposite_side,color,to_return);
+        addAllCastling(same_side|opposite_side,color,to_return);
         return to_return;
     }
 
@@ -389,6 +389,9 @@ namespace BitEngine {
                 if (board.gamestate.getState(canCastleKingSideWhite) && (a & valid) && (b & valid)) {
                     addKingSideCastle(white_king, b, color, moves);
                 }
+                if (board.gamestate.getState(canCastleQueenSideWhite) && (c & valid) && (d & valid)) {
+                    addQueenSideCastle(white_king, d, color, moves);
+                }
             }
         } else {
             uint64_t black_king = board.getBitboard(BKing);
@@ -397,8 +400,10 @@ namespace BitEngine {
                 if (board.gamestate.getState(canCastleKingSideBlack) && (a & valid) && (b & valid)) {
                     addKingSideCastle(black_king, b, color, moves);
                 }
+                if (board.gamestate.getState(canCastleQueenSideBlack) && (c & valid) && (d & valid)) {
+                    addQueenSideCastle(black_king, d, color, moves);
+                }
             }
-
         }
     }
 }

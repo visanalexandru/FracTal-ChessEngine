@@ -75,30 +75,6 @@ namespace BitEngine {
             removePieceAt(move.getDestination(), move.getTaken());
         setPieceAt(move.getDestination(), move.getMoved());
         removePieceAt(move.getOrigin(), move.getMoved());
-
-
-        if (getTurn() == Color::White) {
-            if (org == WKingPosition) {
-                gamestate.unsetState(canCastleKingSideWhite);
-                gamestate.unsetState(canCastleQueenSideWhite);
-            } else if (org == WRookRPosition) {
-                gamestate.unsetState(canCastleKingSideWhite);
-            } else if (org == WRookLPosition) {
-                gamestate.unsetState(canCastleQueenSideWhite);
-            }
-        } else {
-
-
-            if (org == BKingPosition) {
-                gamestate.unsetState(canCastleKingSideBlack);
-                gamestate.unsetState(canCastleQueenSideBlack);
-            } else if (org == BRookRPosition) {
-                gamestate.unsetState(canCastleKingSideBlack);
-            } else if (org == BRookLPosition) {
-                gamestate.unsetState(canCastleQueenSideBlack);
-            }
-
-        }
     }
 
     void Board::makePromotion(const BitEngine::Move &move) {
@@ -143,7 +119,49 @@ namespace BitEngine {
 
     void Board::makeQueenSideCastle() {
 
+        if (getTurn() == White) {
+            removePieceAt(WKingPosition, WKing);
+            removePieceAt(WRookLPosition, WRook);
 
+            setPieceAt(WKingPosition << 2, Piece::WKing);
+            setPieceAt(WKingPosition << 1, Piece::WRook);
+
+        } else {
+            removePieceAt(BKingPosition, BKing);
+            removePieceAt(BRookLPosition, BRook);
+
+            setPieceAt(BKingPosition << 2, Piece::BKing);
+            setPieceAt(BKingPosition << 1, Piece::BRook);
+        }
+    }
+
+    void Board::updateCastlingRights(const Move &move) {
+        uint64_t origin = move.getOrigin();
+        uint64_t destination = move.getDestination();
+        if (getTurn() == White) {
+            if (origin == WKingPosition) {
+                gamestate.unsetState(canCastleKingSideWhite);
+                gamestate.unsetState(canCastleQueenSideWhite);
+            }
+            if (origin == WRookLPosition || destination == WRookLPosition) {
+                gamestate.unsetState(canCastleQueenSideWhite);
+            }
+            if (origin == WRookRPosition || destination == WRookRPosition) {
+                gamestate.unsetState(canCastleKingSideWhite);
+            }
+        } else {
+            if (origin == BKingPosition) {
+                gamestate.unsetState(canCastleKingSideBlack);
+                gamestate.unsetState(canCastleQueenSideBlack);
+            }
+            if (origin == BRookLPosition || destination == BRookLPosition) {
+                gamestate.unsetState(canCastleQueenSideBlack);
+            }
+            if (origin == BRookRPosition || destination == BRookRPosition) {
+                gamestate.unsetState(canCastleKingSideBlack);
+            }
+
+        }
     }
 
     void Board::makeMove(const Move &move) {
@@ -157,11 +175,9 @@ namespace BitEngine {
             makeEnPassant(move);
         else if (type == MoveType::KingSideCastle)
             makeKingSideCastle();
-        /*
         else if (type == MoveType::QueenSideCastle)
             makeQueenSideCastle();
-
-*/
+        updateCastlingRights(move);
         gamestate.toggleState(turnColor);
         gamestate.setLastMove(move);
 
