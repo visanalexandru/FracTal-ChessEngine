@@ -50,9 +50,22 @@ namespace BitEngine{
         EnPassant,
         Promote,
     };
+
+    const uint64_t WRookRPosition=1;
+    const uint64_t  WRookLPosition=1LL<<7;
+    const uint64_t  WKingPosition=1LL<<3;
+    const uint64_t BRookLPosition=1LL<<63;
+    const uint64_t  BRookRPosition=1LL<<56;
+    const uint64_t  BKingPosition=1LL<<59;
+
     char getPieceChar(Piece type);
-    Color  getOpposite(Color color);
-    Piece getPiece(PieceType type,Color color);
+    inline Color  getOpposite(Color color){
+        return static_cast<Color>(1-color);
+    }
+    inline Piece getPiece(PieceType type,Color color){
+        int index= static_cast<int>(type)*2+color;
+        return static_cast<Piece>(index);
+    }
 }
 
 #endif

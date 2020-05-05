@@ -25,13 +25,6 @@ namespace BitEngine {
         void undoPromotion(const Move&move);
         void undoKingSideCastle();
         void undoQueenSideCastle();
-
-        const uint64_t WRookRPosition=1;
-        const uint64_t  WRookLPosition=1LL<<7;
-        const uint64_t  WKingPosition=1LL<<3;
-        const uint64_t BRookLPosition=1LL<<63;
-        const uint64_t  BRookRPosition=1LL<<56;
-        const uint64_t  BKingPosition=1LL<<59;
         std::stack<GameState> history;
         uint64_t bitboards[12];
         GameState gamestate;

@@ -9,12 +9,4 @@ namespace BitEngine{
     char getPieceChar(Piece type){
         return pieceChar[type];
     }
-
-    Color getOpposite(Color color){
-        return static_cast<Color>(1-color);
-    }
-    Piece getPiece(PieceType type, BitEngine::Color color) {
-        int index= static_cast<int>(type)*2+color;
-        return static_cast<Piece>(index);
-    }
 }

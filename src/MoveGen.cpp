@@ -384,7 +384,7 @@ namespace BitEngine {
 
 
         if (color == White) {
-            uint64_t white_king = board.WKingPosition;
+            uint64_t white_king =WKingPosition;
             uint64_t a = white_king >> 1, b = white_king >> 2, c = white_king << 1, d = white_king << 2,e=white_king<<3;
             if (white_king & not_in_check) {
                 if (board.gamestate.getState(canCastleKingSideWhite) && (a & valid) && (b & valid)) {
@@ -395,7 +395,7 @@ namespace BitEngine {
                 }
             }
         } else {
-            uint64_t black_king = board.BKingPosition;
+            uint64_t black_king =BKingPosition;
             uint64_t a = black_king >> 1, b = black_king >> 2, c = black_king << 1, d = black_king << 2,e=black_king<<3;
             if (black_king & not_in_check) {
                 if (board.gamestate.getState(canCastleKingSideBlack) && (a & valid) && (b & valid)) {
