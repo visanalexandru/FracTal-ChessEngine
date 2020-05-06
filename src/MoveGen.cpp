@@ -308,7 +308,6 @@ namespace Engine {
         addAllCastling(same_side|opposite_side,color,to_return);
         return to_return;
     }
-
     void
     MoveGen::addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         if (color == White)
@@ -407,4 +406,9 @@ namespace Engine {
             }
         }
     }
+    bool MoveGen::isInCheck(Engine::Color color) {
+        uint64_t  attacks=getAllAttacks(getOpposite(color));
+        return board.getBitboard(getPiece(PieceType::King,color))&attacks;
+    }
+
 }

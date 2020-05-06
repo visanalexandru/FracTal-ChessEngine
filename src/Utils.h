@@ -22,6 +22,9 @@ namespace Engine{
         inline int bitScanReverse(uint64_t x){
             return 63-__builtin_clzll(x);
         }
+        inline int popCount(uint64_t x){
+            return __builtin_popcountll(x);
+        }
 
 
         //just for debugging

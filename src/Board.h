@@ -32,6 +32,7 @@ namespace Engine {
         void resetBoard();
     public:
         Board();
+        const GameState&getGameState();
         uint64_t getBitboard(Piece type);
         uint64_t  getPieces(Color color) const;
         uint64_t getAll() const;

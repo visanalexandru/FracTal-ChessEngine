@@ -53,13 +53,9 @@ void Protocol::handleRequest(const std::string &req) {
             Log(board.toString());
         }
     } else if (cmmd == "go") {
-        Engine::MoveGen movegen(board);
-        std::vector<Engine::Move> moves = movegen.getAllMoves();
-        //std::sort(moves.begin(),moves.end(),compare);
-        for(Engine::Move a:moves)
-            Log("available "+a.toString());
+        Engine::Eval eval(board);
 
-        Engine::Move bestmove = moves[rand() % moves.size()];
+        Engine::Move bestmove =eval.getBestMove();
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
         Log(board.toString());

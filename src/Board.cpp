@@ -66,6 +66,9 @@ namespace Engine {
     Color Board::getTurn() const {
         return static_cast<Color>(gamestate.getState(turnColor));
     }
+    const GameState& Board::getGameState() {
+        return gamestate;
+    }
 
     void Board::makeNormalMove(const Engine::Move &move) {
         uint64_t org = move.getOrigin();

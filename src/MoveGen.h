@@ -88,6 +88,8 @@ namespace Engine {
     public:
         MoveGen(Board &internal_board);
 
+        bool isInCheck(Color color);
+
         std::vector<Move> getAllMoves();
 
     };

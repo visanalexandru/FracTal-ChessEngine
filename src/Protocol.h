@@ -6,7 +6,7 @@
 #include<fstream>
 #include<sstream>
 #include "AnParser.h"
-
+#include "Eval.h"
 class Protocol {
 private:
     Engine::Board &board;
