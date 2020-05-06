@@ -24,12 +24,22 @@ namespace Engine {
         return white_pawn_score + black_pawn_score + white_knight_score + black_knight_score + white_bishop_score +
                black_bishop_score + white_rook_score + black_rook_score + white_queen_score + black_queen_score;
     }
+    int Eval::score(Engine::Move a) {
+        int to_return=0;
+        if(a.getTaken()!=Piece::None)
+            to_return++;
+        if(a.getType()==MoveType::Promote)
+            to_return+=10;
+        return to_return;
+    }
+    bool Eval::compare(Move a,Move b) {
+        return score(a)>score(b);
+    }
 
     Move Eval::getBestMove() {
         std::cout<<"current score"<<getScore()<<std::endl;
         int alpha=-infinity,beta=infinity;
-        node best=megamax(5,-infinity,infinity,internal_board.getTurn());
-        std::cout<<"best score"<<best.value<<" in "<<4-best.depth<<std::endl;
+        node best=megamax(6,-infinity,infinity,internal_board.getTurn());
         return best.move;
     }
 
@@ -48,6 +58,7 @@ namespace Engine {
                 bestnode.value=checkmate;
             else bestnode.value=stalemate;
         }
+        std::sort(moves.begin(),moves.end(),compare);
 
         for (const Move &move:moves) {
             internal_board.makeMove(move);

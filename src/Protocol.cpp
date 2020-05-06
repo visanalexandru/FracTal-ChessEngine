@@ -40,18 +40,21 @@ void Protocol::handleRequest(const std::string &req) {
     } else if (cmmd == "position") {
         std::string aux;
         sstream >> aux;//the first string is a fen string or "startpos"
-
-        while (!sstream.eof())
-            sstream >> aux;
-
-        Engine::Move server_move = Engine::AnParser::getMove(aux, board);
-        if (server_move.getType() == Engine::MoveType::Null) {
-            Log("invalid move" + server_move.toString());
-            isRunning = false;
-        } else {
-            board.makeMove(Engine::AnParser::getMove(aux, board));
-            Log(board.toString());
+        if(aux=="startpos"){
+            board.loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         }
+        else{
+            board.loadFen(aux);
+        }
+        if(!sstream.eof()){
+            sstream>>aux;//moves
+            while (!sstream.eof()){
+                sstream>>aux;
+                Engine::Move server_move = Engine::AnParser::getMove(aux, board);
+                board.makeMove(server_move);
+            }
+        }
+
     } else if (cmmd == "go") {
         Engine::Eval eval(board);
 

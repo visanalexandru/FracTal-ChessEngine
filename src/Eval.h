@@ -2,7 +2,7 @@
 #define CHESSENGINE_EVAL_H
 
 #include "MoveGen.h"
-
+#include <algorithm>
 namespace Engine {
     class Eval {
     private:
@@ -11,15 +11,16 @@ namespace Engine {
             int depth;
             Move move;
         };
+       static bool compare(Move a,Move b);
+       static int score(Move a);
 
         Board&internal_board;
         MoveGen movegen;
-        const int pawn_value=10;
-        const int knight_value=30;
-        const int bishop_value=30;
-        const int rook_value=50;
-        const int queen_value=100;
-        const int canCastle=3;
+        const int pawn_value=100;
+        const int knight_value=320;
+        const int bishop_value=330;
+        const int rook_value=500;
+        const int queen_value=900;
         const int infinity=999999;
         const int checkmate=-9999;
         const int stalemate=0;
