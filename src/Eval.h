@@ -21,10 +21,13 @@ namespace Engine {
         const int bishop_value=330;
         const int rook_value=500;
         const int queen_value=900;
-        const int infinity=999999;
-        const int checkmate=-9999;
+        const int infinity=99999999;
+        const int checkmate=-9999999;
         const int stalemate=0;
+        int getBonusPieceScore(PieceType piece,Color color) const;
         int getScore() const;
+        int getMaterialScore(Color color) const;
+        int getBonusScore(Color color) const;
         node megamax(int depth,int alpha,int beta,Color color);
     public:
         Eval(Board&board);
