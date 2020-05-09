@@ -9,6 +9,7 @@
 #include "Tables.h"
 #include "Types.h"
 #include "GameState.h"
+#include "Zobrist.h"
 
 namespace Engine {
     class Board {
@@ -16,10 +17,13 @@ namespace Engine {
         void makeNormalMove(const Move&move);
         void makePromotion(const Move &move);
         void makeEnPassant(const Move&move);
+        void makeDoublePawnPush(const Move&move);
         void makeKingSideCastle();
         void makeQueenSideCastle();
         void updateCastlingRights(const Move&move);
 
+
+        //We don't need to update the zobrist key for in  the undo functions as a zobrist history is held in the game state stack
         void undoNormalMove(const Move&move);
         void undoEnPassant(const Move&move);
         void undoPromotion(const Move&move);
@@ -28,7 +32,6 @@ namespace Engine {
         std::stack<GameState> history;
         uint64_t bitboards[12];
         GameState gamestate;
-
         void resetBoard();
     public:
         Board();

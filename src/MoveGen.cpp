@@ -232,8 +232,8 @@ namespace Engine {
                         addCapture(square, attack, WPawn, moves);
                     else addPromotions(square, attack, White, board.getPieceAt(attack), moves);
                 } else {
-                    uint64_t dest = board.gamestate.getLastMove().getDestination();
-                    MoveType type = board.gamestate.getLastMove().getType();
+                    uint64_t dest = board.gamestate.lastmove.getDestination();
+                    MoveType type = board.gamestate.lastmove.getType();
 
                     if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1) &&
                         attack == dest << 8)
@@ -268,8 +268,8 @@ namespace Engine {
                         addCapture(square, attack, BPawn, moves);
                     else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
                 } else {
-                    uint64_t dest = board.gamestate.getLastMove().getDestination();
-                    MoveType type = board.gamestate.getLastMove().getType();
+                    uint64_t dest = board.gamestate.lastmove.getDestination();
+                    MoveType type = board.gamestate.lastmove.getType();
 
                     if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1)
                         && attack == dest >> 8)

@@ -9,9 +9,9 @@ namespace Engine {
 
     private:
         uint16_t state_flags;
-        Move lastmove;
     public:
-
+        uint64_t zobrist_key;
+        Move lastmove;
         bool getState(State state) const;
 
         void setState(State state);
@@ -19,10 +19,6 @@ namespace Engine {
         void unsetState(State state);
 
         void toggleState(State state);
-
-        Move getLastMove() const;
-
-        void setLastMove(Move move);
 
         void reset();
 
