@@ -1,7 +1,7 @@
 #include "Eval.h"
 
 namespace Engine {
-    Eval::Eval(Board &board) : internal_board(board), movegen(board) {
+    Eval::Eval(Board &board) : internal_board(board), movegen(board),Ttable(10000000){
 
     }
 
@@ -77,10 +77,27 @@ namespace Engine {
             if (alpha >= beta)
                 break;
         }
+        Ttable.addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best));
         return to_return;
     }
 
+    //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
+
+        uint64_t hash=internal_board.getGameState().zobrist_key;
+        int alphaOrig=alpha;
+        Transposition node=Ttable.getTransposition(hash);
+        if(node.getType()!=NodeType::Null &&node.getDepth()>=depth){
+            if(node.getType()==NodeType::Exact)
+                return node.getValue();
+            else if(node.getType()==NodeType::LowerBound)
+                alpha=std::max(alpha,node.getValue());
+            else if(node.getType()==NodeType::UpperBound)
+                beta=std::min(beta,node.getValue());
+            if(alpha>=beta)
+                return node.getValue();
+        }
+
         if (depth == 0) {
             int score = getScore();
             if (color == Black)
@@ -90,7 +107,7 @@ namespace Engine {
         std::vector<Move> moves = movegen.getAllMoves();
         if (moves.size() == 0) {
             if (movegen.isInCheck(color))
-                return checkmate - depth;
+                return checkmate - depth;//try to delay the checkmate
             return stalemate;
         }
         int best = -infinity;
@@ -104,6 +121,16 @@ namespace Engine {
             if (alpha >= beta)
                 break;
         }
+
+
+        //save the position in the transposition table
+        NodeType node_type;
+        if(best<=alphaOrig)//did not affect the score
+            node_type=NodeType::UpperBound;
+        else if(best>=beta)
+            node_type=NodeType::LowerBound;
+        else node_type=NodeType::Exact;
+        Ttable.addEntry(Transposition(node_type,hash,depth,best));
         return best;
     }
 }
