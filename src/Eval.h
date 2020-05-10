@@ -6,11 +6,6 @@
 namespace Engine {
     class Eval {
     private:
-        struct node{
-            int value;
-            int depth;
-            Move move;
-        };
        static bool compare(Move a,Move b);
        static int score(Move a);
 
@@ -28,7 +23,8 @@ namespace Engine {
         int getScore() const;
         int getMaterialScore(Color color) const;
         int getBonusScore(Color color) const;
-        node megamax(int depth,int alpha,int beta,Color color);
+        int megamax(int depth,int alpha,int beta,Color color);
+        Move megamaxRoot(int depth,Color color);
     public:
         Eval(Board&board);
         Move getBestMove();

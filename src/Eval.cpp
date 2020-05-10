@@ -57,42 +57,53 @@ namespace Engine {
 
     Move Eval::getBestMove() {
         int alpha = -infinity, beta = infinity;
-        node best = megamax(6, -infinity, infinity, internal_board.getTurn());
-        return best.move;
+        return megamaxRoot(6,internal_board.getTurn());
     }
 
-    Eval::node Eval::megamax(int depth, int alpha, int beta, Color color) {
-        if (depth == 0) {
-            int score = getScore();
-            if (color == White)
-                return {score, 0};
-            return {-score, 0};
-        }
+    Move Eval::megamaxRoot(int depth,Color color) {
+        int alpha = -infinity, beta = infinity, best = -infinity;
+        Move to_return;
         std::vector<Move> moves = movegen.getAllMoves();
-        node bestnode{-infinity, depth};
-
-        if (moves.size() == 0) {
-            if (movegen.isInCheck(color))
-                bestnode.value = checkmate;
-            else bestnode.value = stalemate;
-        }
         std::sort(moves.begin(), moves.end(), compare);
         for (const Move &move:moves) {
             internal_board.makeMove(move);
-            node next = megamax(depth - 1, -beta, -alpha, getOpposite(color));
-            int down = -next.value;
+            int down = -megamax(depth - 1, -beta, -alpha, getOpposite(color));
             internal_board.undoLastMove();
-
-            if (down > bestnode.value || (down == bestnode.value && bestnode.depth < next.depth)) {
-                bestnode.move = move;
-                bestnode.value = down;
-                bestnode.depth = next.depth;
+            if (down > best) {
+                best = down;
+                to_return = move;
             }
-
-            alpha = std::max(alpha, bestnode.value);
+            alpha = std::max(alpha, best);
             if (alpha >= beta)
                 break;
         }
-        return bestnode;
+        return to_return;
+    }
+
+    int Eval::megamax(int depth, int alpha, int beta, Color color) {
+        if (depth == 0) {
+            int score = getScore();
+            if (color == Black)
+                score = -score;
+            return score;
+        }
+        std::vector<Move> moves = movegen.getAllMoves();
+        if (moves.size() == 0) {
+            if (movegen.isInCheck(color))
+                return checkmate + depth;
+            return stalemate;
+        }
+        int best = -infinity;
+        std::sort(moves.begin(), moves.end(), compare);
+        for (const Move &move:moves) {
+            internal_board.makeMove(move);
+            int down = -megamax(depth - 1, -beta, -alpha, getOpposite(color));
+            internal_board.undoLastMove();
+            best = std::max(best, down);
+            alpha = std::max(alpha, best);
+            if (alpha >= beta)
+                break;
+        }
+        return best;
     }
 }
