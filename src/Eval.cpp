@@ -90,7 +90,7 @@ namespace Engine {
         std::vector<Move> moves = movegen.getAllMoves();
         if (moves.size() == 0) {
             if (movegen.isInCheck(color))
-                return checkmate + depth;
+                return checkmate - depth;
             return stalemate;
         }
         int best = -infinity;
