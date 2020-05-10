@@ -33,12 +33,14 @@ namespace Engine {
         uint64_t bitboards[12];
         GameState gamestate;
         void resetBoard();
+        int numMoves;
     public:
         Board();
         const GameState&getGameState();
         uint64_t getBitboard(Piece type);
         uint64_t  getPieces(Color color) const;
         uint64_t getAll() const;
+        int getNumMoves() const;
         Color getTurn() const;
         std::string toString() const;
         Piece getPieceAt(uint64_t position) const;

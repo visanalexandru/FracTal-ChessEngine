@@ -3,7 +3,7 @@
 
 namespace Engine {
 
-    Board::Board() : bitboards() {
+    Board::Board() : bitboards(),numMoves(0) {
         loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 
@@ -13,7 +13,9 @@ namespace Engine {
             to_return |= bitboards[2 * i + color];
         return to_return;
     }
-
+    int Board::getNumMoves() const {
+        return  numMoves;
+    }
 
     uint64_t Board::getAll() const {
         return getPieces(White) | getPieces(Black);
@@ -205,6 +207,7 @@ namespace Engine {
         }
         gamestate.zobrist_key^=Zobrist::ZobristSide;
         gamestate.lastmove=move;
+        numMoves++;
     }
 
     void Board::undoNormalMove(const Move &move) {
@@ -286,10 +289,12 @@ namespace Engine {
         }
 
         gamestate = history.top();
+        numMoves--;
         history.pop();
     }
 
     void Board::resetBoard() {
+        numMoves=0;
         for (int i = 0; i < 12; i++)
             bitboards[i] = 0;
         gamestate.reset();
