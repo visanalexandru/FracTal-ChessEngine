@@ -6,8 +6,8 @@ namespace Engine {
 
     }
 
-    Transposition::Transposition(Engine::NodeType node_type, uint64_t node_hash, int node_depth, int node_value) :
-            type(node_type), zobrist_hash(node_hash), depth(node_depth), value(node_value) {
+    Transposition::Transposition(Engine::NodeType node_type, uint64_t node_hash, int node_depth, int node_value,Move node_best_move) :
+            type(node_type), zobrist_hash(node_hash), depth(node_depth), value(node_value),best_move(node_best_move) {
 
 
     }
@@ -26,6 +26,10 @@ namespace Engine {
 
     int Transposition::getValue() const {
         return value;
+    }
+
+    const Move &Transposition::getBestMove() const {
+        return best_move;
     }
 
 }

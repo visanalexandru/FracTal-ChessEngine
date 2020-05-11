@@ -22,6 +22,8 @@ namespace Engine{
     public:
         Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion);
 
+        bool operator==(const Move &rhs) const;
+
         Move();
 
         uint64_t getOrigin() const;

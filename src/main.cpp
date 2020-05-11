@@ -13,4 +13,5 @@ int main() {
     Engine::Eval eval(board);
     Protocol uci(board);
     uci.start();
+    return 0;
 }

@@ -72,4 +72,13 @@ namespace Engine {
 
         return result;
     }
+
+    bool Move::operator==(const Move &rhs) const {
+        return origin == rhs.origin &&
+               destination == rhs.destination &&
+               move_type == rhs.move_type &&
+               taken == rhs.taken &&
+               promote_to == rhs.promote_to &&
+               moved == rhs.moved;
+    }
 }

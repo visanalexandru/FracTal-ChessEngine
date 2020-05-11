@@ -30,7 +30,6 @@ namespace Engine {
         return score;
 
     }
-
     int Eval::getBonusScore(Color color) const {
         return getBonusPieceScore(PieceType::Pawn, color) + getBonusPieceScore(PieceType::Knight, color) +
                getBonusPieceScore(PieceType::Bishop, color) + getBonusPieceScore(PieceType::Rook, color) +
@@ -53,16 +52,25 @@ namespace Engine {
     }
     void Eval::setRating(std::vector<Move> &moves) {
         Color color=internal_board.getTurn();
+        Transposition here=Ttable.getTransposition(internal_board.getGameState().zobrist_key);
+        Move best_move=here.getBestMove();
         for(Move&move:moves){
-            internal_board.makeMove(move);
-            move.setScore(getHeuristicScore(color));
-            internal_board.undoLastMove();
+            if(here.getType()!=NodeType::Null && move==best_move){
+                move.setScore(100000);
+            }
+            else{
+                internal_board.makeMove(move);
+                move.setScore(getHeuristicScore(color));
+                internal_board.undoLastMove();
+            }
         }
     }
 
     Move Eval::getBestMove() {
         int alpha = -infinity, beta = infinity;
-        return megamaxRoot(7,internal_board.getTurn());
+        Color  color=internal_board.getTurn();
+        Move bestmove=megamaxRoot(6,color);
+        return bestmove;
     }
 
     Move Eval::megamaxRoot(int depth,Color color) {
@@ -83,7 +91,7 @@ namespace Engine {
             if (alpha >= beta)
                 break;
         }
-        Ttable.addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best));
+        Ttable.addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best,to_return));
         return to_return;
     }
 
@@ -114,13 +122,17 @@ namespace Engine {
             return stalemate;
         }
         int best = -infinity;
+        Move best_move;
         setRating(moves);
         std::sort(moves.begin(), moves.end(), compare);
         for (const Move &move:moves) {
             internal_board.makeMove(move);
             int down = -megamax(depth - 1, -beta, -alpha, getOpposite(color));
             internal_board.undoLastMove();
-            best = std::max(best, down);
+            if(down>best){
+                best=down;
+                best_move=move;
+            }
             alpha = std::max(alpha, best);
             if (alpha >= beta)
                 break;
@@ -134,7 +146,7 @@ namespace Engine {
         else if(best>=beta)
             node_type=NodeType::LowerBound;
         else node_type=NodeType::Exact;
-        Ttable.addEntry(Transposition(node_type,hash,depth,best));
+        Ttable.addEntry(Transposition(node_type,hash,depth,best,best_move));
         return best;
     }
 }
