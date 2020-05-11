@@ -7,9 +7,16 @@ namespace Engine {
             destination(end),
             taken(piece_taken),
             promote_to(promotion),
-            moved(piece_moved) {
+            moved(piece_moved),
+            score(0){
 
 
+    }
+    int Move::getScore() const {
+        return  score;
+    }
+    void Move::setScore(int new_score) {
+        score=new_score;
     }
 
     Move::Move() : move_type(MoveType::Null),

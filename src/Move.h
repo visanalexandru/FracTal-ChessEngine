@@ -18,6 +18,7 @@ namespace Engine{
         Piece taken;
         Piece promote_to;
         Piece moved;
+        int score;
     public:
         Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion);
 
@@ -36,6 +37,10 @@ namespace Engine{
         Piece getMoved() const;
 
         std::string toString() const;
+
+        int getScore() const;
+
+        void setScore(int new_score);
     };
 
 

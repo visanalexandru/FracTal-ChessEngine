@@ -8,8 +8,7 @@
 namespace Engine {
     class Eval {
     private:
-       static bool compare(Move a,Move b);
-       static int score(Move a);
+       static bool compare(const Move&a,const Move&b);
 
         Board&internal_board;
         MoveGen movegen;
@@ -22,6 +21,8 @@ namespace Engine {
         const int checkmate=-9999999;
         const int stalemate=0;
         TranspositionTable Ttable;
+        void setRating(std::vector<Move>&moves);
+        int getHeuristicScore(Color color) const;
         int getBonusPieceScore(PieceType piece,Color color) const;
         int getScore() const;
         int getMaterialScore(Color color) const;

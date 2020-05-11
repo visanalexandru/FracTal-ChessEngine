@@ -1,7 +1,7 @@
 #include "Eval.h"
 
 namespace Engine {
-    Eval::Eval(Board &board) : internal_board(board), movegen(board),Ttable(10000000){
+    Eval::Eval(Board &board) : internal_board(board), movegen(board),Ttable(1048583){
 
     }
 
@@ -41,29 +41,35 @@ namespace Engine {
         return getMaterialScore(White) - getMaterialScore(Black)
                + getBonusScore(White) - getBonusScore(Black);
     }
-
-    int Eval::score(Engine::Move a) {
-        int to_return = 0;
-        if (a.getTaken() != Piece::None)
-            to_return++;
-        if (a.getType() == MoveType::Promote)
-            to_return += 10;
-        return to_return;
+    int Eval::getHeuristicScore(Color color) const {
+        int score=getScore();
+        if(color==Black)
+            return -score;
+        return  score;
     }
 
-    bool Eval::compare(Move a, Move b) {
-        return score(a) > score(b);
+    bool Eval::compare(const Move&a,const Move&b) {
+        return a.getScore() >b.getScore();
+    }
+    void Eval::setRating(std::vector<Move> &moves) {
+        Color color=internal_board.getTurn();
+        for(Move&move:moves){
+            internal_board.makeMove(move);
+            move.setScore(getHeuristicScore(color));
+            internal_board.undoLastMove();
+        }
     }
 
     Move Eval::getBestMove() {
         int alpha = -infinity, beta = infinity;
-        return megamaxRoot(6,internal_board.getTurn());
+        return megamaxRoot(7,internal_board.getTurn());
     }
 
     Move Eval::megamaxRoot(int depth,Color color) {
         int alpha = -infinity, beta = infinity, best = -infinity;
         Move to_return;
         std::vector<Move> moves = movegen.getAllMoves();
+        setRating(moves);
         std::sort(moves.begin(), moves.end(), compare);
         for (const Move &move:moves) {
             internal_board.makeMove(move);
@@ -99,10 +105,7 @@ namespace Engine {
         }
 
         if (depth == 0) {
-            int score = getScore();
-            if (color == Black)
-                score = -score;
-            return score;
+            return getHeuristicScore(color);
         }
         std::vector<Move> moves = movegen.getAllMoves();
         if (moves.size() == 0) {
@@ -111,6 +114,7 @@ namespace Engine {
             return stalemate;
         }
         int best = -infinity;
+        setRating(moves);
         std::sort(moves.begin(), moves.end(), compare);
         for (const Move &move:moves) {
             internal_board.makeMove(move);
