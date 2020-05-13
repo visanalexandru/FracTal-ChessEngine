@@ -10,7 +10,6 @@ int main() {
     Engine::Tables::initializeAttackTables();
     Engine::Zobrist::initZobrist();
     Engine::Board board;
-    Engine::Eval eval(board);
     Protocol uci(board);
     uci.start();
     return 0;

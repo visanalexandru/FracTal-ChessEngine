@@ -1,7 +1,13 @@
 #include "TranspositionTable.h"
 namespace Engine {
+    TranspositionTable& TranspositionTable::getInstance() {
+
+        static TranspositionTable instance(1048583);
+        return instance;
+    }
 
     TranspositionTable::TranspositionTable(int entries) : table_size(entries) {
+        std::cout<<"created transposition table of size "<<entries<<std::endl;
         nodes = new Transposition[entries];
     }
 

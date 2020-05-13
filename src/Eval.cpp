@@ -1,7 +1,7 @@
 #include "Eval.h"
 
 namespace Engine {
-    Eval::Eval(Board &board) : internal_board(board), movegen(board),Ttable(1048583){
+    Eval::Eval(Board &board) : internal_board(board), movegen(board){
 
     }
 
@@ -52,7 +52,7 @@ namespace Engine {
     }
     void Eval::setRating(std::vector<Move> &moves) {
         Color color=internal_board.getTurn();
-        Transposition here=Ttable.getTransposition(internal_board.getGameState().zobrist_key);
+        Transposition here=TranspositionTable::getInstance().getTransposition(internal_board.getGameState().zobrist_key);
         Move best_move=here.getBestMove();
         for(Move&move:moves){
             if(here.getType()!=NodeType::Null && move==best_move){
@@ -91,7 +91,7 @@ namespace Engine {
             if (alpha >= beta)
                 break;
         }
-        Ttable.addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best,to_return));
+        TranspositionTable::getInstance().addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best,to_return));
         return to_return;
     }
 
@@ -100,7 +100,7 @@ namespace Engine {
 
         uint64_t hash=internal_board.getGameState().zobrist_key;
         int alphaOrig=alpha;
-        Transposition node=Ttable.getTransposition(hash);
+        Transposition node=TranspositionTable::getInstance().getTransposition(hash);
         if(node.getType()!=NodeType::Null &&node.getDepth()>=depth){
             if(node.getType()==NodeType::Exact)
                 return node.getValue();
@@ -146,7 +146,7 @@ namespace Engine {
         else if(best>=beta)
             node_type=NodeType::LowerBound;
         else node_type=NodeType::Exact;
-        Ttable.addEntry(Transposition(node_type,hash,depth,best,best_move));
+        TranspositionTable::getInstance().addEntry(Transposition(node_type,hash,depth,best,best_move));
         return best;
     }
 }

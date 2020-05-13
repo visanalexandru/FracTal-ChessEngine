@@ -20,7 +20,6 @@ namespace Engine {
         const int infinity=99999999;
         const int checkmate=-9999999;
         const int stalemate=0;
-        TranspositionTable Ttable;
         void setRating(std::vector<Move>&moves);
         int getHeuristicScore(Color color) const;
         int getBonusPieceScore(PieceType piece,Color color) const;

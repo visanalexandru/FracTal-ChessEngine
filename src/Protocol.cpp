@@ -58,7 +58,10 @@ void Protocol::handleRequest(const std::string &req) {
     } else if (cmmd == "go") {
         Engine::Eval eval(board);
 
+        float a =clock();
         Engine::Move bestmove =eval.getBestMove();
+        a=(clock()-a)/CLOCKS_PER_SEC;
+        Log("found in "+std::to_string(a));
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
         Log(board.toString());
