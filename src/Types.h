@@ -59,6 +59,7 @@ namespace Engine{
     const uint64_t  BKingPosition=1LL<<59;
 
     char getPieceChar(Piece type);
+    int getPieceValue(Piece type);
     inline Color  getOpposite(Color color){
         return static_cast<Color>(1-color);
     }

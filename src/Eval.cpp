@@ -54,14 +54,16 @@ namespace Engine {
         Color color=internal_board.getTurn();
         Transposition here=TranspositionTable::getInstance().getTransposition(internal_board.getGameState().zobrist_key);
         Move best_move=here.getBestMove();
+        int score;
         for(Move&move:moves){
             if(here.getType()!=NodeType::Null && move==best_move){
                 move.setScore(100000);
             }
             else{
-                internal_board.makeMove(move);
-                move.setScore(getHeuristicScore(color));
-                internal_board.undoLastMove();
+                score=0;
+                score+=getPieceValue(move.getTaken());
+                score+=getPieceValue(move.getPromotion());
+                move.setScore(score);
             }
         }
     }
