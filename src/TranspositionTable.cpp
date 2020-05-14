@@ -2,7 +2,7 @@
 namespace Engine {
     TranspositionTable& TranspositionTable::getInstance() {
 
-        static TranspositionTable instance(1048583);
+        static TranspositionTable instance(10002943);
         return instance;
     }
 

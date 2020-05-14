@@ -93,11 +93,28 @@ namespace Engine {
         }
     }
 
-    Move Eval::getBestMove() {
+    Move Eval::getBestMove(float allotted) {
+        last_time=std::chrono::system_clock::now();
+        allotted_time=allotted;
+        premature_stop=false;
         int alpha = -infinity, beta = infinity;
         Color  color=internal_board.getTurn();
-        Move bestmove=megamaxRoot(6,color);
+        Move bestmove=megamaxRoot(1,color);//base move is depth 1
+        int depth=2;
+
+        while(true){
+            Move aux=megamaxRoot(depth,color);
+            if(!premature_stop){
+                bestmove=aux;
+            }
+            else break;
+            depth++;
+        }
         return bestmove;
+    }
+    bool Eval::hasTimeLeft() const {
+        std::chrono::duration<double> diff = std::chrono::system_clock::now()-last_time;
+        return (diff.count()) < allotted_time;
     }
 
     Move Eval::megamaxRoot(int depth,Color color) {
@@ -107,6 +124,10 @@ namespace Engine {
         setRating(moves);
         std::sort(moves.begin(), moves.end(), compare);
         for (const Move &move:moves) {
+            if(!hasTimeLeft()){
+                premature_stop=true;
+                break;
+            }
             internal_board.makeMove(move);
             int down = -megamax(depth - 1, -beta, -alpha, getOpposite(color));
             internal_board.undoLastMove();
@@ -118,6 +139,7 @@ namespace Engine {
             if (alpha >= beta)
                 break;
         }
+        if(!premature_stop)//don't add this node in the transposition table because it was not entirely evaluated
         TranspositionTable::getInstance().addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best,to_return));
         return to_return;
     }
@@ -153,6 +175,10 @@ namespace Engine {
         setRating(moves);
         std::sort(moves.begin(), moves.end(), compare);
         for (const Move &move:moves) {
+            if(!hasTimeLeft()){
+                premature_stop=true;
+                break;
+            }
             internal_board.makeMove(move);
             int down = -megamax(depth - 1, -beta, -alpha, getOpposite(color));
             internal_board.undoLastMove();
@@ -165,15 +191,16 @@ namespace Engine {
                 break;
         }
 
-
-        //save the position in the transposition table
-        NodeType node_type;
-        if(best<=alphaOrig)//did not affect the score
-            node_type=NodeType::UpperBound;
-        else if(best>=beta)
-            node_type=NodeType::LowerBound;
-        else node_type=NodeType::Exact;
-        TranspositionTable::getInstance().addEntry(Transposition(node_type,hash,depth,best,best_move));
+        if(!premature_stop) {
+            //save the position in the transposition table
+            NodeType node_type;
+            if (best <= alphaOrig)//did not affect the score
+                node_type = NodeType::UpperBound;
+            else if (best >= beta)
+                node_type = NodeType::LowerBound;
+            else node_type = NodeType::Exact;
+            TranspositionTable::getInstance().addEntry(Transposition(node_type, hash, depth, best, best_move));
+        }
         return best;
     }
 }

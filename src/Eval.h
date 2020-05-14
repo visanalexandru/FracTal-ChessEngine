@@ -5,6 +5,7 @@
 #include "TranspositionTable.h"
 #include <algorithm>
 #include <fstream>
+#include<chrono>
 namespace Engine {
     class Eval {
     private:
@@ -20,6 +21,10 @@ namespace Engine {
         const int infinity=99999999;
         const int checkmate=-9999999;
         const int stalemate=0;
+        std::chrono::time_point<std::chrono::system_clock> last_time;
+        float allotted_time;
+        bool premature_stop;
+        bool hasTimeLeft() const;
         void setRating(std::vector<Move>&moves);
         int getHeuristicScore(Color color) const;
         int getBonusPieceScore(PieceType piece,Color color) const;
@@ -32,7 +37,7 @@ namespace Engine {
         Move megamaxRoot(int depth,Color color);
     public:
         Eval(Board&board);
-        Move getBestMove();
+        Move getBestMove(float allotted);
     };
 };
 
