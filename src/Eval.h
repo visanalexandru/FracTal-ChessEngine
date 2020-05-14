@@ -24,6 +24,8 @@ namespace Engine {
         int getHeuristicScore(Color color) const;
         int getBonusPieceScore(PieceType piece,Color color) const;
         int getScore() const;
+        int getPhase() const;
+        int getBonusKingScore(Color color) const;
         int getMaterialScore(Color color) const;
         int getBonusScore(Color color) const;
         int megamax(int depth,int alpha,int beta,Color color);

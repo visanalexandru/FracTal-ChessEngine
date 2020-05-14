@@ -30,10 +30,35 @@ namespace Engine {
         return score;
 
     }
+    int Eval::getPhase() const {
+        int knights_count=popCount(internal_board.getBitboard(WKnight))+popCount(internal_board.getBitboard(BKnight));
+        int bishops_count=popCount(internal_board.getBitboard(WBishop))+popCount(internal_board.getBitboard(BBishop));
+        int rooks_count=popCount(internal_board.getBitboard(WRook))+popCount(internal_board.getBitboard(BRook));
+        int queens_count=popCount(internal_board.getBitboard(WQueen))+popCount(internal_board.getBitboard(BQueen));
+        int phase=24-bishops_count-knights_count-2*rooks_count-4*queens_count;
+        phase = (phase * 256 + 12) / 24;
+        return phase ;
+    }
+    int Eval::getBonusKingScore(Color color) const{
+        int king_opening,king_ending;
+        int phase=getPhase();
+        if(color==White){
+            int pos=bitScanForward(internal_board.getBitboard(WKing));
+            king_opening=Tables::KingBonus[0][63-pos];
+            king_ending=Tables::KingBonus[1][63-pos];
+        }
+        else{
+            int pos=bitScanForward(internal_board.getBitboard(BKing));
+            king_opening=Tables::KingBonus[0][pos];
+            king_ending=Tables::KingBonus[1][pos];
+        }
+        int eval = ((king_opening * (256 - phase)) + (king_ending * phase)) / 256;
+        return eval;
+    }
     int Eval::getBonusScore(Color color) const {
         return getBonusPieceScore(PieceType::Pawn, color) + getBonusPieceScore(PieceType::Knight, color) +
                getBonusPieceScore(PieceType::Bishop, color) + getBonusPieceScore(PieceType::Rook, color) +
-               getBonusPieceScore(PieceType::Queen, color) + getBonusPieceScore(PieceType::King, color);
+               getBonusPieceScore(PieceType::Queen, color) + getBonusKingScore(color);
     }
 
     int Eval::getScore() const {
