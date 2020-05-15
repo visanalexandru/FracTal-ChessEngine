@@ -7,6 +7,7 @@
 #include<sstream>
 #include "AnParser.h"
 #include "Eval.h"
+#include "TimeManager.h"
 class Protocol {
 private:
     Engine::Board &board;

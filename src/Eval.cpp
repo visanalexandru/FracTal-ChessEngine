@@ -99,16 +99,25 @@ namespace Engine {
         premature_stop=false;
         int alpha = -infinity, beta = infinity;
         Color  color=internal_board.getTurn();
-        Move bestmove=megamaxRoot(1,color);//base move is depth 1
-        int depth=2;
+        Move bestmove;
 
-        while(true){
-            Move aux=megamaxRoot(depth,color);
-            if(!premature_stop){
-                bestmove=aux;
+        std::vector<Move> legal=movegen.getAllMoves();
+        if(legal.size()){
+            if(legal.size()==1)
+                bestmove=legal[0];
+            else{
+                bestmove=legal[0];//random legal move
+                int depth=1;
+                while(true){
+                    Move aux=megamaxRoot(depth,color);
+                    if(!premature_stop){
+                        std::cout<<"searched depth "<<depth<<std::endl;
+                        bestmove=aux;
+                    }
+                    else break;
+                    depth++;
+                }
             }
-            else break;
-            depth++;
         }
         return bestmove;
     }
