@@ -4,7 +4,7 @@
 
 #include <cstdint>
 #include <iostream>
-#include <stack>
+#include <deque>
 #include <sstream>
 #include "Tables.h"
 #include "Types.h"
@@ -29,7 +29,7 @@ namespace Engine {
         void undoPromotion(const Move&move);
         void undoKingSideCastle();
         void undoQueenSideCastle();
-        std::stack<GameState> history;
+        std::deque<GameState> history;
         uint64_t bitboards[12];
         GameState gamestate;
         void resetBoard();

@@ -184,7 +184,7 @@ namespace Engine {
     }
 
     void Board::makeMove(const Move &move) {
-        history.push(gamestate);
+        history.push_back(gamestate);
         MoveType type = move.getType();
         if (type == MoveType::Normal)
             makeNormalMove(move);
@@ -288,13 +288,14 @@ namespace Engine {
             undoQueenSideCastle();
         }
 
-        gamestate = history.top();
+        gamestate = history.back();
         numMoves--;
-        history.pop();
+        history.pop_back();
     }
 
     void Board::resetBoard() {
         numMoves=0;
+        history.clear();
         for (int i = 0; i < 12; i++)
             bitboards[i] = 0;
         gamestate.reset();
@@ -384,6 +385,17 @@ namespace Engine {
                 gamestate.zobrist_key^=Zobrist::ZobristCastling[3];
             }
         }
-        //TODO add en passant parsing
+        sstream>>aux;//en passant target square
+        if(aux!="-"){
+            int x='h'-aux[0];
+            int y=aux[1]-'1';
+            uint64_t ep_target=1LL<<(y*8+x);
+            if(gamestate.getState(turnColor)){
+                gamestate.lastmove=Move(MoveType::DoublePawnPush,ep_target>>8, ep_target<<8,Piece::WPawn,Piece::None,Piece::None);
+            }
+            else{
+                gamestate.lastmove=Move(MoveType::DoublePawnPush,ep_target<<8, ep_target>>8,Piece::BPawn,Piece::None,Piece::None);
+            }
+        }
     }
 }
