@@ -11,7 +11,7 @@ namespace  Engine{
 
             float ms_remaining=((float)remaining+(remaining_moves-1)*(float)increment)/remaining_moves-epsilon;
 
-            float seconds_remaining=std::min(ms_remaining/1000,20.f);//maximum 20 seconds per move
+            float seconds_remaining=ms_remaining/1000;
 
             return std::min(seconds_remaining,remaining_seconds);
         }
