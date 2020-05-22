@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 14)
 
 
-set(sources src/Protocol.cpp src/AnParser.cpp src/Board.cpp src/Board.h src/Tables.h src/Types.cpp src/Types.h src/MoveGen.cpp src/MoveGen.h src/Move.cpp src/Move.h src/GameState.cpp src/Utils.cpp src/Utils.h src/Tables.cpp src/Eval.cpp src/Eval.h src/Zobrist.cpp src/Zobrist.h src/TranspositionTable.cpp src/TranspositionTable.h src/Transposition.cpp src/Transposition.h src/TimeManager.cpp src/TimeManager.h)
+set(sources src/Protocol.cpp src/AnParser.cpp src/Board.cpp src/Board.h src/Tables.h src/Types.cpp src/Types.h src/MoveGen.cpp src/MoveGen.h src/Move.cpp src/Move.h src/GameState.cpp src/Utils.cpp src/Utils.h src/Tables.cpp src/Eval.cpp src/Eval.h src/Zobrist.cpp src/Zobrist.h src/TranspositionTable.cpp src/TranspositionTable.h src/Transposition.cpp src/Transposition.h src/TimeManager.cpp src/TimeManager.h src/Logger.cpp src/Logger.h)
 # set the project name
 project(ChessEngine)
 # add the executable

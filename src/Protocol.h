@@ -11,14 +11,11 @@
 class Protocol {
 private:
     Engine::Board &board;
-    std::ofstream log;
     bool isRunning;
 
     void handleRequest(const std::string &req);
 
     void send(const std::string &to_send);
-
-    void Log(const std::string &to_log);
 
     static bool compare(Engine::Move a, Engine::Move b);
 

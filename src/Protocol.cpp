@@ -2,19 +2,15 @@
 
 
 Protocol::Protocol(Engine::Board &internal_board) : isRunning(false),
-                                                    log("chesslog"),
                                                     board(internal_board) {
 
 
 }
 
 void Protocol::send(const std::string &to_send) {
-    Log("sent " + to_send);
-    std::cout << to_send << '\n';
-}
 
-void Protocol::Log(const std::string &to_log) {
-    log << to_log << std::endl;
+    Engine::Logger::getInstance().log("sent " + to_send);
+    std::cout << to_send << '\n';
 }
 
 bool Protocol::compare(Engine::Move a, Engine::Move b) {
@@ -23,7 +19,7 @@ bool Protocol::compare(Engine::Move a, Engine::Move b) {
 
 void Protocol::handleRequest(const std::string &req) {
 
-    log << "received " << req << std::endl;
+    Engine::Logger::getInstance().log("received " + req);
 
     std::stringstream sstream;
     sstream << req;
@@ -70,22 +66,22 @@ void Protocol::handleRequest(const std::string &req) {
                 sstream>>fixed_time;
         }
 
-       Log("remaining time "+std::to_string(time));
+       Engine::Logger::getInstance().log("remaining time "+std::to_string(time));
 
         float alloted;
         if(fixed_time)
             alloted=(float)(fixed_time)/1000.f;
         else alloted=Engine::TimeManager::getTimePerMove(time,increment);
 
-        Log("alloted "+std::to_string(alloted)+" seconds ");
+        Engine::Logger::getInstance().log("alloted "+std::to_string(alloted)+" seconds ");
 
         float a =clock();
         Engine::Move bestmove =eval.getBestMove(alloted);
         a=(clock()-a)/CLOCKS_PER_SEC;
-        Log("found in "+std::to_string(a));
+        Engine::Logger::getInstance().log("found in "+std::to_string(a));
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
-        Log(board.toString());
+        Engine::Logger::getInstance().log(board.toString());
     } else if (cmmd == "quit") {
         isRunning = false;
     }

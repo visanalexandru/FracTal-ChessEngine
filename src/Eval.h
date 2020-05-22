@@ -5,6 +5,7 @@
 #include "TranspositionTable.h"
 #include <algorithm>
 #include <fstream>
+#include "Logger.h"
 #include<chrono>
 namespace Engine {
     class Eval {

@@ -111,7 +111,7 @@ namespace Engine {
                 while(true){
                     Move aux=megamaxRoot(depth,color);
                     if(!premature_stop){
-                        std::cout<<"searched depth "<<depth<<std::endl;
+                        Logger::getInstance().log("searched depth:"+std::to_string(depth));
                         bestmove=aux;
                     }
                     else break;
