@@ -2,7 +2,7 @@
 #include <iostream>
 namespace Engine{
     Logger::Logger():out("chesslog"){
-        std::cout<<"new instance"<<std::endl;
+
     }
     Logger& Logger::getInstance() {
         static Logger instance;
