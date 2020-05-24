@@ -22,6 +22,7 @@ namespace Engine {
         const int infinity=99999999;
         const int checkmate=-9999999;
         const int stalemate=0;
+        const int threefold_repetition=0;
         std::chrono::time_point<std::chrono::system_clock> last_time;
         float allotted_time;
         bool premature_stop;

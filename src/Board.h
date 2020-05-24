@@ -40,6 +40,7 @@ namespace Engine {
         uint64_t getBitboard(Piece type);
         uint64_t  getPieces(Color color) const;
         uint64_t getAll() const;
+        bool isRepetition() const;
         int getNumMoves() const;
         Color getTurn() const;
         std::string toString() const;

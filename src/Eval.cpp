@@ -156,6 +156,10 @@ namespace Engine {
     //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
 
+        if(internal_board.isRepetition()){
+            return threefold_repetition;
+        }
+
         uint64_t hash=internal_board.getGameState().zobrist_key;
         int alphaOrig=alpha;
         Transposition node=TranspositionTable::getInstance().getTransposition(hash);

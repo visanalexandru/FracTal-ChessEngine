@@ -70,6 +70,16 @@ namespace Engine {
     Color Board::getTurn() const {
         return static_cast<Color>(gamestate.getState(turnColor));
     }
+
+    bool Board::isRepetition() const {
+        uint64_t hash=gamestate.zobrist_key;
+        for(int i=history.size()-2;i>=0;i-=2){
+            if(history[i].zobrist_key==hash){
+                return  true;
+            }
+        }
+        return false;
+    }
     const GameState& Board::getGameState() {
         return gamestate;
     }
@@ -154,32 +164,50 @@ namespace Engine {
         uint64_t destination = move.getDestination();
 
         if (origin == WKingPosition) {
-            gamestate.unsetState(canCastleKingSideWhite);
-            gamestate.unsetState(canCastleQueenSideWhite);
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
+            if(gamestate.getState(canCastleKingSideWhite)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
+                gamestate.unsetState(canCastleKingSideWhite);
+            }
+            if(gamestate.getState(canCastleQueenSideWhite)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
+                gamestate.unsetState(canCastleQueenSideWhite);
+            }
         }
         if (origin == BKingPosition) {
-            gamestate.unsetState(canCastleKingSideBlack);
-            gamestate.unsetState(canCastleQueenSideBlack);
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
+            if(gamestate.getState(canCastleKingSideBlack)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
+                gamestate.unsetState(canCastleKingSideBlack);
+            }
+            if(gamestate.getState(canCastleQueenSideBlack)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
+                gamestate.unsetState(canCastleQueenSideBlack);
+            }
         }
         if (origin == WRookLPosition || destination == WRookLPosition) {
-            gamestate.unsetState(canCastleQueenSideWhite);
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
+            if(gamestate.getState(canCastleQueenSideWhite)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
+                gamestate.unsetState(canCastleQueenSideWhite);
+            }
+
         }
         if (origin == WRookRPosition || destination == WRookRPosition) {
-            gamestate.unsetState(canCastleKingSideWhite);
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
+            if(gamestate.getState(canCastleKingSideWhite)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
+                gamestate.unsetState(canCastleKingSideWhite);
+            }
+
         }
         if (origin == BRookLPosition || destination == BRookLPosition) {
-            gamestate.unsetState(canCastleQueenSideBlack);
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
+            if(gamestate.getState(canCastleQueenSideBlack)){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
+                gamestate.unsetState(canCastleQueenSideBlack);
+            }
         }
         if (origin == BRookRPosition || destination == BRookRPosition) {
-            gamestate.unsetState(canCastleKingSideBlack);
-            gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
+            if(gamestate.getState(canCastleKingSideBlack)){
+                gamestate.unsetState(canCastleKingSideBlack);
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
+            }
         }
     }
 
