@@ -37,10 +37,10 @@ namespace Engine {
     public:
         Board();
         const GameState&getGameState();
+        const std::deque<GameState>&getHistory() const;
         uint64_t getBitboard(Piece type);
         uint64_t  getPieces(Color color) const;
         uint64_t getAll() const;
-        bool isRepetition() const;
         int getNumMoves() const;
         Color getTurn() const;
         std::string toString() const;

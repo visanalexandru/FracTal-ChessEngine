@@ -23,6 +23,7 @@ namespace Engine {
         const int checkmate=-9999999;
         const int stalemate=0;
         const int threefold_repetition=0;
+        int root;//the root position of the search
         std::chrono::time_point<std::chrono::system_clock> last_time;
         float allotted_time;
         bool premature_stop;
@@ -37,6 +38,7 @@ namespace Engine {
         int getBonusScore(Color color) const;
         int megamax(int depth,int alpha,int beta,Color color);
         Move megamaxRoot(int depth,Color color);
+        bool isThreefoldRepetition() const;
     public:
         Eval(Board&board);
         Move getBestMove(float allotted);

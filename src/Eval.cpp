@@ -129,6 +129,7 @@ namespace Engine {
     Move Eval::megamaxRoot(int depth,Color color) {
         int alpha = -infinity, beta = infinity, best = -infinity;
         Move to_return;
+        root=internal_board.getNumMoves();
         std::vector<Move> moves = movegen.getAllMoves();
         setRating(moves);
         std::sort(moves.begin(), moves.end(), compare);
@@ -152,13 +153,29 @@ namespace Engine {
         TranspositionTable::getInstance().addEntry(Transposition(NodeType::Exact,internal_board.getGameState().zobrist_key,depth,best,to_return));
         return to_return;
     }
+    bool Eval::isThreefoldRepetition() const {
+        const std::deque<GameState>&history=internal_board.getHistory();
+        int repetitions=0;
+        uint64_t hash=internal_board.getGameState().zobrist_key;
+
+        for(int k=history.size()-2;k>=0;k-=2){
+            if(history[k].zobrist_key==hash){
+                if(k>=root)//found repetition in current search space
+                    return true;
+                //else we need 2 repetitions that happen before the root
+                repetitions++;
+                if(repetitions==2)
+                    return  true;
+            }
+        }
+        return  false;
+    }
 
     //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
 
-        if(internal_board.isRepetition()){
+        if(isThreefoldRepetition())
             return threefold_repetition;
-        }
 
         uint64_t hash=internal_board.getGameState().zobrist_key;
         int alphaOrig=alpha;

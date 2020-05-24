@@ -70,15 +70,8 @@ namespace Engine {
     Color Board::getTurn() const {
         return static_cast<Color>(gamestate.getState(turnColor));
     }
-
-    bool Board::isRepetition() const {
-        uint64_t hash=gamestate.zobrist_key;
-        for(int i=history.size()-2;i>=0;i-=2){
-            if(history[i].zobrist_key==hash){
-                return  true;
-            }
-        }
-        return false;
+    const std::deque<GameState>& Board::getHistory() const {
+        return history;
     }
     const GameState& Board::getGameState() {
         return gamestate;
