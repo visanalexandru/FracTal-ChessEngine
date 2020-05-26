@@ -6,11 +6,11 @@ namespace Engine {
     }
 
     int Eval::getMaterialScore(Color color) const {
-        int pawn_score = popCount(internal_board.getBitboard(getPiece(PieceType::Pawn, color))) * pawn_value;
-        int knight_score = popCount(internal_board.getBitboard(getPiece(PieceType::Knight, color))) * knight_value;
-        int bishop_score = popCount(internal_board.getBitboard(getPiece(PieceType::Bishop, color))) * bishop_value;
-        int rook_score = popCount(internal_board.getBitboard(getPiece(PieceType::Rook, color))) * rook_value;
-        int queen_score = popCount(internal_board.getBitboard(getPiece(PieceType::Queen, color))) * queen_value;
+        int pawn_score = popCount(internal_board.getBitboard(getPiece(PieceType::Pawn, color))) * getPieceValue(PieceType::Pawn);
+        int knight_score = popCount(internal_board.getBitboard(getPiece(PieceType::Knight, color))) * getPieceValue(PieceType::Knight);
+        int bishop_score = popCount(internal_board.getBitboard(getPiece(PieceType::Bishop, color))) * getPieceValue(PieceType::Bishop);
+        int rook_score = popCount(internal_board.getBitboard(getPiece(PieceType::Rook, color))) * getPieceValue(PieceType::Rook);
+        int queen_score = popCount(internal_board.getBitboard(getPiece(PieceType::Queen, color))) * getPieceValue(PieceType::Queen);
         return pawn_score + knight_score + bishop_score + rook_score + queen_score;
     }
 
@@ -86,8 +86,8 @@ namespace Engine {
             }
             else{
                 score=0;
-                score+=getPieceValue(move.getTaken());
-                score+=getPieceValue(move.getPromotion());
+                score+=getPieceValue(getPieceType(move.getTaken()));
+                score+=getPieceValue(getPieceType(move.getPromotion()));
                 move.setScore(score);
             }
         }
@@ -173,10 +173,6 @@ namespace Engine {
 
     //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
-
-        if(isThreefoldRepetition())
-            return threefold_repetition;
-
         uint64_t hash=internal_board.getGameState().zobrist_key;
         int alphaOrig=alpha;
         Transposition node=TranspositionTable::getInstance().getTransposition(hash);

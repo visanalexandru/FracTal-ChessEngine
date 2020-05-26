@@ -14,11 +14,6 @@ namespace Engine {
 
         Board&internal_board;
         MoveGen movegen;
-        const int pawn_value=100;
-        const int knight_value=320;
-        const int bishop_value=330;
-        const int rook_value=500;
-        const int queen_value=900;
         const int infinity=99999999;
         const int checkmate=-9999999;
         const int stalemate=0;

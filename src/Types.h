@@ -26,6 +26,7 @@ namespace Engine{
         Rook,
         Queen,
         King,
+        None
     };
     enum Color {
         White,
@@ -59,13 +60,16 @@ namespace Engine{
     const uint64_t  BKingPosition=1LL<<59;
 
     char getPieceChar(Piece type);
-    int getPieceValue(Piece type);
+    int getPieceValue(PieceType type);
     inline Color  getOpposite(Color color){
         return static_cast<Color>(1-color);
     }
     inline Piece getPiece(PieceType type,Color color){
         int index= static_cast<int>(type)*2+color;
         return static_cast<Piece>(index);
+    }
+    inline PieceType getPieceType(Piece piece){
+        return static_cast<PieceType>(piece/2);
     }
 }
 
