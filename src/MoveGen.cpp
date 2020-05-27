@@ -208,6 +208,25 @@ namespace Engine {
                getAllBishopAttacks(queens_and_bishops, same_side, all) |
                getAllRookAttacks(queens_and_rooks, same_side, all);
     }
+    void MoveGen::addWhitePawnCaptures(uint64_t square, uint64_t same_side, uint64_t opposite_side,
+                                       std::vector<Move> &moves) {
+        uint64_t attacks = getPawnAttacks(square, same_side, White);
+        while (attacks) {
+            uint64_t attack = popLsb(attacks);
+            if (attack & opposite_side) {
+                if ((attack & Tables::MaskRank[7]) == 0)
+                    addCapture(square, attack, WPawn, moves);
+                else addPromotions(square, attack, White, board.getPieceAt(attack), moves);
+            } else {
+                uint64_t dest = board.gamestate.lastmove.getDestination();
+                MoveType type = board.gamestate.lastmove.getType();
+
+                if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1) &&
+                    attack == dest << 8)
+                    addEnPassant(square, attack, White, moves);
+            }
+        }
+    }
 
     void MoveGen::addWhitePawnsMoves(uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves) {
         uint64_t white_pawns = board.getBitboard(Piece::WPawn);
@@ -228,22 +247,26 @@ namespace Engine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, White, moves);
 
-            uint64_t attacks = getPawnAttacks(square, same_side, White);
+           addWhitePawnCaptures(square,same_side,opposite_side,moves);
+        }
+    }
 
-            while (attacks) {
-                uint64_t attack = popLsb(attacks);
-                if (attack & opposite_side) {
-                    if ((attack & Tables::MaskRank[7]) == 0)
-                        addCapture(square, attack, WPawn, moves);
-                    else addPromotions(square, attack, White, board.getPieceAt(attack), moves);
-                } else {
-                    uint64_t dest = board.gamestate.lastmove.getDestination();
-                    MoveType type = board.gamestate.lastmove.getType();
+    void MoveGen::addBlackPawnCaptures(uint64_t square, uint64_t same_side, uint64_t opposite_side,
+                                       std::vector<Move> &moves) {
+        uint64_t attacks = getPawnAttacks(square, same_side, Black);
+        while (attacks) {
+            uint64_t attack = popLsb(attacks);
+            if (attack & opposite_side) {
+                if ((attack & Tables::MaskRank[0]) == 0)
+                    addCapture(square, attack, BPawn, moves);
+                else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
+            } else {
+                uint64_t dest = board.gamestate.lastmove.getDestination();
+                MoveType type = board.gamestate.lastmove.getType();
 
-                    if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1) &&
-                        attack == dest << 8)
-                        addEnPassant(square, attack, White, moves);
-                }
+                if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1)
+                    && attack == dest >> 8)
+                    addEnPassant(square, attack, Black, moves);
             }
         }
     }
@@ -265,23 +288,35 @@ namespace Engine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, Black, moves);
 
-            uint64_t attacks = getPawnAttacks(square, same_side, Black);
-            while (attacks) {
-                uint64_t attack = popLsb(attacks);
-                if (attack & opposite_side) {
-                    if ((attack & Tables::MaskRank[0]) == 0)
-                        addCapture(square, attack, BPawn, moves);
-                    else addPromotions(square, attack, Black, board.getPieceAt(attack), moves);
-                } else {
-                    uint64_t dest = board.gamestate.lastmove.getDestination();
-                    MoveType type = board.gamestate.lastmove.getType();
-
-                    if (type == MoveType::DoublePawnPush && (dest == square << 1 || dest == square >> 1)
-                        && attack == dest >> 8)
-                        addEnPassant(square, attack, Black, moves);
-                }
-            }
+            addBlackPawnCaptures(square,same_side,opposite_side,moves);
         }
+    }
+    std::vector<Move> MoveGen::getAllCaptures() {
+
+        std::vector<Move> to_return;
+        to_return.reserve(300);
+        Color color = board.getTurn();
+        Color opposite_color = getOpposite(color);
+        uint64_t same_side = board.getPieces(color);
+        uint64_t opposite_side = board.getPieces(opposite_color);
+        Piece king = getPiece(PieceType::King, color);
+
+        addAllKingCaptures(same_side, opposite_side, color, to_return);
+        addAllPawnCaptures(same_side, opposite_side, color, to_return);
+        addAllKnightCaptures(same_side, opposite_side, color, to_return);
+        addAllRookCaptures(same_side, opposite_side, color, to_return);
+        addAllBishopCaptures(same_side, opposite_side, color, to_return);
+        addAllQueenCaptures(same_side, opposite_side, color, to_return);
+        for (int i = 0; i < to_return.size(); i++) {
+            board.makeMove(to_return[i]);
+            uint64_t kingpos = board.getBitboard(king);
+            if (isInCheck(color)) {
+                to_return.erase(to_return.begin() + i);
+                i--;
+            }
+            board.undoLastMove();
+        }
+        return to_return;
     }
 
     std::vector<Move> MoveGen::getAllMoves() {
@@ -319,6 +354,70 @@ namespace Engine {
             addWhitePawnsMoves(same_side, opposite_side, moves);
         else
             addBlackPawnsMoves(same_side, opposite_side, moves);
+    }
+    void MoveGen::addAllCaptures(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Engine::Piece piece_type,
+                                 std::vector<Move> &moves) {
+        while (attacks) {
+            uint64_t square = popLsb(attacks);
+            if (square & opposite_side) {
+                addCapture(origin, square, piece_type, moves);
+            }
+        }
+    }
+    void MoveGen::addAllPawnCaptures(uint64_t same_side, uint64_t opposite_side,Color color,
+                                     std::vector<Move> &moves) {
+        Piece pawn=getPiece(PieceType::Pawn,color);
+        uint64_t pawns=board.getBitboard(pawn);
+
+        while(pawns){
+            uint64_t square=popLsb(pawns);
+            if(color==White)
+                addWhitePawnCaptures(square,same_side,opposite_side,moves);
+            else addBlackPawnCaptures(square,same_side,opposite_side,moves);
+        }
+    }
+    void MoveGen::addAllKnightCaptures(uint64_t same_side, uint64_t opposite_side, Color color,
+                                       std::vector<Move> &moves) {
+        Piece knight_type = getPiece(PieceType::Knight, color);
+        uint64_t knight_squares = board.getBitboard(knight_type);
+        while (knight_squares) {
+            uint64_t knight_square = popLsb(knight_squares);
+            uint64_t knight_attacks = getKnightAttacks(knight_square, same_side);
+            addAllCaptures(knight_square, knight_attacks, opposite_side, knight_type, moves);
+        }
+    }
+    void MoveGen::addAllBishopCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece bishop_type = getPiece(PieceType::Bishop, color);
+        uint64_t bishop_squares = board.getBitboard(bishop_type);
+        while (bishop_squares) {
+            uint64_t bishop_square = popLsb(bishop_squares);
+            uint64_t bishop_attacks = getBishopAttacks(bishop_square, same_side, same_side | opposite_side);
+            addAllCaptures(bishop_square, bishop_attacks, opposite_side, bishop_type, moves);
+        }
+    }
+    void MoveGen::addAllRookCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece rook_type = getPiece(PieceType::Rook, color);
+        uint64_t rook_squares = board.getBitboard(rook_type);
+        while (rook_squares) {
+            uint64_t rook_square = popLsb(rook_squares);
+            uint64_t rook_attacks = getRookAttacks(rook_square, same_side, same_side | opposite_side);
+            addAllCaptures(rook_square, rook_attacks, opposite_side, rook_type, moves);
+        }
+    }
+    void MoveGen::addAllQueenCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece queen_type = getPiece(PieceType::Queen, color);
+        uint64_t queen_squares = board.bitboards[queen_type];
+        while (queen_squares) {
+            uint64_t queen_square = popLsb(queen_squares);
+            uint64_t queen_attacks = getQueenAttacks(queen_square, same_side, same_side | opposite_side);
+            addAllCaptures(queen_square, queen_attacks, opposite_side, queen_type, moves);
+        }
+    }
+    void MoveGen::addAllKingCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+        Piece king_type = getPiece(PieceType::King, color);
+        uint64_t king_square = board.getBitboard(king_type);
+        uint64_t king_attacks = getKingAttacks(king_square, same_side);
+        addAllCaptures(king_square, king_attacks, opposite_side, king_type, moves);
     }
 
     void MoveGen::addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side,

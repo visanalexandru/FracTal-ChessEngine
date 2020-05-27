@@ -68,9 +68,29 @@ namespace Engine {
         //Adds all pawn moves
         void addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
+        void addWhitePawnCaptures(uint64_t square,uint64_t same_side,uint64_t opposite_side,std::vector<Move>&moves);
+
+        void addBlackPawnCaptures(uint64_t square,uint64_t same_side,uint64_t opposite_side,std::vector<Move>&moves);
+
+        void addAllPawnCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllKnightCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllBishopCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllRookCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllQueenCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+        void addAllKingCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
+
+
         //adds all attacks for non-pawn piece
         void addAllAttacks(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Piece piece_type,
                            std::vector<Move> &moves);
+
+        void addAllCaptures(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Piece piece_type,
+                            std::vector<Move> &moves);
 
 
         void addAllKingMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
@@ -91,6 +111,8 @@ namespace Engine {
         bool isInCheck(Color color);
 
         std::vector<Move> getAllMoves();
+
+        std::vector<Move> getAllCaptures();
 
     };
 }
