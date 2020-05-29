@@ -31,6 +31,7 @@ namespace Engine {
         int getBonusKingScore(Color color) const;
         int getMaterialScore(Color color) const;
         int getBonusScore(Color color) const;
+        int quiescenceSearch(int alpha,int beta,Color color);
         int megamax(int depth,int alpha,int beta,Color color);
         Move megamaxRoot(int depth,Color color);
         bool isThreefoldRepetition() const;

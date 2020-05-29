@@ -170,6 +170,25 @@ namespace Engine {
         }
         return  false;
     }
+    int Eval::quiescenceSearch(int alpha, int beta,Color color) {
+        int stand_pat=getHeuristicScore(color);
+        std::vector<Move> moves=movegen.getAllCaptures();
+        setRating(moves);
+        std::sort(moves.begin(),moves.end(),compare);
+        if(stand_pat>=beta)
+            return beta;
+        alpha=std::max(alpha,stand_pat);
+        for(const Move&move:moves){
+            internal_board.makeMove(move);
+            int score=-quiescenceSearch(-beta,-alpha,getOpposite(color));
+            internal_board.undoLastMove();
+
+            if(score>=beta)
+                return  beta;
+            alpha=std::max(alpha,score);
+        }
+        return alpha;
+    }
 
     //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
@@ -188,7 +207,7 @@ namespace Engine {
         }
 
         if (depth == 0) {
-            return getHeuristicScore(color);
+            return quiescenceSearch(-infinity,infinity,color);
         }
         std::vector<Move> moves = movegen.getAllMoves();
         if (moves.size() == 0) {
