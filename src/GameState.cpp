@@ -3,7 +3,7 @@
 
 namespace Engine {
 
-    GameState::GameState() : state_flags(0),zobrist_key(0) {
+    GameState::GameState() : state_flags(0), zobrist_key(0) {
 
     }
 
@@ -24,9 +24,9 @@ namespace Engine {
     }
 
     void GameState::reset() {
-        state_flags=0;
-        zobrist_key=0;
-        lastmove=Move();
+        state_flags = 0;
+        zobrist_key = 0;
+        lastmove = Move();
     }
 
 }

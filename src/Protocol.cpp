@@ -36,16 +36,15 @@ void Protocol::handleRequest(const std::string &req) {
     } else if (cmmd == "position") {
         std::string aux;
         sstream >> aux;//the first string is a fen string or "startpos"
-        if(aux=="startpos"){
+        if (aux == "startpos") {
             board.loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        }
-        else{
+        } else {
             board.loadFen(aux);
         }
-        if(!sstream.eof()){
-            sstream>>aux;//moves
-            while (!sstream.eof()){
-                sstream>>aux;
+        if (!sstream.eof()) {
+            sstream >> aux;//moves
+            while (!sstream.eof()) {
+                sstream >> aux;
                 Engine::Move server_move = Engine::AnParser::getMove(aux, board);
                 board.makeMove(server_move);
             }
@@ -54,31 +53,33 @@ void Protocol::handleRequest(const std::string &req) {
     } else if (cmmd == "go") {
         Engine::Eval eval(board);
         std::string aux;
-        int time=10000000,increment=0;
-        int fixed_time=0;
-        while(sstream>>aux){
-            if((aux=="wtime" && board.getTurn()==Engine::White) || (aux=="btime" && board.getTurn()==Engine::Black))
-                sstream>>time;
+        int time = 10000000, increment = 0;
+        int fixed_time = 0;
+        while (sstream >> aux) {
+            if ((aux == "wtime" && board.getTurn() == Engine::White) ||
+                (aux == "btime" && board.getTurn() == Engine::Black))
+                sstream >> time;
 
-            if((aux=="winc" && board.getTurn()==Engine::White) || (aux=="binc" && board.getTurn()==Engine::Black))
-                sstream>>increment;
-            if(aux=="movetime")
-                sstream>>fixed_time;
+            if ((aux == "winc" && board.getTurn() == Engine::White) ||
+                (aux == "binc" && board.getTurn() == Engine::Black))
+                sstream >> increment;
+            if (aux == "movetime")
+                sstream >> fixed_time;
         }
 
-       Engine::Logger::getInstance().log("remaining time "+std::to_string(time));
+        Engine::Logger::getInstance().log("remaining time " + std::to_string(time));
 
         float alloted;
-        if(fixed_time)
-            alloted=(float)(fixed_time)/1000.f;
-        else alloted=Engine::TimeManager::getTimePerMove(time,increment);
+        if (fixed_time)
+            alloted = (float) (fixed_time) / 1000.f;
+        else alloted = Engine::TimeManager::getTimePerMove(time, increment);
 
-        Engine::Logger::getInstance().log("alloted "+std::to_string(alloted)+" seconds ");
+        Engine::Logger::getInstance().log("alloted " + std::to_string(alloted) + " seconds ");
 
-        float a =clock();
-        Engine::Move bestmove =eval.getBestMove(alloted);
-        a=(clock()-a)/CLOCKS_PER_SEC;
-        Engine::Logger::getInstance().log("found in "+std::to_string(a));
+        float a = clock();
+        Engine::Move bestmove = eval.getBestMove(alloted);
+        a = (clock() - a) / CLOCKS_PER_SEC;
+        Engine::Logger::getInstance().log("found in " + std::to_string(a));
         send("bestmove " + bestmove.toString());
         board.makeMove(bestmove);
         Engine::Logger::getInstance().log(board.toString());

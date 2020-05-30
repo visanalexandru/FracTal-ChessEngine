@@ -7,7 +7,8 @@
 #include <cmath>
 #include "Utils.h"
 #include "Types.h"
-namespace Engine{
+
+namespace Engine {
 
 
     class Move {
@@ -44,7 +45,6 @@ namespace Engine{
 
         void setScore(int new_score);
     };
-
 
 
 }

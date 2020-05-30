@@ -12,6 +12,7 @@ namespace Engine {
     public:
         uint64_t zobrist_key;
         Move lastmove;
+
         bool getState(State state) const;
 
         void setState(State state);

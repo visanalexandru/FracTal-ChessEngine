@@ -21,11 +21,11 @@ namespace Engine {
 
         void addEnPassant(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
-        void addDoublePawnPushMove(uint64_t origin, uint64_t dest,Color color, std::vector<Move> &moves);
+        void addDoublePawnPushMove(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
-        void addKingSideCastle(uint64_t origin,uint64_t dest,Color color,std::vector<Move>&moves);
+        void addKingSideCastle(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
-        void addQueenSideCastle(uint64_t origin,uint64_t dest,Color color,std::vector<Move>&moves);
+        void addQueenSideCastle(uint64_t origin, uint64_t dest, Color color, std::vector<Move> &moves);
 
 
         //functions that get the attack bitboards from a given position
@@ -53,9 +53,9 @@ namespace Engine {
 
         uint64_t getAllBishopAttacks(uint64_t positions, uint64_t same_side, uint64_t all);
 
-        uint64_t getAllQueenAttacks(uint64_t positions,uint64_t same_side,uint64_t all);
+        uint64_t getAllQueenAttacks(uint64_t positions, uint64_t same_side, uint64_t all);
 
-        bool squareUnderAttack(uint64_t square,Color color);
+        bool squareUnderAttack(uint64_t square, Color color);
 
         uint64_t getAllAttacks(Color color);
 
@@ -68,9 +68,11 @@ namespace Engine {
         //Adds all pawn moves
         void addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
-        void addWhitePawnCaptures(uint64_t square,uint64_t same_side,uint64_t opposite_side,std::vector<Move>&moves);
+        void
+        addWhitePawnCaptures(uint64_t square, uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);
 
-        void addBlackPawnCaptures(uint64_t square,uint64_t same_side,uint64_t opposite_side,std::vector<Move>&moves);
+        void
+        addBlackPawnCaptures(uint64_t square, uint64_t same_side, uint64_t opposite_side, std::vector<Move> &moves);
 
         void addAllPawnCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
@@ -103,7 +105,7 @@ namespace Engine {
 
         void addAllQueenMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves);
 
-        void addAllCastling(uint64_t all,Color color,std::vector<Move>&moves);
+        void addAllCastling(uint64_t all, Color color, std::vector<Move> &moves);
 
     public:
         MoveGen(Board &internal_board);

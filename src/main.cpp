@@ -5,6 +5,7 @@ using namespace std;
 
 #include"Protocol.h"
 #include "Eval.h"
+
 int main() {
     srand(time(NULL));
     Engine::Tables::initializeAttackTables();

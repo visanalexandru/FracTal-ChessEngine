@@ -159,35 +159,36 @@ namespace Engine {
         return result;
     }
 
-    bool MoveGen::squareUnderAttack(uint64_t square, Color color) {//if the opposite side of the color can attack the square
-        Color opposite=getOpposite(color);
-        uint64_t same_side=board.getPieces(color);
-        uint64_t opposite_side=board.getPieces(opposite);
-        uint64_t  all=same_side|opposite_side;
+    bool
+    MoveGen::squareUnderAttack(uint64_t square, Color color) {//if the opposite side of the color can attack the square
+        Color opposite = getOpposite(color);
+        uint64_t same_side = board.getPieces(color);
+        uint64_t opposite_side = board.getPieces(opposite);
+        uint64_t all = same_side | opposite_side;
 
-        uint64_t opposite_bishops=board.getBitboard(getPiece(PieceType::Bishop,opposite));
-        uint64_t opposite_rooks=board.getBitboard(getPiece(PieceType::Rook,opposite));
-        uint64_t opposite_queens=board.getBitboard(getPiece(PieceType::Queen,opposite));
-        uint64_t opposite_knights=board.getBitboard(getPiece(PieceType::Knight,opposite));
-        uint64_t opposite_pawns=board.getBitboard(getPiece(PieceType::Pawn,opposite));
-        uint64_t opposite_king=board.getBitboard(getPiece(PieceType::King,opposite));
+        uint64_t opposite_bishops = board.getBitboard(getPiece(PieceType::Bishop, opposite));
+        uint64_t opposite_rooks = board.getBitboard(getPiece(PieceType::Rook, opposite));
+        uint64_t opposite_queens = board.getBitboard(getPiece(PieceType::Queen, opposite));
+        uint64_t opposite_knights = board.getBitboard(getPiece(PieceType::Knight, opposite));
+        uint64_t opposite_pawns = board.getBitboard(getPiece(PieceType::Pawn, opposite));
+        uint64_t opposite_king = board.getBitboard(getPiece(PieceType::King, opposite));
 
-        uint64_t bishops_and_queens=opposite_bishops|opposite_queens;
-        uint64_t rooks_and_queens=opposite_rooks|opposite_queens;
+        uint64_t bishops_and_queens = opposite_bishops | opposite_queens;
+        uint64_t rooks_and_queens = opposite_rooks | opposite_queens;
 
-        if(bishops_and_queens && (getBishopAttacks(square,same_side,all)&bishops_and_queens))
-            return  true;
+        if (bishops_and_queens && (getBishopAttacks(square, same_side, all) & bishops_and_queens))
+            return true;
 
-        if(rooks_and_queens && (getRookAttacks(square,same_side,all)&rooks_and_queens))
-            return  true;
+        if (rooks_and_queens && (getRookAttacks(square, same_side, all) & rooks_and_queens))
+            return true;
 
-        if(opposite_knights && (getKnightAttacks(square,same_side)&opposite_knights))
-            return  true;
-        if(opposite_pawns && (getPawnAttacks(square,same_side,color) &opposite_pawns))
-            return  true;
-        if(getKingAttacks(square,same_side) & opposite_king)
-            return  true;
-        return  false;
+        if (opposite_knights && (getKnightAttacks(square, same_side) & opposite_knights))
+            return true;
+        if (opposite_pawns && (getPawnAttacks(square, same_side, color) & opposite_pawns))
+            return true;
+        if (getKingAttacks(square, same_side) & opposite_king)
+            return true;
+        return false;
     }
 
 
@@ -208,6 +209,7 @@ namespace Engine {
                getAllBishopAttacks(queens_and_bishops, same_side, all) |
                getAllRookAttacks(queens_and_rooks, same_side, all);
     }
+
     void MoveGen::addWhitePawnCaptures(uint64_t square, uint64_t same_side, uint64_t opposite_side,
                                        std::vector<Move> &moves) {
         uint64_t attacks = getPawnAttacks(square, same_side, White);
@@ -247,7 +249,7 @@ namespace Engine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, White, moves);
 
-           addWhitePawnCaptures(square,same_side,opposite_side,moves);
+            addWhitePawnCaptures(square, same_side, opposite_side, moves);
         }
     }
 
@@ -288,9 +290,10 @@ namespace Engine {
             if (double_push)
                 addDoublePawnPushMove(square, double_push, Black, moves);
 
-            addBlackPawnCaptures(square,same_side,opposite_side,moves);
+            addBlackPawnCaptures(square, same_side, opposite_side, moves);
         }
     }
+
     std::vector<Move> MoveGen::getAllCaptures() {
 
         std::vector<Move> to_return;
@@ -345,9 +348,10 @@ namespace Engine {
             }
             board.undoLastMove();
         }
-        addAllCastling(same_side|opposite_side,color,to_return);
+        addAllCastling(same_side | opposite_side, color, to_return);
         return to_return;
     }
+
     void
     MoveGen::addAllPawnMoves(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         if (color == White)
@@ -355,6 +359,7 @@ namespace Engine {
         else
             addBlackPawnsMoves(same_side, opposite_side, moves);
     }
+
     void MoveGen::addAllCaptures(uint64_t origin, uint64_t attacks, uint64_t opposite_side, Engine::Piece piece_type,
                                  std::vector<Move> &moves) {
         while (attacks) {
@@ -364,18 +369,20 @@ namespace Engine {
             }
         }
     }
-    void MoveGen::addAllPawnCaptures(uint64_t same_side, uint64_t opposite_side,Color color,
-                                     std::vector<Move> &moves) {
-        Piece pawn=getPiece(PieceType::Pawn,color);
-        uint64_t pawns=board.getBitboard(pawn);
 
-        while(pawns){
-            uint64_t square=popLsb(pawns);
-            if(color==White)
-                addWhitePawnCaptures(square,same_side,opposite_side,moves);
-            else addBlackPawnCaptures(square,same_side,opposite_side,moves);
+    void MoveGen::addAllPawnCaptures(uint64_t same_side, uint64_t opposite_side, Color color,
+                                     std::vector<Move> &moves) {
+        Piece pawn = getPiece(PieceType::Pawn, color);
+        uint64_t pawns = board.getBitboard(pawn);
+
+        while (pawns) {
+            uint64_t square = popLsb(pawns);
+            if (color == White)
+                addWhitePawnCaptures(square, same_side, opposite_side, moves);
+            else addBlackPawnCaptures(square, same_side, opposite_side, moves);
         }
     }
+
     void MoveGen::addAllKnightCaptures(uint64_t same_side, uint64_t opposite_side, Color color,
                                        std::vector<Move> &moves) {
         Piece knight_type = getPiece(PieceType::Knight, color);
@@ -386,7 +393,9 @@ namespace Engine {
             addAllCaptures(knight_square, knight_attacks, opposite_side, knight_type, moves);
         }
     }
-    void MoveGen::addAllBishopCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+
+    void
+    MoveGen::addAllBishopCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         Piece bishop_type = getPiece(PieceType::Bishop, color);
         uint64_t bishop_squares = board.getBitboard(bishop_type);
         while (bishop_squares) {
@@ -395,7 +404,9 @@ namespace Engine {
             addAllCaptures(bishop_square, bishop_attacks, opposite_side, bishop_type, moves);
         }
     }
-    void MoveGen::addAllRookCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+
+    void
+    MoveGen::addAllRookCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         Piece rook_type = getPiece(PieceType::Rook, color);
         uint64_t rook_squares = board.getBitboard(rook_type);
         while (rook_squares) {
@@ -404,7 +415,9 @@ namespace Engine {
             addAllCaptures(rook_square, rook_attacks, opposite_side, rook_type, moves);
         }
     }
-    void MoveGen::addAllQueenCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+
+    void
+    MoveGen::addAllQueenCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         Piece queen_type = getPiece(PieceType::Queen, color);
         uint64_t queen_squares = board.bitboards[queen_type];
         while (queen_squares) {
@@ -413,7 +426,9 @@ namespace Engine {
             addAllCaptures(queen_square, queen_attacks, opposite_side, queen_type, moves);
         }
     }
-    void MoveGen::addAllKingCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
+
+    void
+    MoveGen::addAllKingCaptures(uint64_t same_side, uint64_t opposite_side, Color color, std::vector<Move> &moves) {
         Piece king_type = getPiece(PieceType::King, color);
         uint64_t king_square = board.getBitboard(king_type);
         uint64_t king_attacks = getKingAttacks(king_square, same_side);
@@ -482,37 +497,42 @@ namespace Engine {
     void MoveGen::addAllCastling(uint64_t all, Color color, std::vector<Move> &moves) {
         uint64_t attacks = getAllAttacks(getOpposite(color));
         uint64_t not_in_check = ~attacks;
-        uint64_t not_occupied=~all;
+        uint64_t not_occupied = ~all;
         uint64_t valid = ~(attacks | all);
 
 
         if (color == White) {
-            uint64_t white_king =WKingPosition;
-            uint64_t a = white_king >> 1, b = white_king >> 2, c = white_king << 1, d = white_king << 2,e=white_king<<3;
+            uint64_t white_king = WKingPosition;
+            uint64_t a = white_king >> 1, b = white_king >> 2, c = white_king << 1, d = white_king << 2, e =
+                    white_king << 3;
             if (white_king & not_in_check) {
                 if (board.gamestate.getState(canCastleKingSideWhite) && (a & valid) && (b & valid)) {
                     addKingSideCastle(white_king, b, color, moves);
                 }
-                if (board.gamestate.getState(canCastleQueenSideWhite) && (c & valid) && (d & valid) && (e&not_occupied)) {
+                if (board.gamestate.getState(canCastleQueenSideWhite) && (c & valid) && (d & valid) &&
+                    (e & not_occupied)) {
                     addQueenSideCastle(white_king, d, color, moves);
                 }
             }
         } else {
-            uint64_t black_king =BKingPosition;
-            uint64_t a = black_king >> 1, b = black_king >> 2, c = black_king << 1, d = black_king << 2,e=black_king<<3;
+            uint64_t black_king = BKingPosition;
+            uint64_t a = black_king >> 1, b = black_king >> 2, c = black_king << 1, d = black_king << 2, e =
+                    black_king << 3;
             if (black_king & not_in_check) {
                 if (board.gamestate.getState(canCastleKingSideBlack) && (a & valid) && (b & valid)) {
                     addKingSideCastle(black_king, b, color, moves);
                 }
-                if (board.gamestate.getState(canCastleQueenSideBlack) && (c & valid) && (d & valid) && (e&not_occupied)) {
+                if (board.gamestate.getState(canCastleQueenSideBlack) && (c & valid) && (d & valid) &&
+                    (e & not_occupied)) {
                     addQueenSideCastle(black_king, d, color, moves);
                 }
             }
         }
     }
+
     bool MoveGen::isInCheck(Engine::Color color) {
-        uint64_t king_position=board.getBitboard(getPiece(PieceType::King,color));
-        return squareUnderAttack(king_position,color);
+        uint64_t king_position = board.getBitboard(getPiece(PieceType::King, color));
+        return squareUnderAttack(king_position, color);
     }
 
 }

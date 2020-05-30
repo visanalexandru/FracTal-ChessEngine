@@ -3,7 +3,7 @@
 
 namespace Engine {
 
-    Board::Board() : bitboards(),numMoves(0) {
+    Board::Board() : bitboards(), numMoves(0) {
         loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 
@@ -13,8 +13,9 @@ namespace Engine {
             to_return |= bitboards[2 * i + color];
         return to_return;
     }
+
     int Board::getNumMoves() const {
-        return  numMoves;
+        return numMoves;
     }
 
     uint64_t Board::getAll() const {
@@ -70,10 +71,12 @@ namespace Engine {
     Color Board::getTurn() const {
         return static_cast<Color>(gamestate.getState(turnColor));
     }
-    const std::deque<GameState>& Board::getHistory() const {
+
+    const std::deque<GameState> &Board::getHistory() const {
         return history;
     }
-    const GameState& Board::getGameState() {
+
+    const GameState &Board::getGameState() {
         return gamestate;
     }
 
@@ -88,7 +91,7 @@ namespace Engine {
     }
 
     void Board::makeDoublePawnPush(const Engine::Move &move) {
-        uint64_t  dest=move.getDestination();
+        uint64_t dest = move.getDestination();
         setPieceAt(dest, move.getMoved());
         removePieceAt(move.getOrigin(), move.getMoved());
         gamestate.zobrist_key ^= Zobrist::ZobristEnPassant[(bitScanForward(dest)) % 8];//file of en passant
@@ -157,47 +160,47 @@ namespace Engine {
         uint64_t destination = move.getDestination();
 
         if (origin == WKingPosition) {
-            if(gamestate.getState(canCastleKingSideWhite)){
+            if (gamestate.getState(canCastleKingSideWhite)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
                 gamestate.unsetState(canCastleKingSideWhite);
             }
-            if(gamestate.getState(canCastleQueenSideWhite)){
+            if (gamestate.getState(canCastleQueenSideWhite)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
                 gamestate.unsetState(canCastleQueenSideWhite);
             }
         }
         if (origin == BKingPosition) {
-            if(gamestate.getState(canCastleKingSideBlack)){
+            if (gamestate.getState(canCastleKingSideBlack)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
                 gamestate.unsetState(canCastleKingSideBlack);
             }
-            if(gamestate.getState(canCastleQueenSideBlack)){
+            if (gamestate.getState(canCastleQueenSideBlack)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
                 gamestate.unsetState(canCastleQueenSideBlack);
             }
         }
         if (origin == WRookLPosition || destination == WRookLPosition) {
-            if(gamestate.getState(canCastleQueenSideWhite)){
+            if (gamestate.getState(canCastleQueenSideWhite)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
                 gamestate.unsetState(canCastleQueenSideWhite);
             }
 
         }
         if (origin == WRookRPosition || destination == WRookRPosition) {
-            if(gamestate.getState(canCastleKingSideWhite)){
+            if (gamestate.getState(canCastleKingSideWhite)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
                 gamestate.unsetState(canCastleKingSideWhite);
             }
 
         }
         if (origin == BRookLPosition || destination == BRookLPosition) {
-            if(gamestate.getState(canCastleQueenSideBlack)){
+            if (gamestate.getState(canCastleQueenSideBlack)) {
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
                 gamestate.unsetState(canCastleQueenSideBlack);
             }
         }
         if (origin == BRookRPosition || destination == BRookRPosition) {
-            if(gamestate.getState(canCastleKingSideBlack)){
+            if (gamestate.getState(canCastleKingSideBlack)) {
                 gamestate.unsetState(canCastleKingSideBlack);
                 gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
             }
@@ -209,7 +212,7 @@ namespace Engine {
         MoveType type = move.getType();
         if (type == MoveType::Normal)
             makeNormalMove(move);
-        else if(type==MoveType::DoublePawnPush)
+        else if (type == MoveType::DoublePawnPush)
             makeDoublePawnPush(move);
         else if (type == MoveType::Promote)
             makePromotion(move);
@@ -222,12 +225,12 @@ namespace Engine {
         updateCastlingRights(move);
         gamestate.toggleState(turnColor);
         //unset last en passant capture
-        if(gamestate.lastmove.getType()==MoveType::DoublePawnPush){
-            uint64_t destination=gamestate.lastmove.getDestination();
+        if (gamestate.lastmove.getType() == MoveType::DoublePawnPush) {
+            uint64_t destination = gamestate.lastmove.getDestination();
             gamestate.zobrist_key ^= Zobrist::ZobristEnPassant[(bitScanForward(destination)) % 8];
         }
-        gamestate.zobrist_key^=Zobrist::ZobristSide;
-        gamestate.lastmove=move;
+        gamestate.zobrist_key ^= Zobrist::ZobristSide;
+        gamestate.lastmove = move;
         numMoves++;
     }
 
@@ -315,7 +318,7 @@ namespace Engine {
     }
 
     void Board::resetBoard() {
-        numMoves=0;
+        numMoves = 0;
         history.clear();
         for (int i = 0; i < 12; i++)
             bitboards[i] = 0;
@@ -382,40 +385,38 @@ namespace Engine {
             }
         }
         sstream >> aux;
-        if (aux == "b"){
+        if (aux == "b") {
             gamestate.toggleState(turnColor);
-            gamestate.zobrist_key^=Zobrist::ZobristSide;
+            gamestate.zobrist_key ^= Zobrist::ZobristSide;
         }
 
         sstream >> aux;
         for (char a:aux) {
-            if (a == 'K'){
+            if (a == 'K') {
                 gamestate.setState(canCastleKingSideWhite);
-                gamestate.zobrist_key^=Zobrist::ZobristCastling[0];
-            }
-            else if (a == 'k'){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[0];
+            } else if (a == 'k') {
                 gamestate.setState(canCastleKingSideBlack);
-                gamestate.zobrist_key^=Zobrist::ZobristCastling[2];
-            }
-            else if (a == 'Q'){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[2];
+            } else if (a == 'Q') {
                 gamestate.setState(canCastleQueenSideWhite);
-                gamestate.zobrist_key^=Zobrist::ZobristCastling[1];
-            }
-            else if (a == 'q'){
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[1];
+            } else if (a == 'q') {
                 gamestate.setState(canCastleQueenSideBlack);
-                gamestate.zobrist_key^=Zobrist::ZobristCastling[3];
+                gamestate.zobrist_key ^= Zobrist::ZobristCastling[3];
             }
         }
-        sstream>>aux;//en passant target square
-        if(aux!="-"){
-            int x='h'-aux[0];
-            int y=aux[1]-'1';
-            uint64_t ep_target=1LL<<(y*8+x);
-            if(gamestate.getState(turnColor)){
-                gamestate.lastmove=Move(MoveType::DoublePawnPush,ep_target>>8, ep_target<<8,Piece::WPawn,Piece::None,Piece::None);
-            }
-            else{
-                gamestate.lastmove=Move(MoveType::DoublePawnPush,ep_target<<8, ep_target>>8,Piece::BPawn,Piece::None,Piece::None);
+        sstream >> aux;//en passant target square
+        if (aux != "-") {
+            int x = 'h' - aux[0];
+            int y = aux[1] - '1';
+            uint64_t ep_target = 1LL << (y * 8 + x);
+            if (gamestate.getState(turnColor)) {
+                gamestate.lastmove = Move(MoveType::DoublePawnPush, ep_target >> 8, ep_target << 8, Piece::WPawn,
+                                          Piece::None, Piece::None);
+            } else {
+                gamestate.lastmove = Move(MoveType::DoublePawnPush, ep_target << 8, ep_target >> 8, Piece::BPawn,
+                                          Piece::None, Piece::None);
             }
         }
     }

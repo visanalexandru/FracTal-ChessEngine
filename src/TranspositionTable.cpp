@@ -1,13 +1,14 @@
 #include "TranspositionTable.h"
+
 namespace Engine {
-    TranspositionTable& TranspositionTable::getInstance() {
+    TranspositionTable &TranspositionTable::getInstance() {
 
         static TranspositionTable instance(10002943);
         return instance;
     }
 
     TranspositionTable::TranspositionTable(int entries) : table_size(entries) {
-        std::cout<<"created transposition table of size "<<entries<<std::endl;
+        std::cout << "created transposition table of size " << entries << std::endl;
         nodes = new Transposition[entries];
     }
 
@@ -33,7 +34,7 @@ namespace Engine {
 
         int index = getIndex(zobrist_hash);
         Transposition selected = nodes[index];
-        if (selected.getType() != NodeType::Null &&selected.getZobristHash()==zobrist_hash) {
+        if (selected.getType() != NodeType::Null && selected.getZobristHash() == zobrist_hash) {
             return selected;
         }
         return Transposition();

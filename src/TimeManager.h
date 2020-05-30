@@ -5,7 +5,7 @@
 
 namespace Engine {
     namespace TimeManager {
-        float getTimePerMove(int remaining,int increment);//in milliseconds
+        float getTimePerMove(int remaining, int increment);//in milliseconds
     }
 }
 

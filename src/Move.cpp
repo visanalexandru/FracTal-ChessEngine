@@ -1,22 +1,25 @@
 #include "Move.h"
+
 namespace Engine {
 
-    Move::Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion):
+    Move::Move(MoveType type, uint64_t start, uint64_t end, Piece piece_moved, Piece piece_taken, Piece promotion) :
             move_type(type),
             origin(start),
             destination(end),
             taken(piece_taken),
             promote_to(promotion),
             moved(piece_moved),
-            score(0){
+            score(0) {
 
 
     }
+
     int Move::getScore() const {
-        return  score;
+        return score;
     }
+
     void Move::setScore(int new_score) {
-        score=new_score;
+        score = new_score;
     }
 
     Move::Move() : move_type(MoveType::Null),
@@ -51,13 +54,13 @@ namespace Engine {
 
     std::string Move::toString() const {
         std::string result;
-        int orgindex=bitScanForward(origin),destindex=bitScanForward(destination);
+        int orgindex = bitScanForward(origin), destindex = bitScanForward(destination);
 
-        int orgy=orgindex/8;
-        int orgx=(7-orgindex%8);
+        int orgy = orgindex / 8;
+        int orgx = (7 - orgindex % 8);
 
-        int desty=destindex/8;
-        int destx=(7-destindex%8);
+        int desty = destindex / 8;
+        int destx = (7 - destindex % 8);
 
         result += (char) (orgx + 'a');
         result += (char) (orgy + '1');
@@ -65,7 +68,7 @@ namespace Engine {
         result += (char) (destx + 'a');
         result += (char) (desty + '1');
 
-        if (move_type ==MoveType::Promote) {
+        if (move_type == MoveType::Promote) {
             result += tolower(getPieceChar(promote_to));
         }
 

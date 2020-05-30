@@ -9,12 +9,17 @@ namespace Engine {
     private:
         Transposition *nodes;
         int table_size;
+
         int getIndex(uint64_t zobrist_hash);//hash function
         TranspositionTable(int entries);
+
     public:
-        static TranspositionTable & getInstance();
-        void addEntry(const Transposition&transposition);
+        static TranspositionTable &getInstance();
+
+        void addEntry(const Transposition &transposition);
+
         Transposition getTransposition(uint64_t zobrist_hash);
+
         virtual ~TranspositionTable();
     };
 }

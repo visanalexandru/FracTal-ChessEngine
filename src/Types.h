@@ -3,8 +3,9 @@
 #define CHESSENGINE_TYPES_H
 
 #include <cstdint>
-namespace Engine{
-    enum Piece{
+
+namespace Engine {
+    enum Piece {
         WPawn,
         BPawn,
         WKnight,
@@ -19,7 +20,7 @@ namespace Engine{
         BKing,
         None,
     };
-    enum class PieceType{
+    enum class PieceType {
         Pawn,
         Knight,
         Bishop,
@@ -42,7 +43,7 @@ namespace Engine{
     };
 
 
-    enum MoveType{
+    enum MoveType {
         Null,
         Normal,//can be a quiet move or a capture
         QueenSideCastle,
@@ -52,24 +53,28 @@ namespace Engine{
         Promote,
     };
 
-    const uint64_t WRookRPosition=1;
-    const uint64_t  WRookLPosition=1LL<<7;
-    const uint64_t  WKingPosition=1LL<<3;
-    const uint64_t BRookLPosition=1LL<<63;
-    const uint64_t  BRookRPosition=1LL<<56;
-    const uint64_t  BKingPosition=1LL<<59;
+    const uint64_t WRookRPosition = 1;
+    const uint64_t WRookLPosition = 1LL << 7;
+    const uint64_t WKingPosition = 1LL << 3;
+    const uint64_t BRookLPosition = 1LL << 63;
+    const uint64_t BRookRPosition = 1LL << 56;
+    const uint64_t BKingPosition = 1LL << 59;
 
     char getPieceChar(Piece type);
+
     int getPieceValue(PieceType type);
-    inline Color  getOpposite(Color color){
-        return static_cast<Color>(1-color);
+
+    inline Color getOpposite(Color color) {
+        return static_cast<Color>(1 - color);
     }
-    inline Piece getPiece(PieceType type,Color color){
-        int index= static_cast<int>(type)*2+color;
+
+    inline Piece getPiece(PieceType type, Color color) {
+        int index = static_cast<int>(type) * 2 + color;
         return static_cast<Piece>(index);
     }
-    inline PieceType getPieceType(Piece piece){
-        return static_cast<PieceType>(piece/2);
+
+    inline PieceType getPieceType(Piece piece) {
+        return static_cast<PieceType>(piece / 2);
     }
 }
 
