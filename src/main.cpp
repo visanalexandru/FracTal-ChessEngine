@@ -10,6 +10,7 @@ int main() {
     srand(time(NULL));
     Engine::Tables::initializeAttackTables();
     Engine::Zobrist::initZobrist();
+    Engine::TranspositionTable::getInstance().initSize(100);
     Engine::Board board;
     Protocol uci(board);
     uci.start();

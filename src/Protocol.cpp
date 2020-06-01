@@ -107,7 +107,6 @@ void Protocol::handleRequest(const std::string &req) {
 
     }
     else if (cmmd == "go") {
-        std::cout<<"received go"<<std::endl;
         searchMove();
     }
     else if (cmmd == "quit") {
