@@ -122,7 +122,7 @@ namespace Engine {
                 while (true) {
                     Move aux = megamaxRoot(depth, color);
                     if (!premature_stop) {
-                        Logger::getInstance().log("searched depth:" + std::to_string(depth));
+                        printInfo(depth,aux);
                         bestmove = aux;
                     } else break;
                     depth++;
@@ -130,6 +130,19 @@ namespace Engine {
             }
         }
         return bestmove;
+    }
+    void Eval::printInfo(int current_depth,const Move&current_best_move) const {
+        std::cout<<"info depth "<<current_depth<<" ";
+        std::cout<<"pv ";
+        Engine::Move best=current_best_move;
+        for(int i=0;i<current_depth;i++){
+            std::cout<<best.toString()<<" ";
+            internal_board.makeMove(best);
+            best=TranspositionTable::getInstance().getTransposition(internal_board.getGameState().zobrist_key).getBestMove();
+        }
+        for(int i=0;i<current_depth;i++)
+            internal_board.undoLastMove();
+        std::cout<<std::endl;
     }
 
     bool Eval::hasTimeLeft() const {

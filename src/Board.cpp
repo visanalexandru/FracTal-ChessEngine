@@ -39,8 +39,6 @@ namespace Engine {
         }
         for (int k = 0; k < 33; k++)
             to_return += '#';
-
-        to_return += '\n';
         return to_return;
     }
 

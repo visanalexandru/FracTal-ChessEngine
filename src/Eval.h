@@ -50,6 +50,8 @@ namespace Engine {
 
         bool isThreefoldRepetition() const;
 
+        void printInfo(int current_depth,const Move&current_best_move) const;
+
     public:
         Eval(Board &board);
 

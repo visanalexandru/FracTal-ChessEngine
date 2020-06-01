@@ -9,81 +9,108 @@ Protocol::Protocol(Engine::Board &internal_board) : isRunning(false),
 
 void Protocol::send(const std::string &to_send) {
 
-    Engine::Logger::getInstance().log("sent " + to_send);
+    Engine::Logger::getInstance().log("SEND: " + to_send);
     std::cout << to_send << '\n';
 }
 
-bool Protocol::compare(Engine::Move a, Engine::Move b) {
-    return a.getType() < b.getType();
+
+void Protocol::init() {
+    send("id name StockFischer");
+    send("id author Visan");
+    send("uciok");
 }
 
-void Protocol::handleRequest(const std::string &req) {
-
-    Engine::Logger::getInstance().log("received " + req);
-
-    std::stringstream sstream;
-    sstream << req;
-
-    std::string cmmd;
-    sstream >> cmmd;
-
-    if (cmmd == "uci") {
-        send("id name StockFischer");
-        send("id author Visan");
-        send("uciok");
-    } else if (cmmd == "isready") {
-        send("readyok");
-    } else if (cmmd == "position") {
-        std::string aux;
-        sstream >> aux;//the first string is a fen string or "startpos"
-        if (aux == "startpos") {
-            board.loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        } else {
-            board.loadFen(aux);
+void Protocol::setUpPosition() {
+    std::string option;
+    stream >> option;//the first string is a fen string or "startpos"
+    if (option == "startpos") {
+        board.loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    } else {//it is a fen string
+        std::string fen;
+        std::string remaining;
+        //the fen string is made out of 6 chunks
+        for(int i=0;i<6;i++){
+            stream>>remaining;
+            fen+=remaining+" ";
         }
-        if (!sstream.eof()) {
-            sstream >> aux;//moves
-            while (!sstream.eof()) {
-                sstream >> aux;
-                Engine::Move server_move = Engine::AnParser::getMove(aux, board);
+        board.loadFen(fen);
+    }
+    if (!stream.eof()) {//has not reached end
+        std::string move;
+        stream >> move;
+        if(move=="moves"){//we need to parse moves
+            while (stream>>move) {//parse moves
+                Engine::Move server_move = Engine::AnParser::getMove(move, board);
                 board.makeMove(server_move);
             }
         }
 
-    } else if (cmmd == "go") {
-        Engine::Eval eval(board);
-        std::string aux;
-        int time = 10000000, increment = 0;
-        int fixed_time = 0;
-        while (sstream >> aux) {
-            if ((aux == "wtime" && board.getTurn() == Engine::White) ||
-                (aux == "btime" && board.getTurn() == Engine::Black))
-                sstream >> time;
+    }
+}
 
-            if ((aux == "winc" && board.getTurn() == Engine::White) ||
-                (aux == "binc" && board.getTurn() == Engine::Black))
-                sstream >> increment;
-            if (aux == "movetime")
-                sstream >> fixed_time;
-        }
+void Protocol::searchMove() {
+    Engine::Eval eval(board);
+    std::string aux;
+    int time = 10000000, increment = 0;
+    int fixed_time = 0;
+    Engine::Logger::getInstance().log("Begin search");
 
-        Engine::Logger::getInstance().log("remaining time " + std::to_string(time));
+    while (stream >> aux) {//we read search options
+        if ((aux == "wtime" && board.getTurn() == Engine::White) ||
+            (aux == "btime" && board.getTurn() == Engine::Black))
+            stream >> time;
 
-        float alloted;
-        if (fixed_time)
-            alloted = (float) (fixed_time) / 1000.f;
-        else alloted = Engine::TimeManager::getTimePerMove(time, increment);
+        if ((aux == "winc" && board.getTurn() == Engine::White) ||
+            (aux == "binc" && board.getTurn() == Engine::Black))
+            stream >> increment;
+        if (aux == "movetime")
+            stream >> fixed_time;
+    }
 
-        Engine::Logger::getInstance().log("alloted " + std::to_string(alloted) + " seconds ");
+    Engine::Logger::getInstance().log("--remaining time " + std::to_string(time));
 
-        float a = clock();
-        Engine::Move bestmove = eval.getBestMove(alloted);
-        a = (clock() - a) / CLOCKS_PER_SEC;
-        Engine::Logger::getInstance().log("found in " + std::to_string(a));
-        send("bestmove " + bestmove.toString());
-        board.makeMove(bestmove);
+    float alloted;
+    if (fixed_time)
+        alloted = (float) (fixed_time) / 1000.f;
+    else alloted = Engine::TimeManager::getTimePerMove(time, increment);
+
+    Engine::Logger::getInstance().log("--alloted " + std::to_string(alloted) + " seconds ");
+
+    float a = clock();
+    Engine::Move bestmove = eval.getBestMove(alloted);
+    a = (clock() - a) / CLOCKS_PER_SEC;
+    Engine::Logger::getInstance().log("--found in " + std::to_string(a) + ": "+bestmove.toString());
+    send("bestmove " + bestmove.toString());
+}
+
+void Protocol::sendOk() {
+    send("readyok");
+}
+
+void Protocol::handleRequest(const std::string &req) {
+
+    Engine::Logger::getInstance().log("RECEIVE: " + req);
+    stream.clear();
+    stream << req;
+
+    std::string cmmd;
+    stream >> cmmd;
+
+    if (cmmd == "uci") {
+        init();
+    } else if (cmmd == "isready") {
+        sendOk();
+    }
+    else if (cmmd == "position") {
+        setUpPosition();
         Engine::Logger::getInstance().log(board.toString());
-    } else if (cmmd == "quit") {
+
+    }
+    else if (cmmd == "go") {
+        std::cout<<"received go"<<std::endl;
+        searchMove();
+    }
+    else if (cmmd == "quit") {
         isRunning = false;
     }
 }

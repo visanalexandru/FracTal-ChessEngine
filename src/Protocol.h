@@ -18,7 +18,15 @@ private:
 
     void send(const std::string &to_send);
 
-    static bool compare(Engine::Move a, Engine::Move b);
+    std::stringstream stream;
+
+    void setUpPosition();
+
+    void init();
+
+    void sendOk();
+
+    void searchMove();
 
 public:
     Protocol(Engine::Board &internal_board);
