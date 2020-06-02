@@ -111,7 +111,8 @@ namespace Engine {
         int alpha = -infinity, beta = infinity;
         Color color = internal_board.getTurn();
         Move bestmove;
-
+        nodes = 0;
+        int score = 0;
         std::vector<Move> legal = movegen.getAllMoves();
         if (legal.size()) {
             if (legal.size() == 1)
@@ -120,9 +121,9 @@ namespace Engine {
                 bestmove = legal[0];//random legal move
                 int depth = 1;
                 while (true) {
-                    Move aux = megamaxRoot(depth, color);
+                    Move aux = megamaxRoot(depth, color, score);
                     if (!premature_stop) {
-                        printInfo(depth,aux);
+                        printInfo(depth, aux, score);
                         bestmove = aux;
                     } else break;
                     depth++;
@@ -131,18 +132,32 @@ namespace Engine {
         }
         return bestmove;
     }
-    void Eval::printInfo(int current_depth,const Move&current_best_move) const {
-        std::cout<<"info depth "<<current_depth<<" ";
-        std::cout<<"pv ";
-        Engine::Move best=current_best_move;
-        for(int i=0;i<current_depth;i++){
-            std::cout<<best.toString()<<" ";
+
+    void Eval::printInfo(int current_depth, const Move &current_best_move, int score) const {
+        std::cout << "info depth " << current_depth << " ";
+        std::cout << "nodes " << nodes << " ";
+        std::cout << "score cp " << score << " ";
+        std::cout << "pv ";
+
+        Engine::Move best = current_best_move;
+        int depth = 0;
+        while (depth < current_depth && best.getType() != MoveType::Null) {
+            std::cout << best.toString() << " ";
             internal_board.makeMove(best);
-            best=TranspositionTable::getInstance().getTransposition(internal_board.getGameState().zobrist_key).getBestMove();
+            depth++;
+
+            Transposition next = TranspositionTable::getInstance().getTransposition(
+                    internal_board.getGameState().zobrist_key);
+            if (next.getType() != NodeType::Null) {
+                best = next.getBestMove();
+            } else break;
         }
-        for(int i=0;i<current_depth;i++)
+        //reset moves
+        while (depth) {
             internal_board.undoLastMove();
-        std::cout<<std::endl;
+            depth--;
+        }
+        std::cout << std::endl;
     }
 
     bool Eval::hasTimeLeft() const {
@@ -150,7 +165,7 @@ namespace Engine {
         return (diff.count()) < allotted_time;
     }
 
-    Move Eval::megamaxRoot(int depth, Color color) {
+    Move Eval::megamaxRoot(int depth, Color color, int &score) {
         int alpha = -infinity, beta = infinity, best = -infinity;
         Move to_return;
         root = internal_board.getNumMoves();
@@ -173,9 +188,12 @@ namespace Engine {
             if (alpha >= beta)
                 break;
         }
-        if (!premature_stop)//don't add this node in the transposition table because it was not entirely evaluated
+        if (!premature_stop) {
+            score = best;
             TranspositionTable::getInstance().addEntry(
                     Transposition(NodeType::Exact, internal_board.getGameState().zobrist_key, depth, best, to_return));
+        }//else don't add this node in the transposition table because it was not entirely evaluated
+
         return to_return;
     }
 
@@ -207,6 +225,7 @@ namespace Engine {
         alpha = std::max(alpha, stand_pat);
         for (const Move &move:moves) {
             internal_board.makeMove(move);
+            nodes++;
             int score = -quiescenceSearch(-beta, -alpha, getOpposite(color));
             internal_board.undoLastMove();
 
@@ -219,6 +238,7 @@ namespace Engine {
 
     //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
+        nodes++;
         uint64_t hash = internal_board.getGameState().zobrist_key;
         int alphaOrig = alpha;
         Transposition node = TranspositionTable::getInstance().getTransposition(hash);

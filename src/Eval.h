@@ -23,6 +23,7 @@ namespace Engine {
         std::chrono::time_point<std::chrono::system_clock> last_time;
         float allotted_time;
         bool premature_stop;
+        int nodes;
 
         bool hasTimeLeft() const;
 
@@ -46,11 +47,11 @@ namespace Engine {
 
         int megamax(int depth, int alpha, int beta, Color color);
 
-        Move megamaxRoot(int depth, Color color);
+        Move megamaxRoot(int depth, Color color,int&score);
 
         bool isThreefoldRepetition() const;
 
-        void printInfo(int current_depth,const Move&current_best_move) const;
+        void printInfo(int current_depth,const Move&current_best_move,int score) const;
 
     public:
         Eval(Board &board);
