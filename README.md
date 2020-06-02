@@ -1,7 +1,7 @@
 # SimpleChessEngine
 This is a simple UCI compliant chess engine.
 
-Features:
+## Features:
 - Bitboards
 - Negamax search with alpha-beta pruning
 - Quiescence search 
@@ -10,3 +10,8 @@ Features:
 - Move ordering
 - Tapered eval
 - Simplified evaluation function: https://www.chessprogramming.org/Simplified_Evaluation_Function
+
+## Todo:
+- Magic bitboards for faster move generation
+- Better move ordering
+- Static exchange evaluation (SEE)
