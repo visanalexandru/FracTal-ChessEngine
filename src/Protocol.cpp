@@ -91,7 +91,7 @@ void Protocol::handleRequest(const std::string &req) {
 
     Engine::Logger::getInstance().log("RECEIVE: " + req);
     stream.clear();
-    stream << req;
+    stream.str(req);
 
     std::string cmmd;
     stream >> cmmd;
