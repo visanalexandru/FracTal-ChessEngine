@@ -97,8 +97,15 @@ namespace Engine {
                 move.setScore(100000);
             } else {
                 score = 0;
-                score += getPieceValue(getPieceType(move.getTaken()));
-                score += getPieceValue(getPieceType(move.getPromotion()));
+                PieceType moved=getPieceType(move.getMoved());
+                PieceType promotion=getPieceType(move.getPromotion());
+                PieceType taken=getPieceType(move.getTaken());
+                score += getPieceValue(promotion);
+
+                if(taken!=PieceType::None){
+                    score += getPieceValue(taken);
+                    score-=getPieceValue(moved)/10;
+                }
                 move.setScore(score);
             }
         }
@@ -217,12 +224,14 @@ namespace Engine {
 
     int Eval::quiescenceSearch(int alpha, int beta, Color color) {
         int stand_pat = getHeuristicScore(color);
-        std::vector<Move> moves = movegen.getAllCaptures();
-        setRating(moves);
-        std::sort(moves.begin(), moves.end(), compare);
         if (stand_pat >= beta)
             return beta;
         alpha = std::max(alpha, stand_pat);
+
+        std::vector<Move> moves = movegen.getAllCaptures();
+        setRating(moves);
+        std::sort(moves.begin(), moves.end(), compare);
+
         for (const Move &move:moves) {
             internal_board.makeMove(move);
             nodes++;
