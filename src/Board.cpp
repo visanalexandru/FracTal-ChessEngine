@@ -82,7 +82,7 @@ namespace Engine {
         uint64_t org = move.getOrigin();
 
 
-        if (move.getTaken() != None)
+        if (move.isCapture())
             removePieceAt(move.getDestination(), move.getTaken());
         setPieceAt(move.getDestination(), move.getMoved());
         removePieceAt(move.getOrigin(), move.getMoved());
@@ -97,7 +97,7 @@ namespace Engine {
 
     void Board::makePromotion(const Engine::Move &move) {
         uint64_t org = move.getOrigin();
-        if (move.getTaken() != None)
+        if (move.isCapture())
             removePieceAt(move.getDestination(), move.getTaken());
         setPieceAt(move.getDestination(), move.getPromotion());
         removePieceAt(move.getOrigin(), move.getMoved());
@@ -237,7 +237,7 @@ namespace Engine {
         uint64_t dest = move.getDestination();
         uint64_t org = move.getOrigin();
         removePieceAt(dest, move.getMoved());
-        if (move.getTaken() != Piece::None) {
+        if (move.isCapture()) {
             setPieceAt(dest, move.getTaken());
         }
         setPieceAt(move.getOrigin(), move.getMoved());
@@ -245,7 +245,7 @@ namespace Engine {
 
     void Board::undoPromotion(const Engine::Move &move) {
         removePieceAt(move.getDestination(), move.getPromotion());
-        if (move.getTaken() != Piece::None)
+        if (move.isCapture())
             setPieceAt(move.getDestination(), move.getTaken());
         setPieceAt(move.getOrigin(), move.getMoved());
     }

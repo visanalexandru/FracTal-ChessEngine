@@ -36,6 +36,10 @@ namespace Engine {
         return destination;
     }
 
+    bool Move::isCapture() const {
+        return taken!=None;
+    }
+
     MoveType Move::getType() const {
         return move_type;
     }

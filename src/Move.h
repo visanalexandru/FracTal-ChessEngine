@@ -29,6 +29,8 @@ namespace Engine {
 
         uint64_t getOrigin() const;
 
+        bool isCapture() const;
+
         uint64_t getDestination() const;
 
         MoveType getType() const;

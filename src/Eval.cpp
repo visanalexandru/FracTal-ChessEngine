@@ -97,14 +97,13 @@ namespace Engine {
                 move.setScore(100000);
             } else {
                 score = 0;
-                PieceType moved=getPieceType(move.getMoved());
-                PieceType promotion=getPieceType(move.getPromotion());
-                PieceType taken=getPieceType(move.getTaken());
-                score += getPieceValue(promotion);
-
-                if(taken!=PieceType::None){
-                    score += getPieceValue(taken);
-                    score-=getPieceValue(moved)/10;
+                if(move.getType()==MoveType::Promote){
+                    PieceType promotion=getPieceType(move.getPromotion());
+                    score += getPieceValue(promotion);
+                }
+                if(move.isCapture()){
+                    score += getPieceValue(getPieceType(move.getTaken()));
+                    score-=getPieceValue(getPieceType(move.getMoved()))/10;
                 }
                 move.setScore(score);
             }
@@ -143,7 +142,9 @@ namespace Engine {
     void Eval::printInfo(int current_depth, const Move &current_best_move, int score) const {
         std::cout << "info depth " << current_depth << " ";
         std::cout << "nodes " << nodes << " ";
+        std::chrono::duration<double> diff = std::chrono::system_clock::now() - last_time;
         std::cout << "score cp " << score << " ";
+        std::cout << "nps " << nodes / diff.count() << " ";
         std::cout << "pv ";
 
         Engine::Move best = current_best_move;
