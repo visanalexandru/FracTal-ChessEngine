@@ -1,8 +1,9 @@
+#include <cstring>
 #include "Eval.h"
 
 namespace Engine {
-    Eval::Eval(Board &board) : internal_board(board), movegen(board) {
-
+    Eval::Eval(Board &board) : internal_board(board), movegen(board), history_heuristic() {
+        memset(history_heuristic,0,sizeof(history_heuristic));
     }
 
     int Eval::getMaterialScore(Color color) const {
@@ -94,16 +95,21 @@ namespace Engine {
         int score;
         for (Move &move:moves) {
             if (here.getType() != NodeType::Null && move == best_move) {
-                move.setScore(100000);
+                move.setScore(infinity);
             } else {
                 score = 0;
-                if(move.getType()==MoveType::Promote){
-                    PieceType promotion=getPieceType(move.getPromotion());
-                    score += getPieceValue(promotion);
+                if (move.getType() == MoveType::Promote) {
+                    PieceType promotion = getPieceType(move.getPromotion());
+                    score += getPieceValue(promotion) * 100+2000;
                 }
-                if(move.isCapture()){
-                    score += getPieceValue(getPieceType(move.getTaken()));
-                    score-=getPieceValue(getPieceType(move.getMoved()))/10;
+                else{
+                    if (move.isCapture()) {
+                        score += getPieceValue(getPieceType(move.getTaken())) * 100+1000;
+                        score -= getPieceValue(getPieceType(move.getMoved()));
+                    }
+                    else {
+                       score += history_heuristic[color][bitScanForward(move.getOrigin())][bitScanForward(move.getDestination())];
+                    }
                 }
                 move.setScore(score);
             }
@@ -225,6 +231,7 @@ namespace Engine {
 
     int Eval::quiescenceSearch(int alpha, int beta, Color color) {
         int stand_pat = getHeuristicScore(color);
+        nodes++;
         if (stand_pat >= beta)
             return beta;
         alpha = std::max(alpha, stand_pat);
@@ -235,7 +242,6 @@ namespace Engine {
 
         for (const Move &move:moves) {
             internal_board.makeMove(move);
-            nodes++;
             int score = -quiescenceSearch(-beta, -alpha, getOpposite(color));
             internal_board.undoLastMove();
 
@@ -248,7 +254,6 @@ namespace Engine {
 
     //see https://en.wikipedia.org/wiki/Negamax with transposition tables
     int Eval::megamax(int depth, int alpha, int beta, Color color) {
-        nodes++;
         uint64_t hash = internal_board.getGameState().zobrist_key;
         int alphaOrig = alpha;
         Transposition node = TranspositionTable::getInstance().getTransposition(hash);
@@ -289,8 +294,11 @@ namespace Engine {
                 best_move = move;
             }
             alpha = std::max(alpha, best);
-            if (alpha >= beta)
+            if (alpha >= beta) {
+                history_heuristic[color][bitScanForward(move.getOrigin())][bitScanForward(move.getDestination())] +=
+                        depth * depth;
                 break;
+            }
         }
 
         if (!premature_stop) {

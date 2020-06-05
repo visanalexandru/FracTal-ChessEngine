@@ -25,6 +25,8 @@ namespace Engine {
         bool premature_stop;
         int nodes;
 
+        int history_heuristic[2][64][64];
+
         bool hasTimeLeft() const;
 
         void setRating(std::vector<Move> &moves);
