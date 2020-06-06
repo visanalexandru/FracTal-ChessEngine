@@ -27,6 +27,8 @@ namespace Engine {
 
         int history_heuristic[2][64][64];
 
+        void clearHistory();
+
         bool hasTimeLeft() const;
 
         void setRating(std::vector<Move> &moves);

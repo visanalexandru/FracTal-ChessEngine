@@ -2,7 +2,7 @@
 
 
 Protocol::Protocol(Engine::Board &internal_board) : isRunning(false),
-                                                    board(internal_board) {
+                                                    board(internal_board),eval(internal_board) {
 
 
 }
@@ -49,7 +49,6 @@ void Protocol::setUpPosition() {
 }
 
 void Protocol::searchMove() {
-    Engine::Eval eval(board);
     std::string aux;
     int time = 10000000, increment = 0;
     int fixed_time = 0;

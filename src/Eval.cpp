@@ -3,7 +3,7 @@
 
 namespace Engine {
     Eval::Eval(Board &board) : internal_board(board), movegen(board), history_heuristic() {
-        memset(history_heuristic,0,sizeof(history_heuristic));
+
     }
 
     int Eval::getMaterialScore(Color color) const {
@@ -18,6 +18,10 @@ namespace Engine {
         int queen_score = popCount(internal_board.getBitboard(getPiece(PieceType::Queen, color))) *
                           getPieceValue(PieceType::Queen);
         return pawn_score + knight_score + bishop_score + rook_score + queen_score;
+    }
+
+    void Eval::clearHistory() {
+        memset(history_heuristic,0,sizeof(history_heuristic));
     }
 
     int Eval::getBonusPieceScore(PieceType piece, Color color) const {
@@ -125,6 +129,7 @@ namespace Engine {
         Move bestmove;
         nodes = 0;
         int score = 0;
+        clearHistory();
         std::vector<Move> legal = movegen.getAllMoves();
         if (legal.size()) {
             if (legal.size() == 1)

@@ -12,6 +12,7 @@
 class Protocol {
 private:
     Engine::Board &board;
+    Engine::Eval eval;
     bool isRunning;
 
     void handleRequest(const std::string &req);
