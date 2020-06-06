@@ -275,7 +275,7 @@ namespace Engine {
         }
 
         if (depth == 0) {
-            return quiescenceSearch(-infinity, infinity, color);
+            return quiescenceSearch(alpha, beta, color);
         }
         std::vector<Move> moves = movegen.getAllMoves();
         if (moves.size() == 0) {
