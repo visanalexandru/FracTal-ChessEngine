@@ -154,8 +154,9 @@ namespace Engine {
         std::cout << "info depth " << current_depth << " ";
         std::cout << "nodes " << nodes << " ";
         std::chrono::duration<double> diff = std::chrono::system_clock::now() - last_time;
+        double nps=(double)(nodes)/diff.count();
         std::cout << "score cp " << score << " ";
-        std::cout << "nps " << nodes / diff.count() << " ";
+        std::cout << "nps " <<(int)nps << " ";
         std::cout << "pv ";
 
         Engine::Move best = current_best_move;
