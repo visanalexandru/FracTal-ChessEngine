@@ -41,11 +41,11 @@ namespace Engine {
 
         int getPhase() const;
 
-        int getBonusKingScore(Color color) const;
+        int getBonusKingScore(Color color,int phase) const;
 
         int getMaterialScore(Color color) const;
 
-        int getBonusScore(Color color) const;
+        int getBonusScore(Color color,int phase) const;
 
         int quiescenceSearch(int alpha, int beta, Color color);
 

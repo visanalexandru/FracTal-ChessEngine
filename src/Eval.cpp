@@ -53,9 +53,8 @@ namespace Engine {
         return phase;
     }
 
-    int Eval::getBonusKingScore(Color color) const {
+    int Eval::getBonusKingScore(Color color,int phase) const {
         int king_opening, king_ending;
-        int phase = getPhase();
         if (color == White) {
             int pos = bitScanForward(internal_board.getBitboard(WKing));
             king_opening = Tables::KingBonus[0][63 - pos];
@@ -69,15 +68,16 @@ namespace Engine {
         return eval;
     }
 
-    int Eval::getBonusScore(Color color) const {
+    int Eval::getBonusScore(Color color,int phase) const {
         return getBonusPieceScore(PieceType::Pawn, color) + getBonusPieceScore(PieceType::Knight, color) +
                getBonusPieceScore(PieceType::Bishop, color) + getBonusPieceScore(PieceType::Rook, color) +
-               getBonusPieceScore(PieceType::Queen, color) + getBonusKingScore(color);
+               getBonusPieceScore(PieceType::Queen, color) + getBonusKingScore(color,phase);
     }
 
     int Eval::getScore() const {
+        int phase=getPhase();
         return getMaterialScore(White) - getMaterialScore(Black)
-               + getBonusScore(White) - getBonusScore(Black);
+               + getBonusScore(White,phase) - getBonusScore(Black,phase);
     }
 
     int Eval::getHeuristicScore(Color color) const {
