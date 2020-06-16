@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <fstream>
 #include "Logger.h"
+#include "BoardEval.h"
 #include<chrono>
 
 namespace Engine {
@@ -15,6 +16,7 @@ namespace Engine {
 
         Board &internal_board;
         MoveGen movegen;
+        BoardEval board_evaluation;
         const int infinity = 99999999;
         const int checkmate = -9999999;
         const int stalemate = 0;
@@ -34,18 +36,6 @@ namespace Engine {
         void setRating(std::vector<Move> &moves);
 
         int getHeuristicScore(Color color) const;
-
-        int getBonusPieceScore(PieceType piece, Color color) const;
-
-        int getScore() const;
-
-        int getPhase() const;
-
-        int getBonusKingScore(Color color,int phase) const;
-
-        int getMaterialScore(Color color) const;
-
-        int getBonusScore(Color color,int phase) const;
 
         int quiescenceSearch(int alpha, int beta, Color color);
 
