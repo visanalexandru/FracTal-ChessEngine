@@ -8,6 +8,8 @@ namespace Engine {
     private:
         Board &internal_board;
 
+        const int doubled_pawn_penalty=-50;
+
         int getMaterialScore(Color color) const;
 
         int getBonusPieceScore(PieceType piece, Color color) const;
@@ -19,6 +21,9 @@ namespace Engine {
         int getPhase() const;
 
         int getDoubledPawnCount(Color color) const;
+
+        int getPawnStructureScore(Color color) const;
+
 
     public:
         BoardEval(Board &board);

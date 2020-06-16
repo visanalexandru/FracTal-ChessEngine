@@ -81,6 +81,10 @@ namespace Engine {
         return result;
     }
 
+    int BoardEval::getPawnStructureScore(Color color) const {
+        return getDoubledPawnCount(color)*doubled_pawn_penalty;
+    }
+
     int BoardEval::getBonusScore(Color color, int phase) const {
         return getBonusPieceScore(PieceType::Pawn, color) + getBonusPieceScore(PieceType::Knight, color) +
                getBonusPieceScore(PieceType::Bishop, color) + getBonusPieceScore(PieceType::Rook, color) +
@@ -90,7 +94,8 @@ namespace Engine {
     int BoardEval::getScore() const {
         int phase = getPhase();
         return getMaterialScore(White) - getMaterialScore(Black)
-               + getBonusScore(White, phase) - getBonusScore(Black, phase);
+               + getBonusScore(White, phase) - getBonusScore(Black, phase)
+               + getPawnStructureScore(White)-getPawnStructureScore(Black);
     }
 
 }
