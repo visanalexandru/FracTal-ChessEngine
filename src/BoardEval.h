@@ -8,7 +8,11 @@ namespace Engine {
     private:
         Board &internal_board;
 
-        const int doubled_pawn_penalty=-50;
+        //OPENING AND ENDGAME
+        const int doubled_pawn_penalty[2]{-20, -30};
+        const int passed_pawn_bonus[2]{10, 70};
+
+        int interpolate(int opening, int ending, int phase) const;
 
         int getMaterialScore(Color color) const;
 
@@ -22,7 +26,9 @@ namespace Engine {
 
         int getDoubledPawnCount(Color color) const;
 
-        int getPawnStructureScore(Color color) const;
+        int getPassedPawnCount(Color color) const;
+        
+        int getPawnStructureScore(Color color, int phase) const;
 
 
     public:

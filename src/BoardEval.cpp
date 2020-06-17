@@ -51,6 +51,10 @@ namespace Engine {
 
     }
 
+    int BoardEval::interpolate(int opening, int ending, int phase) const {
+        return  ((opening* (256 - phase)) + (ending * phase)) / 256;
+    }
+
     int BoardEval::getBonusKingScore(Color color, int phase) const {
         int king_opening, king_ending;
         if (color == White) {
@@ -62,8 +66,7 @@ namespace Engine {
             king_opening = Tables::KingBonus[0][pos];
             king_ending = Tables::KingBonus[1][pos];
         }
-        int eval = ((king_opening * (256 - phase)) + (king_ending * phase)) / 256;
-        return eval;
+        return interpolate(king_opening,king_ending,phase);
     }
 
     int BoardEval::getDoubledPawnCount(Color color) const {
@@ -80,9 +83,37 @@ namespace Engine {
         }
         return result;
     }
+    int BoardEval::getPassedPawnCount(Color color) const {
+        Piece pawn = getPiece(PieceType::Pawn, color);
+        Piece opposite_pawn=getPiece(PieceType::Pawn,getOpposite(color));
+        int result=0;
+        uint64_t pawn_bitboard = internal_board.getBitboard(pawn);
+        uint64_t opposite_pawn_bitboard=internal_board.getBitboard(opposite_pawn);
+        uint64_t front_fill,pawn_pos;
+        Tables::Direction up=(color==White? Tables::North : Tables::South);
+        while(pawn_bitboard){
+            pawn_pos=popLsb(pawn_bitboard);
+            int position=bitScanForward(pawn_pos);
+            front_fill=Tables::AttackTables[position][up];
+            if(position%8!=0)
+                front_fill|=Tables::AttackTables[position-1][up];
+            if(position%8!=7)
+                front_fill|=Tables::AttackTables[position+1][up];
 
-    int BoardEval::getPawnStructureScore(Color color) const {
-        return getDoubledPawnCount(color)*doubled_pawn_penalty;
+            if((front_fill&opposite_pawn_bitboard)==0)
+                result++;
+        }
+        return result;
+    }
+
+    int BoardEval::getPawnStructureScore(Color color,int phase) const {
+        int opening=0,ending=0;
+        int num_doubled_pawns=getDoubledPawnCount(color);
+
+        opening+=num_doubled_pawns*doubled_pawn_penalty[0];
+        ending+=num_doubled_pawns*doubled_pawn_penalty[1];
+
+        return interpolate(opening,ending,phase);
     }
 
     int BoardEval::getBonusScore(Color color, int phase) const {
@@ -95,7 +126,7 @@ namespace Engine {
         int phase = getPhase();
         return getMaterialScore(White) - getMaterialScore(Black)
                + getBonusScore(White, phase) - getBonusScore(Black, phase)
-               + getPawnStructureScore(White)-getPawnStructureScore(Black);
+               + getPawnStructureScore(White,phase)-getPawnStructureScore(Black,phase);
     }
 
 }
