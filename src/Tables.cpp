@@ -4,6 +4,7 @@ namespace Engine {
 
     namespace Tables {
         uint64_t AttackTables[64][8];
+        uint64_t PawnFrontFill[2][64];
 
         void initializeAttackTables() {
             //NORTH
@@ -45,6 +46,19 @@ namespace Engine {
             for (int i = 55; i >= 0; i--) {
                 if ((i + 1) % 8)
                     AttackTables[i][NorthWest] = (1LL << (i + 9)) | AttackTables[i + 9][NorthWest];
+            }
+
+            for(int i=0;i<64;i++){
+                PawnFrontFill[0][i]=AttackTables[i][North];
+                PawnFrontFill[1][i]=AttackTables[i][South];
+                if(i%8!=0){
+                    PawnFrontFill[0][i]|=AttackTables[i-1][North];
+                    PawnFrontFill[1][i]|=AttackTables[i-1][South];
+                }
+                if(i%8!=7){
+                    PawnFrontFill[0][i]|=AttackTables[i+1][North];
+                    PawnFrontFill[1][i]|=AttackTables[i+1][South];
+                }
             }
         }
     }

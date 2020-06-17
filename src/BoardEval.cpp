@@ -90,16 +90,10 @@ namespace Engine {
         uint64_t pawn_bitboard = internal_board.getBitboard(pawn);
         uint64_t opposite_pawn_bitboard=internal_board.getBitboard(opposite_pawn);
         uint64_t front_fill,pawn_pos;
-        Tables::Direction up=(color==White? Tables::North : Tables::South);
         while(pawn_bitboard){
             pawn_pos=popLsb(pawn_bitboard);
             int position=bitScanForward(pawn_pos);
-            front_fill=Tables::AttackTables[position][up];
-            if(position%8!=0)
-                front_fill|=Tables::AttackTables[position-1][up];
-            if(position%8!=7)
-                front_fill|=Tables::AttackTables[position+1][up];
-
+            front_fill=Tables::PawnFrontFill[color][position];
             if((front_fill&opposite_pawn_bitboard)==0)
                 result++;
         }
@@ -109,9 +103,13 @@ namespace Engine {
     int BoardEval::getPawnStructureScore(Color color,int phase) const {
         int opening=0,ending=0;
         int num_doubled_pawns=getDoubledPawnCount(color);
+        int num_passed_pawns=getPassedPawnCount(color);
 
         opening+=num_doubled_pawns*doubled_pawn_penalty[0];
         ending+=num_doubled_pawns*doubled_pawn_penalty[1];
+
+        opening+=num_passed_pawns*passed_pawn_bonus[0];
+        ending+=num_passed_pawns*passed_pawn_bonus[1];
 
         return interpolate(opening,ending,phase);
     }
