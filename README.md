@@ -1,4 +1,4 @@
-# SimpleChessEngine
+# FracTal Chess Engine
 This is a simple UCI compliant chess engine.
 
 ## Features:
