@@ -15,8 +15,8 @@ void Protocol::send(const std::string &to_send) {
 
 
 void Protocol::init() {
-    send("id name StockFischer");
-    send("id author Visan");
+    send("id name FracTal");
+    send("id author Visan Alexandru");
     send("uciok");
 }
 
@@ -50,7 +50,7 @@ void Protocol::setUpPosition() {
 
 void Protocol::searchMove() {
     std::string aux;
-    int time = 10000000, increment = 0;
+    int time = 100000, increment = 0;
     int fixed_time = 0;
     Engine::Logger::getInstance().log("Begin search");
 
