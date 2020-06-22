@@ -34,39 +34,26 @@ namespace Engine {
         return pawn_score + knight_score + bishop_score + rook_score + queen_score;
     }
 
-    int BoardEval::getBonusPieceScore(PieceType piece, Color color) const {
-        int score = 0, bonus, pos;
+    int BoardEval::getBonusPieceScore(PieceType piece, Color color,int phase) const {
+        int opening= 0,ending=0, pos;
         int piece_index = static_cast<int>(piece);
         uint64_t positions = internal_board.getBitboard(getPiece(piece, color));
-
         while (positions) {
             pos = bitScanForward(popLsb(positions));
-            if (color == White)
-                bonus = Tables::Bonus[piece_index][63 - pos];
-            else bonus = Tables::Bonus[piece_index][pos];
-
-            score += bonus;
+            if (color == White){
+                opening+= Tables::Bonus[0][piece_index][63 - pos];
+                ending+= Tables::Bonus[1][piece_index][63 - pos];
+            }
+            else {
+                opening+= Tables::Bonus[0][piece_index][pos];
+                ending+= Tables::Bonus[1][piece_index][pos];
+            }
         }
-        return score;
-
+        return interpolate(opening,ending,phase);
     }
 
     int BoardEval::interpolate(int opening, int ending, int phase) const {
         return  ((opening* (256 - phase)) + (ending * phase)) / 256;
-    }
-
-    int BoardEval::getBonusKingScore(Color color, int phase) const {
-        int king_opening, king_ending;
-        if (color == White) {
-            int pos = bitScanForward(internal_board.getBitboard(WKing));
-            king_opening = Tables::KingBonus[0][63 - pos];
-            king_ending = Tables::KingBonus[1][63 - pos];
-        } else {
-            int pos = bitScanForward(internal_board.getBitboard(BKing));
-            king_opening = Tables::KingBonus[0][pos];
-            king_ending = Tables::KingBonus[1][pos];
-        }
-        return interpolate(king_opening,king_ending,phase);
     }
 
     int BoardEval::getDoubledPawnCount(Color color) const {
@@ -115,9 +102,9 @@ namespace Engine {
     }
 
     int BoardEval::getBonusScore(Color color, int phase) const {
-        return getBonusPieceScore(PieceType::Pawn, color) + getBonusPieceScore(PieceType::Knight, color) +
-               getBonusPieceScore(PieceType::Bishop, color) + getBonusPieceScore(PieceType::Rook, color) +
-               getBonusPieceScore(PieceType::Queen, color) + getBonusKingScore(color, phase);
+        return getBonusPieceScore(PieceType::Pawn, color,phase) + getBonusPieceScore(PieceType::Knight, color,phase) +
+               getBonusPieceScore(PieceType::Bishop, color,phase) + getBonusPieceScore(PieceType::Rook, color,phase) +
+               getBonusPieceScore(PieceType::Queen, color,phase) + getBonusPieceScore(PieceType::King,color,phase);
     }
 
     int BoardEval::getScore() const {

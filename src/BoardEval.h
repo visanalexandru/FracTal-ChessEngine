@@ -16,9 +16,7 @@ namespace Engine {
 
         int getMaterialScore(Color color) const;
 
-        int getBonusPieceScore(PieceType piece, Color color) const;
-
-        int getBonusKingScore(Color color, int phase) const;
+        int getBonusPieceScore(PieceType piece, Color color,int phase) const;
 
         int getBonusScore(Color color, int phase) const;
 
