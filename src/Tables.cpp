@@ -5,6 +5,7 @@ namespace Engine {
     namespace Tables {
         uint64_t AttackTables[64][8];
         uint64_t PawnFrontFill[2][64];
+        uint64_t KingShieldMask[2][64];
 
         void initializeAttackTables() {
             //NORTH
@@ -59,6 +60,16 @@ namespace Engine {
                     PawnFrontFill[0][i]|=AttackTables[i+1][North];
                     PawnFrontFill[1][i]|=AttackTables[i+1][South];
                 }
+            }
+
+            for(int i=0;i<64;i++){
+                uint64_t kingpos=1LL<<i;
+                uint64_t up=(kingpos)<<8;
+                uint64_t down=(kingpos)>>8;
+
+                KingShieldMask[0][i]=up| ((up&ClearFile[0])<<1) | ((up&ClearFile[7])>>1);
+                KingShieldMask[1][i]=down | ((down&ClearFile[0])<<1) | ((down&ClearFile[7])>>1);
+                printBitboard(KingShieldMask[1][i]);
             }
         }
     }

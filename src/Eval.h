@@ -51,6 +51,8 @@ namespace Engine {
         Eval(Board &board);
 
         Move getBestMove(float allotted);
+
+        void printEval() const;
     };
 };
 

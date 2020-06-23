@@ -108,6 +108,9 @@ void Protocol::handleRequest(const std::string &req) {
     else if (cmmd == "go") {
         searchMove();
     }
+    else if(cmmd=="eval"){
+        eval.printEval();
+    }
     else if (cmmd == "quit") {
         isRunning = false;
     }

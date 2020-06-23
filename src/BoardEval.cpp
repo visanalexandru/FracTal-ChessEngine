@@ -87,6 +87,22 @@ namespace Engine {
         return result;
     }
 
+    int BoardEval::getPawnShieldingKingCount(Color color) const {
+        Piece king_piece=getPiece(PieceType::King,color);
+        Piece pawn_piece=getPiece(PieceType::Pawn,color);
+        int king_pos=bitScanForward(internal_board.getBitboard(king_piece));
+        uint64_t  pawn_bitboard=internal_board.getBitboard(pawn_piece);
+        return popCount(Tables::KingShieldMask[color][king_pos]&pawn_bitboard);
+    }
+    void BoardEval::printEval() const {
+        int phase=getPhase();
+        std::cout<<"game phase: "<<phase<<std::endl;
+        std::cout<<"              WHITE    BLACK   "<<std::endl;
+        std::cout<<"passed pawns:   "<<getPassedPawnCount(White)<<"        "<<getPassedPawnCount(Black)<<std::endl;
+        std::cout<<"doubled pawns:  "<<getDoubledPawnCount(White)<<"        "<<getDoubledPawnCount(Black)<<std::endl;
+        std::cout<<"pawn shield:    "<<getPawnShieldingKingCount(White)<<"        "<<getPawnShieldingKingCount(Black)<<std::endl;
+    }
+
     int BoardEval::getPawnStructureScore(Color color,int phase) const {
         int opening=0,ending=0;
         int num_doubled_pawns=getDoubledPawnCount(color);

@@ -249,4 +249,8 @@ namespace Engine {
         }
         return best;
     }
+
+    void Eval::printEval() const {
+        board_evaluation.printEval();
+    }
 }

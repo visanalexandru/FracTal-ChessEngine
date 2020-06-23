@@ -189,6 +189,8 @@ namespace Engine {
 
         extern uint64_t PawnFrontFill[2][64];
 
+        extern uint64_t KingShieldMask[2][64];
+
         void initializeAttackTables();
     }
 }
