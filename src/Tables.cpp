@@ -69,7 +69,6 @@ namespace Engine {
 
                 KingShieldMask[0][i]=up| ((up&ClearFile[0])<<1) | ((up&ClearFile[7])>>1);
                 KingShieldMask[1][i]=down | ((down&ClearFile[0])<<1) | ((down&ClearFile[7])>>1);
-                printBitboard(KingShieldMask[1][i]);
             }
         }
     }
