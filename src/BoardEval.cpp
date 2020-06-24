@@ -107,12 +107,16 @@ namespace Engine {
         int opening=0,ending=0;
         int num_doubled_pawns=getDoubledPawnCount(color);
         int num_passed_pawns=getPassedPawnCount(color);
+        int num_pawns_shielding_king=getPawnShieldingKingCount(color);
 
         opening+=num_doubled_pawns*doubled_pawn_penalty[0];
         ending+=num_doubled_pawns*doubled_pawn_penalty[1];
 
         opening+=num_passed_pawns*passed_pawn_bonus[0];
         ending+=num_passed_pawns*passed_pawn_bonus[1];
+
+        opening+=num_pawns_shielding_king*pawn_shield_bonus[0];
+        ending+=num_pawns_shielding_king*pawn_shield_bonus[1];
 
         return interpolate(opening,ending,phase);
     }
